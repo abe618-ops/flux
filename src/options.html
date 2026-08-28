@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Send2Mail 设置</title>
+  <style>
+    :root { --blue:#2563eb; --blue-d:#1d4ed8; --ok:#16a34a; --err:#dc2626; --line:#e5e7eb; --muted:#9ca3af; }
+    * { box-sizing: border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+           max-width:520px; margin:26px auto; padding:0 18px; color:#1f2937; }
+    h1 { font-size:19px; margin:0 0 4px; }
+    .sub { color:var(--muted); font-size:12.5px; margin:0 0 14px; line-height:1.6; }
+    .banner { background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; border-radius:10px;
+              padding:10px 12px; font-size:12.5px; line-height:1.6; margin-bottom:14px; display:none; }
+    .banner.show { display:block; }
+    .sec { border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:14px; }
+    .sec > .ttl { font-size:13px; font-weight:600; color:var(--blue); margin-bottom:10px; }
+    .row { display:flex; align-items:center; gap:10px; margin:9px 0; flex-wrap:wrap; }
+    label { font-size:13px; color:#374151; }
+    input[type=text], input[type=email], textarea {
+      width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:8px;
+      font-size:13px; font-family:inherit; outline:none; }
+    input:focus, textarea:focus { border-color:var(--blue); }
+    textarea { height:78px; resize:vertical; }
+    button { border:none; background:var(--blue); color:#fff; padding:8px 16px; border-radius:8px;
+             font-size:13px; cursor:pointer; }
+    button.ghost { background:#eef2ff; color:var(--blue); }
+    button:disabled { opacity:.5; cursor:default; }
+    .status { font-size:12.5px; min-height:18px; color:var(--muted); word-break:break-all; margin-top:6px; }
+    .status.ok { color:var(--ok); } .status.err { color:var(--err); }
+    .hint { font-size:12px; color:var(--muted); line-height:1.7; margin-top:8px; }
+    .cards { display:flex; gap:10px; }
+    .card { flex:1; border:1.5px solid var(--line); border-radius:10px; padding:12px; cursor:pointer; transition:.15s; }
+    .card:hover { border-color:#c7d2fe; }
+    .card.sel { border-color:var(--blue); background:#f5f8ff; }
+    .card .name { font-size:13.5px; font-weight:600; }
+    .card .desc { font-size:11.5px; color:var(--muted); margin-top:4px; line-height:1.5; }
+    .card input { display:none; }
+    .check { display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+    code { background:#f3f4f6; padding:1px 5px; border-radius:4px; font-size:12px; }
+    .hide { display:none; }
+  </style>
+</head>
+<body>
+  <h1>Send2Mail 设置</h1>
+  <p class="sub">选中网页文本或整页正文，一键推送到邮箱。支持 <b>腾讯 Agent 邮箱（含微信）</b> 与 <b>网易 Agent 邮箱</b>。</p>
+
+  <div class="banner" id="offline">
+    ⚠ 未连接本地发送服务。请双击扩展文件夹里的 <code>setup.command</code> 完成一键安装（仅需一次，之后开机自启）。
+  </div>
+
+  <div class="sec">
+    <div class="ttl">① 选择通道</div>
+    <div class="cards">
+      <label class="card" data-ch="tencent">
+        <input type="radio" name="channel" value="tencent">
+        <div class="name">腾讯 Agent 邮箱</div>
+        <div class="desc">含微信转发，点按钮扫码授权</div>
+      </label>
+      <label class="card" data-ch="netease">
+        <input type="radio" name="channel" value="netease">
+        <div class="name">网易 Agent 邮箱</div>
+        <div class="desc">粘贴 API Key 授权，无需终端</div>
+      </label>
+    </div>
+
+    <div id="tencentBox" class="hide" style="margin-top:12px">
+      <button id="authBtn">微信扫码授权</button>
+      <div class="status" id="tencentStatus"></div>
+      <div class="hint">点击后自动打开浏览器二维码，用微信扫码即可。微信消息请把收件人填为微信对应地址。</div>
+    </div>
+
+    <div id="neteaseBox" class="hide" style="margin-top:12px">
+      <label style="font-size:12px;color:#6b7280">API Key（claw.163.com 控制台获取）</label>
+      <input type="text" id="neteaseKey" placeholder="粘贴 API Key">
+      <label style="font-size:12px;color:#6b7280;margin-top:8px;display:block">你的邮箱</label>
+      <input type="email" id="neteaseEmail" placeholder="xxx@claw.163.com">
+      <div class="row" style="margin-top:10px">
+        <button id="neteaseAuthBtn">授权</button>
+      </div>
+      <div class="status" id="neteaseStatus"></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="ttl">② 接收邮箱</div>
+    <label class="check" style="margin-bottom:6px"><input type="checkbox" id="useDefault"> 使用授权邮箱作为默认收件人</label>
+    <input type="email" id="defaultTo" placeholder="留空则发送时手动填写">
+    <label style="margin:10px 0 4px; color:var(--muted); font-size:12px">常用收件人（每行一个，面板可下拉）</label>
+    <textarea id="contacts"></textarea>
+  </div>
+
+  <div class="sec">
+    <div class="ttl">③ 发送行为</div>
+    <div class="row">
+      <label class="check"><input type="radio" name="sendMode" value="panel"> 弹面板确认</label>
+      <label class="check"><input type="radio" name="sendMode" value="direct"> 静默直发</label>
+    </div>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="includePageInfo"> 附来源标题/链接</label>
+    </div>
+    <div class="row">
+      <label style="min-width:64px">主题前缀</label>
+      <input type="text" id="subjectPrefix" placeholder="如：网页收藏">
+    </div>
+  </div>
+
+  <div class="row">
+    <button id="saveBtn">保存</button>
+    <span class="status" id="saveStatus"></span>
+  </div>
+  <div class="hint" id="hostHint"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>
