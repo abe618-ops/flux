@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "name": "选中文本发送邮箱 / 页面推送",
+  "version": "1.4.0",
+  "description": "一键阅读模式推送：点图标自动提取网页正文、过滤广告杂乱，直接发送到邮箱。支持腾讯Agent邮箱(含微信)与网易Agent邮箱(ClawEmail)。",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "notifications"
+  ],
+  "host_permissions": ["http://127.0.0.1/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "推送本页正文到邮箱(有选区则优先推选区)",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "send-selection": {
+      "suggested_key": {
+        "default": "Alt+Shift+E"
+      },
+      "description": "发送选中文本到邮箱"
+    },
+    "push-page": {
+      "suggested_key": {
+        "default": "Alt+Shift+P"
+      },
+      "description": "推送当前页面全文到邮箱"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxZ30JsFY3+MKwdY1MlmZw7WfIsKjKQBDLYBYgS/MItRSXzfuhUZUQirnogjydQDw1tl0yfDN9tA3VWaQFxkOq6qojTJXOGNfdYYfRUTqmahJPHGh25V3wSmNmUBlmqj3UE77Q+zqSVEulszpgwSyzx4JRyLcqgFb46UDzj3VWtBUf4tAIw5hKgKF//MDG5jpcOXsvv160+zgGNYC61J5eG5hbyB2O87J+oCYccw/kpC0JYM2CiHUKuJpUp3TpTjp6XiboTVNpN8v0TlSD/bBREvWqCBI5DMRxeHRW9lvoNmB2d7wW6pu02Ww9y/Fyba1mc47Bpy6CoXdqSPR8XHY8QIDAQAB"
+}
