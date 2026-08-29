@@ -37,6 +37,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: VedicPrashnaFootball-v0.2.0-one-tap-debug
+          name: VedicPrashnaFootball-v0.3.0-random-history-debug
           path: vedic-prashna-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
