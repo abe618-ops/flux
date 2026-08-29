@@ -1,0 +1,286 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F6F2EA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="印度占星·问事足球"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#2F251D" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Prashna · 分钟盘 · Lahiri · D1 / D9"
+            android:textSize="13sp"
+            android:textColor="#756A61" />
+
+        <LinearLayout
+            android:id="@+id/resultCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg">
+
+            <TextView
+                android:id="@+id/verdictText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="先输入问事时间与地点，再点击“起盘并分析”"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#5A321C" />
+
+            <TextView
+                android:id="@+id/probText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="主胜 —  平 —  客胜 —"
+                android:textSize="16sp"
+                android:textColor="#2F251D" />
+
+            <TextView
+                android:id="@+id/sensitivityText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="分钟敏感性：—"
+                android:textSize="13sp"
+                android:textColor="#756A61" />
+
+            <TextView
+                android:id="@+id/summaryText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="结果优先展示；详细盘面与规则说明在下方折叠区。"
+                android:textSize="14sp"
+                android:textColor="#40362E" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="问事设置"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="#2F251D" />
+
+        <EditText
+            android:id="@+id/questionInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="问题，例如：主队能否在常规时间取胜？"
+            android:singleLine="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/homeInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="主队"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/awayInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="客队"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/timeInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="问事时间 yyyy-MM-dd HH:mm"
+            android:singleLine="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/minusMinute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="-1分" />
+
+            <Button
+                android:id="@+id/nowButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.4"
+                android:text="当前分钟" />
+
+            <Button
+                android:id="@+id/plusMinute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="+1分" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/timezoneInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="时区偏移，例如 +08:00"
+            android:singleLine="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/latitudeInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal|numberSigned"
+                android:hint="问事地点纬度" />
+
+            <EditText
+                android:id="@+id/longitudeInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal|numberSigned"
+                android:hint="问事地点经度" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="第一版固定规则：主队=第1宫，客队=第7宫；地点使用“提问发生地点”，不是比赛场地。"
+            android:textSize="12sp"
+            android:textColor="#756A61" />
+
+        <Button
+            android:id="@+id/analyzeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="起盘并分析" />
+
+        <TextView
+            android:id="@+id/chartToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:padding="10dp"
+            android:text="▶ 排盘详情（D1 / D9 / 星曜位置）"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:textColor="#3D2A1C" />
+
+        <LinearLayout
+            android:id="@+id/chartSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/chartMetaText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textSize="13sp"
+                android:textColor="#4D433B" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="D1 Rāśi"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+            <com.abe.vedicprashna.VedicChartView
+                android:id="@+id/d1Chart"
+                android:layout_width="match_parent"
+                android:layout_height="320dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="D9 Navāṁśa"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+            <com.abe.vedicprashna.VedicChartView
+                android:id="@+id/d9Chart"
+                android:layout_width="match_parent"
+                android:layout_height="320dp" />
+
+            <TextView
+                android:id="@+id/planetTableText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:typeface="monospace"
+                android:textSize="12sp"
+                android:textColor="#3C332C" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/analysisToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="10dp"
+            android:text="▶ 分析规则与评分明细"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:textColor="#3D2A1C" />
+
+        <LinearLayout
+            android:id="@+id/analysisSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/analysisDetailText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:textSize="13sp"
+                android:textColor="#3C332C" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:paddingBottom="24dp"
+            android:text="说明：占星判断属于传统术数方法，不是经统计学验证的比赛概率模型；“百分比”为本应用内部规则分布，仅用于比较方向。"
+            android:textSize="12sp"
+            android:textColor="#7A6E64" />
+    </LinearLayout>
+</ScrollView>
