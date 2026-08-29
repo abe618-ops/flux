@@ -1,0 +1,25 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.abe.vedicprashna'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.abe.vedicprashna'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '0.1.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'com.github.krishnact:swisseph:6000e46cf8fc57e15444154018af176304f39ec2'
+}
