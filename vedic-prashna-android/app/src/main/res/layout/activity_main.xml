@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Prashna · 分钟盘 · Lahiri · D1 / D9"
+            android:text="一键 Prashna · 当前分钟 · Lahiri · D1 / D9"
             android:textSize="13sp"
             android:textColor="#756A61" />
 
@@ -38,8 +38,8 @@
                 android:id="@+id/verdictText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="先输入问事时间与地点，再点击“起盘并分析”"
-                android:textSize="22sp"
+                android:text="点击“立即起盘”"
+                android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="#5A321C" />
 
@@ -48,8 +48,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="主胜 —  平 —  客胜 —"
-                android:textSize="16sp"
+                android:text="主胜 —   平 —   客胜 —"
+                android:textSize="17sp"
                 android:textColor="#2F251D" />
 
             <TextView
@@ -66,126 +66,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="结果优先展示；详细盘面与规则说明在下方折叠区。"
+                android:text="无需输入主客队、问题、时间、时区或经纬度。"
                 android:textSize="14sp"
                 android:textColor="#40362E" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:text="问事设置"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="#2F251D" />
-
-        <EditText
-            android:id="@+id/questionInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="问题，例如：主队能否在常规时间取胜？"
-            android:singleLine="true" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/homeInput"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="主队"
-                android:singleLine="true" />
-
-            <EditText
-                android:id="@+id/awayInput"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="客队"
-                android:singleLine="true" />
-        </LinearLayout>
-
-        <EditText
-            android:id="@+id/timeInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="问事时间 yyyy-MM-dd HH:mm"
-            android:singleLine="true" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/minusMinute"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="-1分" />
-
-            <Button
-                android:id="@+id/nowButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1.4"
-                android:text="当前分钟" />
-
-            <Button
-                android:id="@+id/plusMinute"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="+1分" />
-        </LinearLayout>
-
-        <EditText
-            android:id="@+id/timezoneInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="时区偏移，例如 +08:00"
-            android:singleLine="true" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/latitudeInput"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="numberDecimal|numberSigned"
-                android:hint="问事地点纬度" />
-
-            <EditText
-                android:id="@+id/longitudeInput"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="numberDecimal|numberSigned"
-                android:hint="问事地点经度" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="第一版固定规则：主队=第1宫，客队=第7宫；地点使用“提问发生地点”，不是比赛场地。"
-            android:textSize="12sp"
-            android:textColor="#756A61" />
-
         <Button
             android:id="@+id/analyzeButton"
             android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="14dp"
+            android:text="立即起盘"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/autoInfoText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="起盘并分析" />
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="自动读取：当前分钟 · 系统时区 · 手机位置"
+            android:textSize="12sp"
+            android:textColor="#756A61" />
 
         <TextView
             android:id="@+id/chartToggle"
@@ -279,7 +182,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:paddingBottom="24dp"
-            android:text="说明：占星判断属于传统术数方法，不是经统计学验证的比赛概率模型；“百分比”为本应用内部规则分布，仅用于比较方向。"
+            android:text="固定映射：主方=第1宫，客方=第7宫。占星属于传统术数方法；百分比为内部规则权重，并非统计学胜率。"
             android:textSize="12sp"
             android:textColor="#7A6E64" />
     </LinearLayout>
