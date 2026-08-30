@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
         root.setGravity(Gravity.TOP);
 
         TextView title = new TextView(this);
-        title.setText("微信语音点 · 原型 V1");
+        title.setText("微信语音点 · V2");
         title.setTextSize(24);
         title.setTextColor(Color.BLACK);
         title.setPadding(0, 0, 0, dp(14));
@@ -38,14 +38,12 @@ public class MainActivity extends Activity {
 
         TextView desc = new TextView(this);
         desc.setText(
-            "目标：平时隐藏虚拟键盘，只保留一个固定麦克风。\n\n" +
-            "按住麦克风：临时唤出微信输入法，并代理长按空格语音。\n" +
-            "松开麦克风：结束语音，等待微信输入法上屏后再次折叠键盘。\n" +
-            "向屏幕中央快速滑动麦克风：临时展开完整微信输入法键盘。\n\n" +
-            "首次使用请确认：\n" +
-            "1. 默认输入法已经设为“微信输入法”；\n" +
-            "2. 微信输入法中已经开启“长按空格语音转文字”；\n" +
-            "3. 在系统辅助功能中开启“微信语音点辅助服务”。"
+            "V2 已改为“单击切换”模式：\n\n" +
+            "• 点输入框：先正常取得光标，再自动折叠微信输入法键盘。\n" +
+            "• 第一次单击 🎙：在底层唤出微信输入法，并持续模拟长按空格。\n" +
+            "• 第二次单击：松开空格，等待微信输入法完成识别并上屏。\n" +
+            "• 向屏幕中央滑动 🎙：临时展开完整微信输入法键盘。\n\n" +
+            "这一版不录音、不安装语音模型，识别仍完全由微信输入法完成。"
         );
         desc.setTextSize(16);
         desc.setTextColor(Color.DKGRAY);
@@ -54,27 +52,33 @@ public class MainActivity extends Activity {
 
         Button inputSettings = new Button(this);
         inputSettings.setText("打开系统输入法设置");
-        inputSettings.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)));
+        inputSettings.setOnClickListener(v ->
+                startActivity(new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)));
         root.addView(inputSettings, new LinearLayout.LayoutParams(-1, -2));
 
         Button accessibility = new Button(this);
         accessibility.setText("打开辅助功能设置");
-        accessibility.setOnClickListener(v -> startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
+        accessibility.setOnClickListener(v ->
+                startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)));
         root.addView(accessibility, new LinearLayout.LayoutParams(-1, -2));
 
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+
         CheckBox adjust = new CheckBox(this);
         adjust.setText("调整语音点位置（开启后拖动；关闭后锁定）");
         adjust.setTextSize(16);
         adjust.setChecked(prefs.getBoolean(KEY_ADJUST, false));
         adjust.setPadding(0, dp(12), 0, dp(8));
         adjust.setOnCheckedChangeListener((buttonView, isChecked) ->
-            prefs.edit().putBoolean(KEY_ADJUST, isChecked).apply()
-        );
+                prefs.edit().putBoolean(KEY_ADJUST, isChecked).apply());
         root.addView(adjust);
 
         TextView note = new TextView(this);
-        note.setText("说明：这是微信输入法专用验证版，不包含任何自有语音模型，也不会录音；语音识别仍由微信输入法完成。不同微信输入法版本的空格键节点可能不同，因此代码同时包含“节点定位”和“键盘区域坐标回退”两条路径。");
+        note.setText(
+            "状态提示：绿色 🎙=待机；蓝色 …=正在唤出微信输入法；" +
+            "红色 ■=微信空格处于持续按住状态；橙色 …=已松开，等待识别结果。\n\n" +
+            "建议测试时先在微信输入法设置中确认“长按空格语音”可正常使用。"
+        );
         note.setTextSize(14);
         note.setTextColor(Color.GRAY);
         note.setPadding(0, dp(12), 0, 0);
