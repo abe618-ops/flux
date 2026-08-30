@@ -10,7 +10,8 @@ import android.webkit.*;
 import android.widget.*;
 import org.json.JSONObject;
 import java.io.*;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -80,7 +81,7 @@ public class MainActivity extends Activity {
     private void openWeb(boolean inject) {
         web = new WebView(this); web.setBackgroundColor(Color.WHITE);
         WebSettings s = web.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true); s.setDatabaseEnabled(true); s.setMediaPlaybackRequiresUserGesture(false);
-        CookieManager.getInstance().setAcceptCookie(true); CookieManager.getInstance().setAcceptThirdPartyCookies(web,true);
+        android.webkit.CookieManager.getInstance().setAcceptCookie(true); android.webkit.CookieManager.getInstance().setAcceptThirdPartyCookies(web,true);
         web.setWebChromeClient(new WebChromeClient());
         web.setWebViewClient(new WebViewClient(){
             @Override public void onPageFinished(WebView v,String url){ super.onPageFinished(v,url); if(inject && !pendingPrompt.isEmpty() && url.contains("suno")) { v.postDelayed(() -> injectPrompt(), 1800); } }
