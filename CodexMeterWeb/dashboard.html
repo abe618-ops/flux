@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CodexMeter</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><div class="logo">C</div><div><h1>CodexMeter</h1><p>真实 Codex 用量</p></div></div>
+    <div class="actions"><button id="openFull">大屏</button><button id="refresh">刷新</button></div>
+  </header>
+
+  <div id="message" class="message hidden"></div>
+
+  <section class="quota-grid">
+    <article class="card quota">
+      <div class="card-title">5 HOUR WINDOW <span id="fiveUsed">--</span></div>
+      <div class="big mint" id="fiveLeft">--%</div>
+      <div class="bar"><i id="fiveBar"></i></div>
+      <div class="reset" id="fiveReset">等待真实数据</div>
+    </article>
+    <article class="card quota weekly">
+      <div class="card-title">WEEKLY WINDOW <span id="weekUsed">--</span></div>
+      <div class="big cyan" id="weekLeft">--%</div>
+      <div class="bar"><i id="weekBar"></i></div>
+      <div class="reset" id="weekReset">等待真实数据</div>
+    </article>
+  </section>
+
+  <section class="metric-grid">
+    <article class="card metric"><span>今日 Token</span><b id="today">--</b></article>
+    <article class="card metric"><span>7 天 Token</span><b id="seven">--</b></article>
+    <article class="card metric"><span>30 天 Token</span><b id="thirty">--</b></article>
+    <article class="card metric"><span>Credits</span><b id="credits">--</b></article>
+  </section>
+
+  <section class="card">
+    <div class="card-title">TOKEN MIX · 30D</div>
+    <div class="split">
+      <div><span>Uncached input</span><b id="uncached">--</b></div>
+      <div><span>Cached input</span><b id="cached">--</b></div>
+      <div><span>Output</span><b id="output">--</b></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-title">MODEL USAGE · 30D</div>
+    <div id="models" class="models"><p class="muted">等待真实数据</p></div>
+  </section>
+
+  <section class="card">
+    <div class="card-title">数据状态</div>
+    <div id="diag" class="diag"></div>
+    <p class="foot">不保存 ChatGPT 密码、Cookie 或 access token。读不到的字段统一显示 -- / N/A。</p>
+  </section>
+</div>
+<script src="dashboard.js"></script>
+</body>
+</html>
