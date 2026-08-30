@@ -1,0 +1,57 @@
+name: Build CodexMeter Bridge DMG
+on:
+  push:
+    branches: [ codexmeter-mac-dmg ]
+    paths:
+      - 'CodexMeterMac/**'
+      - '.github/workflows/codexmeter-mac-dmg.yml'
+  workflow_dispatch:
+jobs:
+  dmg:
+    runs-on: macos-14
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+      - name: Build bridge binaries
+        run: |
+          mkdir -p build
+          GOOS=darwin GOARCH=arm64 go build -o build/bridge-arm64 ./CodexMeterMac/bridge.go
+          GOOS=darwin GOARCH=amd64 go build -o build/bridge-x64 ./CodexMeterMac/bridge.go
+      - name: Download official Codex binaries
+        run: |
+          ARM_URL=$(curl -s https://api.github.com/repos/openai/codex/releases/latest | python3 -c 'import json,sys; j=json.load(sys.stdin); print(next(a["browser_download_url"] for a in j["assets"] if a["name"]=="codex-aarch64-apple-darwin.tar.gz"))')
+          X64_URL=$(curl -s https://api.github.com/repos/openai/codex/releases/latest | python3 -c 'import json,sys; j=json.load(sys.stdin); print(next(a["browser_download_url"] for a in j["assets"] if a["name"]=="codex-x86_64-apple-darwin.tar.gz"))')
+          curl -L --fail "$ARM_URL" -o build/codex-arm64.tgz
+          curl -L --fail "$X64_URL" -o build/codex-x64.tgz
+          mkdir -p build/codex-arm64 build/codex-x64
+          tar -xzf build/codex-arm64.tgz -C build/codex-arm64
+          tar -xzf build/codex-x64.tgz -C build/codex-x64
+      - name: Assemble app
+        run: |
+          APP="build/CodexMeter Bridge.app"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources/bin/arm64" "$APP/Contents/Resources/bin/x86_64"
+          cp CodexMeterMac/Info.plist "$APP/Contents/Info.plist"
+          cp CodexMeterMac/launcher.sh "$APP/Contents/MacOS/CodexMeterBridgeLauncher"
+          chmod +x "$APP/Contents/MacOS/CodexMeterBridgeLauncher"
+          cp build/bridge-arm64 "$APP/Contents/Resources/bin/arm64/codexmeter-bridge"
+          cp build/bridge-x64 "$APP/Contents/Resources/bin/x86_64/codexmeter-bridge"
+          cp build/codex-arm64/* "$APP/Contents/Resources/bin/arm64/codex"
+          cp build/codex-x64/* "$APP/Contents/Resources/bin/x86_64/codex"
+          chmod +x "$APP/Contents/Resources/bin/"*/codex "$APP/Contents/Resources/bin/"*/codexmeter-bridge
+          codesign --force --deep --sign - "$APP"
+      - name: Create DMG
+        run: |
+          mkdir -p build/dmg
+          cp -R "build/CodexMeter Bridge.app" build/dmg/
+          ln -s /Applications build/dmg/Applications
+          hdiutil create -volname "CodexMeter Bridge" -srcfolder build/dmg -ov -format UDZO "build/CodexMeter-Bridge-0.5.0.dmg"
+          shasum -a 256 "build/CodexMeter-Bridge-0.5.0.dmg" > "build/CodexMeter-Bridge-0.5.0.dmg.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CodexMeter-Bridge-DMG
+          path: |
+            build/CodexMeter-Bridge-0.5.0.dmg
+            build/CodexMeter-Bridge-0.5.0.dmg.sha256
