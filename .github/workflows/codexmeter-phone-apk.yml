@@ -1,0 +1,33 @@
+name: CodexMeter Phone APK
+on:
+  push:
+    branches: [ codexmeter-phone-build ]
+    paths:
+      - 'CodexMeter/**'
+      - '.github/workflows/codexmeter-phone-apk.yml'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Download Android ARM64 Codex runtime
+        run: |
+          curl -L --fail --retry 3 -o "$RUNNER_TEMP/codex-termux.tgz" "https://github.com/DioNanos/codex-termux/releases/download/v0.150.1/mmmbuto-codex-cli-termux-0.150.1.tgz"
+          echo "ec8dd1211f366d44f92b5a9d37abcc3de979f004f502bfff6dde7335ebf65a4e  $RUNNER_TEMP/codex-termux.tgz" | sha256sum -c -
+      - name: Build APK
+        working-directory: CodexMeter
+        run: |
+          gradle :app:assembleDebug --no-daemon --stacktrace -PcodexMeter.phoneRuntime.archive="$RUNNER_TEMP/codex-termux.tgz" -PcodexMeter.phoneRuntime.version="codex-termux-0.150.1"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CodexMeter-v0.4-phone-only-arm64
+          path: CodexMeter/app/build/outputs/apk/debug/app-debug.apk
