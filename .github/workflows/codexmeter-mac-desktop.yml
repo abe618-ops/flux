@@ -17,8 +17,7 @@ jobs:
         run: swift build -c release
       - name: Download official Codex arm64
         run: |
-          URL=$(curl -s https://api.github.com/repos/openai/codex/releases/latest | python3 -c 'import json,sys; j=json.load(sys.stdin); print(next(a["browser_download_url"] for a in j["assets"] if a["name"]=="codex-aarch64-apple-darwin.tar.gz"))')
-          curl -L --fail "$URL" -o "$RUNNER_TEMP/codex.tgz"
+          curl -L --fail --retry 3             "https://github.com/openai/codex/releases/download/rust-v0.151.0/codex-aarch64-apple-darwin.tar.gz"             -o "$RUNNER_TEMP/codex.tgz"
           mkdir -p "$RUNNER_TEMP/codex"
           tar -xzf "$RUNNER_TEMP/codex.tgz" -C "$RUNNER_TEMP/codex"
       - name: Assemble app bundle
