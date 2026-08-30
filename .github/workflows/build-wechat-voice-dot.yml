@@ -1,0 +1,40 @@
+name: Build WeChat Voice Dot APK
+
+on:
+  push:
+    branches:
+      - prototype/wechat-voice-dot
+    paths:
+      - 'wechat-voice-dot/**'
+      - '.github/workflows/build-wechat-voice-dot.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'wechat-voice-dot/**'
+      - '.github/workflows/build-wechat-voice-dot.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - uses: android-actions/setup-android@v3
+      - name: Build debug APK
+        working-directory: wechat-voice-dot
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Rename APK
+        run: cp wechat-voice-dot/app/build/outputs/apk/debug/app-debug.apk WeChatVoiceDot-V1.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WeChatVoiceDot-V1
+          path: WeChatVoiceDot-V1.apk
+          if-no-files-found: error
