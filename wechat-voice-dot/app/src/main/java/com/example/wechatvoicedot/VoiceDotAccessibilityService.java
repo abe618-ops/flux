@@ -10,7 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.AccessibilityWindowInfo;
+import android.view.accessibility.AccessibilityWindowInfo;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -86,7 +86,7 @@ public class VoiceDotAccessibilityService extends AccessibilityService {
             try { wm.removeView(dot); } catch (Exception ignored) { }
         }
         getSoftKeyboardController().setShowMode(
-                AccessibilityService.SoftKeyboardController.SHOW_MODE_AUTO);
+                AccessibilityService.SHOW_MODE_AUTO);
         super.onDestroy();
     }
 
@@ -183,7 +183,7 @@ public class VoiceDotAccessibilityService extends AccessibilityService {
 
         manualKeyboard = false;
         getSoftKeyboardController().setShowMode(
-                AccessibilityService.SoftKeyboardController.SHOW_MODE_AUTO);
+                AccessibilityService.SHOW_MODE_AUTO);
         nudgeFocusedEditor();
 
         handler.postDelayed(() -> {
@@ -296,14 +296,14 @@ public class VoiceDotAccessibilityService extends AccessibilityService {
         currentStroke = null;
         manualKeyboard = true;
         getSoftKeyboardController().setShowMode(
-                AccessibilityService.SoftKeyboardController.SHOW_MODE_AUTO);
+                AccessibilityService.SHOW_MODE_AUTO);
         nudgeFocusedEditor();
     }
 
     private void hideSoftKeyboard() {
         if (!manualKeyboard) {
             getSoftKeyboardController().setShowMode(
-                    AccessibilityService.SoftKeyboardController.SHOW_MODE_HIDDEN);
+                    AccessibilityService.SHOW_MODE_HIDDEN);
         }
     }
 
