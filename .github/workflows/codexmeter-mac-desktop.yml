@@ -1,0 +1,45 @@
+name: Build CodexMeter Desktop DMG
+on:
+  push:
+    branches: [ codexmeter-mac-desktop ]
+    paths:
+      - 'CodexMeterMacDesktop/**'
+      - '.github/workflows/codexmeter-mac-desktop.yml'
+  workflow_dispatch:
+jobs:
+  dmg:
+    runs-on: macos-14
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build native SwiftUI app
+        working-directory: CodexMeterMacDesktop
+        run: swift build -c release
+      - name: Download official Codex arm64
+        run: |
+          URL=$(curl -s https://api.github.com/repos/openai/codex/releases/latest | python3 -c 'import json,sys; j=json.load(sys.stdin); print(next(a["browser_download_url"] for a in j["assets"] if a["name"]=="codex-aarch64-apple-darwin.tar.gz"))')
+          curl -L --fail "$URL" -o "$RUNNER_TEMP/codex.tgz"
+          mkdir -p "$RUNNER_TEMP/codex"
+          tar -xzf "$RUNNER_TEMP/codex.tgz" -C "$RUNNER_TEMP/codex"
+      - name: Assemble app bundle
+        run: |
+          APP="build/CodexMeter.app"
+          mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources/bin"
+          cp CodexMeterMacDesktop/Info.plist "$APP/Contents/Info.plist"
+          cp CodexMeterMacDesktop/.build/release/CodexMeterDesktop "$APP/Contents/MacOS/CodexMeterDesktop"
+          cp "$RUNNER_TEMP/codex/"* "$APP/Contents/Resources/bin/codex"
+          chmod +x "$APP/Contents/MacOS/CodexMeterDesktop" "$APP/Contents/Resources/bin/codex"
+          codesign --force --deep --sign - "$APP"
+      - name: Create DMG
+        run: |
+          mkdir -p build/dmg
+          cp -R build/CodexMeter.app build/dmg/
+          ln -s /Applications build/dmg/Applications
+          hdiutil create -volname "CodexMeter" -srcfolder build/dmg -ov -format UDZO build/CodexMeter-Desktop-1.0.0.dmg
+          shasum -a 256 build/CodexMeter-Desktop-1.0.0.dmg > build/CodexMeter-Desktop-1.0.0.dmg.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CodexMeter-Desktop-DMG
+          path: |
+            build/CodexMeter-Desktop-1.0.0.dmg
+            build/CodexMeter-Desktop-1.0.0.dmg.sha256
