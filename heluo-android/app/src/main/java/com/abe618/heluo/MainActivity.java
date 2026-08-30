@@ -335,7 +335,7 @@ public class MainActivity extends Activity {
         Toast.makeText(this, "已复制本盘结果", Toast.LENGTH_SHORT).show();
     }
 
-    private TextView stat(String label, String value) {
+    private LinearLayout stat(String label, String value) {
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
         box.setGravity(Gravity.CENTER);
@@ -350,9 +350,7 @@ public class MainActivity extends Activity {
         b.setGravity(Gravity.CENTER);
         box.addView(b, mp(dp(2), 0));
 
-        // Return a TextView-compatible wrapper is not possible, so use a carrier TextView?
-        // This method is unused; kept only for source compatibility.
-        return b;
+        return box;
     }
 
     private LinearLayout card() {
