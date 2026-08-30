@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">微信语音点</string>
+    <string name="service_name">微信语音点辅助服务</string>
+    <string name="service_desc">隐藏软键盘，并用固定语音按钮代理微信输入法的长按空格语音输入。</string>
+</resources>
