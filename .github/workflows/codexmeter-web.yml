@@ -1,0 +1,28 @@
+name: Build CodexMeter Web
+on:
+  push:
+    branches: [ codexmeter-web ]
+    paths:
+      - 'CodexMeterWeb/**'
+      - '.github/workflows/codexmeter-web.yml'
+  workflow_dispatch:
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate manifest
+        run: python3 -m json.tool CodexMeterWeb/manifest.json >/dev/null
+      - name: Validate JavaScript
+        run: |
+          node --check CodexMeterWeb/content.js
+          node --check CodexMeterWeb/background.js
+          node --check CodexMeterWeb/dashboard.js
+      - name: Package extension
+        run: |
+          cd CodexMeterWeb
+          zip -r ../CodexMeter-Web-v1.0.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CodexMeter-Web-v1.0
+          path: CodexMeter-Web-v1.0.zip
