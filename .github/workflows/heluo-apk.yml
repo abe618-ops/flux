@@ -1,0 +1,45 @@
+name: Build Heluo Android APK
+
+on:
+  push:
+    branches:
+      - heluo-random-football-v1-20260830
+    paths:
+      - 'heluo-android/**'
+      - '.github/workflows/heluo-apk.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        working-directory: heluo-android
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Rename APK
+        run: cp heluo-android/app/build/outputs/apk/debug/app-debug.apk heluo-android/app/build/outputs/apk/debug/HeluoRandomFootball-v1.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HeluoRandomFootball-v1
+          path: heluo-android/app/build/outputs/apk/debug/HeluoRandomFootball-v1.apk
+          if-no-files-found: error
+          retention-days: 30
