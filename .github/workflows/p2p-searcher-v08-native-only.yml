@@ -1,0 +1,62 @@
+name: Build P2P Searcher v0.8 Native Only
+
+on:
+  push:
+    branches: [ 'build/p2p-searcher-v08-native-only' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.1"
+      - name: Reassemble baseline
+        run: |
+          cat p2p-searcher-v04/source.part* > source.b64
+          base64 -d source.b64 > baseline.zip
+          echo "6912f664c3b6128796ca73e561a0bf1211fe1a4219077df272547ff09b940b80  baseline.zip" | sha256sum -c -
+          rm -rf p2p-build && mkdir p2p-build
+          unzip -q baseline.zip -d p2p-build
+      - name: Apply eD2K and completed Kad v0.7 cores
+        run: |
+          cp p2p-searcher-v05/LegacyEd2kSearch.java p2p-build/app/src/main/java/app/p2psearchernext/android/LegacyEd2kSearch.java
+          cat p2p-searcher-v07/patch.part* > kad-v07.b64
+          base64 -d kad-v07.b64 > kad-v07.zip
+          echo "837c63ce30775c1f9e3536c5070076dd3ee1ef9b6ce70c9d625651813993e358  kad-v07.zip" | sha256sum -c -
+          unzip -qo kad-v07.zip -d p2p-build
+      - name: Restrict results to P2PSearcher native sources
+        run: |
+          cd p2p-build
+          python ../p2p-searcher-v08/apply_native_only.py
+          sed -i 's/--version-code 7/--version-code 8/; s/--version-code 4/--version-code 8/' build_manual.sh
+          sed -i 's/--version-name 0.7.0/--version-name 0.8.0/; s/--version-name 0.4.0/--version-name 0.8.0/' build_manual.sh
+          sed -i 's/P2P-Searcher-Next-Android-v0.7.0.apk/P2P-Searcher-Next-Android-v0.8.0.apk/; s/P2P-Searcher-Next-Android-v0.4.0.apk/P2P-Searcher-Next-Android-v0.8.0.apk/' build_manual.sh
+          grep -q 'NativeKadSearch.search(getApplicationContext(), keyword)' app/src/main/java/app/p2psearchernext/android/MainActivity.java
+          grep -q 'LegacyEd2kSearch.search(keyword)' app/src/main/java/app/p2psearchernext/android/MainActivity.java
+          ! grep -A120 'private void startSearch' app/src/main/java/app/p2psearchernext/android/MainActivity.java | grep -q 'InternetArchive.search'
+          chmod +x build_manual.sh
+      - name: Build and verify APK
+        run: |
+          cd p2p-build
+          ./build_manual.sh
+          test -s dist/P2P-Searcher-Next-Android-v0.8.0.apk
+          $ANDROID_HOME/build-tools/35.0.1/apksigner verify --verbose --print-certs dist/P2P-Searcher-Next-Android-v0.8.0.apk
+          sha256sum dist/P2P-Searcher-Next-Android-v0.8.0.apk > dist/P2P-Searcher-Next-Android-v0.8.0.apk.sha256
+      - name: Package outputs
+        run: |
+          mkdir -p out
+          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.8.0.apk out/
+          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.8.0.apk.sha256 out/
+          rm -rf p2p-build/build-manual p2p-build/signing
+          (cd p2p-build && zip -qr ../out/P2P-Searcher-Next-v0.8.0-source.zip . -x 'dist/*')
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P2P-Searcher-Next-v0.8.0-native-only
+          path: out/
