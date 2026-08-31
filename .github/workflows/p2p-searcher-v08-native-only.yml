@@ -43,6 +43,8 @@ jobs:
           ! grep -A120 'private void startSearch' app/src/main/java/app/p2psearchernext/android/MainActivity.java | grep -q 'InternetArchive.search'
           chmod +x build_manual.sh
       - name: Build and verify APK
+        env:
+          ANDROID_SDK_LOCAL: ${{ env.ANDROID_HOME }}
         run: |
           cd p2p-build
           ./build_manual.sh
