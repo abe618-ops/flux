@@ -1,11 +1,11 @@
-name: Materialize FlashNotePush v1.5.3 assets
+name: Build FlashNotePush v1.5.3 public APK
 
 on:
   push:
     branches:
       - flashnotepush-v1.5.3
     paths:
-      - 'FlashNotePush/.binary/**'
+      - 'FlashNotePush/.binary/source/**'
       - '.github/workflows/materialize-flashnotepush-v1.5.3.yml'
   workflow_dispatch:
 
@@ -13,26 +13,47 @@ permissions:
   contents: write
 
 jobs:
-  materialize:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: flashnotepush-v1.5.3
 
-      - name: Materialize APK and source archive
+      - name: Restore sanitized source archive
         shell: bash
         run: |
           set -euo pipefail
-          sha256sum FlashNotePush/.binary/apk/part*
-          mkdir -p FlashNotePush/releases FlashNotePush/source
-          cat FlashNotePush/.binary/apk/part* | base64 -d > FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk
+          mkdir -p FlashNotePush/source /tmp/flashnote-src
           cat FlashNotePush/.binary/source/part* | base64 -d > FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
-          sha256sum FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk
-          echo 'd90158f27931529f260e124233c26bdc176f749019c2bb042d5a7da5425f6f14  FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk' | sha256sum -c -
           unzip -t FlashNotePush/source/FlashNotePush-public-v1.5.3.zip >/dev/null
+          unzip -q FlashNotePush/source/FlashNotePush-public-v1.5.3.zip -d /tmp/flashnote-src
 
-      - name: Commit materialized assets
+      - name: Ensure Android SDK packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDKROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          test -n "$SDKROOT"
+          yes | "$SDKROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$SDKROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.1'
+
+      - name: Generate CI release key and build APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          keytool -genkeypair -v -keystore /tmp/flashnote-ci.jks -storepass flashnotepush-ci-153 -keypass flashnotepush-ci-153 -alias flashnote -keyalg RSA -keysize 2048 -validity 10000 -dname 'CN=FlashNotePush Public Build, OU=GitHub Actions, O=FlashNotePush, C=CN'
+          cd /tmp/flashnote-src
+          export FLASHNOTE_KEYSTORE=/tmp/flashnote-ci.jks
+          export FLASHNOTE_KEY_ALIAS=flashnote
+          export FLASHNOTE_KEYSTORE_PASS=flashnotepush-ci-153
+          export FLASHNOTE_KEY_PASS=flashnotepush-ci-153
+          bash build.sh
+          mkdir -p "$GITHUB_WORKSPACE/FlashNotePush/releases"
+          cp dist/FlashNotePush-Web-v1.5.3.apk "$GITHUB_WORKSPACE/FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk"
+          sha256sum "$GITHUB_WORKSPACE/FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk"
+
+      - name: Commit public assets
         shell: bash
         run: |
           set -euo pipefail
@@ -40,5 +61,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Materialize FlashNotePush v1.5.3 public assets [skip ci]'
+          git commit -m 'Build FlashNotePush v1.5.3 public APK [skip ci]'
           git push origin HEAD:flashnotepush-v1.5.3
