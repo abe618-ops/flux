@@ -1,0 +1,31 @@
+name: Temp Android 36 Tools
+
+on:
+  push:
+    paths:
+      - ".github/workflows/temp-android36-tools.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: android-actions/setup-android@v3
+      - name: Install Android 36
+        run: |
+          set -eux
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+          test -f "$ANDROID_SDK_ROOT/platforms/android-36/android.jar"
+          test -x "$ANDROID_SDK_ROOT/build-tools/36.0.0/aapt2"
+          mkdir payload
+          cp "$ANDROID_SDK_ROOT/platforms/android-36/android.jar" payload/android.jar
+          cp -a "$ANDROID_SDK_ROOT/build-tools/36.0.0" payload/build-tools-36.0.0
+          du -sh payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-36-tools
+          path: payload
+          retention-days: 1
