@@ -1,0 +1,26 @@
+name: Temp Android DX Tool Transfer
+
+on:
+  push:
+    paths:
+      - ".github/workflows/temp-dx-transfer.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  fetch-dx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download public dx tool
+        run: |
+          set -eux
+          curl -L --fail --retry 3             https://github.com/simplehappy2600/dxjar/raw/refs/heads/master/dx.zip             -o dx.zip
+          unzip -t dx.zip
+          ls -lh dx.zip
+      - name: Upload dx tool
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-dx-tool
+          path: dx.zip
+          retention-days: 1
