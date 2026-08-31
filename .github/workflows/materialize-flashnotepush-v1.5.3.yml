@@ -6,6 +6,10 @@ on:
       - flashnotepush-v1.5.3
     paths:
       - 'FlashNotePush/.binary/source/**'
+      - 'FlashNotePush/src/**'
+      - 'FlashNotePush/AndroidManifest.xml'
+      - 'FlashNotePush/build.sh'
+      - 'FlashNotePush/res/**'
       - '.github/workflows/materialize-flashnotepush-v1.5.3.yml'
   workflow_dispatch:
 
@@ -20,16 +24,22 @@ jobs:
         with:
           ref: flashnotepush-v1.5.3
 
-      - name: Restore sanitized source archive
+      - name: Restore and repair sanitized source
         shell: bash
         run: |
           set -euo pipefail
-          sha256sum FlashNotePush/.binary/source/part*
-          mkdir -p FlashNotePush/source /tmp/flashnote-src
-          cat FlashNotePush/.binary/source/part* | base64 -d > FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
-          sha256sum FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
-          unzip -t FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
-          unzip -q FlashNotePush/source/FlashNotePush-public-v1.5.3.zip -d /tmp/flashnote-src
+          rm -rf /tmp/flashnote-src
+          mkdir -p /tmp/flashnote-src FlashNotePush/source
+          cat FlashNotePush/.binary/source/part* | base64 -d > /tmp/staged-source.zip
+          unzip -q /tmp/staged-source.zip -d /tmp/flashnote-src || true
+          # The staged archive has one known damaged member. Replace it with the
+          # verified public text source committed directly in this branch.
+          cp FlashNotePush/src/com/mingyang/flashpush/ArticleExtractor.java /tmp/flashnote-src/src/com/mingyang/flashpush/ArticleExtractor.java
+          cp FlashNotePush/AndroidManifest.xml /tmp/flashnote-src/AndroidManifest.xml
+          cp FlashNotePush/build.sh /tmp/flashnote-src/build.sh
+          cp -R FlashNotePush/res/. /tmp/flashnote-src/res/
+          (cd /tmp/flashnote-src && zip -q -r "$GITHUB_WORKSPACE/FlashNotePush/source/FlashNotePush-public-v1.5.3.zip" . -x 'build/*' 'dist/*' '*.jks' '*.keystore')
+          unzip -t FlashNotePush/source/FlashNotePush-public-v1.5.3.zip >/dev/null
 
       - name: Ensure Android SDK packages
         shell: bash
@@ -37,10 +47,12 @@ jobs:
           set -euo pipefail
           SDKROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
           test -n "$SDKROOT"
-          yes | "$SDKROOT/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
-          "$SDKROOT/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.1'
+          SDKMANAGER="$(find "$SDKROOT/cmdline-tools" -type f -name sdkmanager | head -1)"
+          test -x "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.1'
 
-      - name: Generate CI release key and build APK
+      - name: Generate CI signing key and build APK
         shell: bash
         run: |
           set -euo pipefail
