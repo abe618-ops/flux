@@ -24,9 +24,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          sha256sum FlashNotePush/.binary/source/part*
           mkdir -p FlashNotePush/source /tmp/flashnote-src
           cat FlashNotePush/.binary/source/part* | base64 -d > FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
-          unzip -t FlashNotePush/source/FlashNotePush-public-v1.5.3.zip >/dev/null
+          sha256sum FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
+          unzip -t FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
           unzip -q FlashNotePush/source/FlashNotePush-public-v1.5.3.zip -d /tmp/flashnote-src
 
       - name: Ensure Android SDK packages
