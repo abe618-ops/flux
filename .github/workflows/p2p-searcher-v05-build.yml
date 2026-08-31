@@ -42,13 +42,13 @@ jobs:
           $ANDROID_HOME/build-tools/35.0.1/apksigner verify --verbose --print-certs dist/P2P-Searcher-Next-Android-v0.5.0.apk
       - name: Package v0.5 source
         run: |
-          rm -rf p2p-build/build-manual p2p-build/dist p2p-build/signing
-          (cd p2p-build && zip -qr ../P2P-Searcher-Next-v0.5.0-source.zip .)
-          sha256sum P2P-Searcher-Next-v0.5.0-source.zip
+          mkdir -p out
+          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.5.0.apk out/
+          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.5.0.apk.sha256 out/
+          rm -rf p2p-build/build-manual p2p-build/signing
+          (cd p2p-build && zip -qr ../out/P2P-Searcher-Next-v0.5.0-source.zip . -x 'dist/*')
+          sha256sum out/P2P-Searcher-Next-v0.5.0-source.zip
       - uses: actions/upload-artifact@v4
         with:
           name: P2P-Searcher-Next-v0.5.0
-          path: |
-            p2p-build/dist/P2P-Searcher-Next-Android-v0.5.0.apk
-            p2p-build/dist/P2P-Searcher-Next-Android-v0.5.0.apk.sha256
-            P2P-Searcher-Next-v0.5.0-source.zip
+          path: out/
