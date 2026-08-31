@@ -1,0 +1,44 @@
+name: Materialize FlashNotePush v1.5.3 assets
+
+on:
+  push:
+    branches:
+      - flashnotepush-v1.5.3
+    paths:
+      - 'FlashNotePush/.binary/**'
+      - '.github/workflows/materialize-flashnotepush-v1.5.3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: flashnotepush-v1.5.3
+
+      - name: Materialize APK and source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p FlashNotePush/releases FlashNotePush/source
+          cat FlashNotePush/.binary/apk/part* | base64 -d > FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk
+          cat FlashNotePush/.binary/source/part* | base64 -d > FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
+          echo 'd90158f27931529f260e124233c26bdc176f749019c2bb042d5a7da5425f6f14  FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk' | sha256sum -c -
+          unzip -t FlashNotePush/source/FlashNotePush-public-v1.5.3.zip >/dev/null
+
+      - name: Commit materialized assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add FlashNotePush/releases/FlashNotePush-Web-v1.5.3.apk FlashNotePush/source/FlashNotePush-public-v1.5.3.zip
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Materialize FlashNotePush v1.5.3 public assets [skip ci]'
+          git push origin HEAD:flashnotepush-v1.5.3
