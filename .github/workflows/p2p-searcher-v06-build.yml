@@ -1,0 +1,82 @@
+name: Build P2P Searcher v0.6
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.1"
+      - name: Reassemble v0.4 baseline
+        run: |
+          cat p2p-searcher-v04/source.part* > source.b64
+          base64 -d source.b64 > baseline.zip
+          echo "6912f664c3b6128796ca73e561a0bf1211fe1a4219077df272547ff09b940b80  baseline.zip" | sha256sum -c -
+          rm -rf p2p-build
+          mkdir p2p-build
+          unzip -q baseline.zip -d p2p-build
+      - name: Apply v0.5 native eD2K and v0.6 native Kad
+        run: |
+          cp p2p-searcher-v05/LegacyEd2kSearch.java p2p-build/app/src/main/java/app/p2psearchernext/android/LegacyEd2kSearch.java
+          cp p2p-searcher-v06/NativeKadSearch.java p2p-build/app/src/main/java/app/p2psearchernext/android/NativeKadSearch.java
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('p2p-build/app/src/main/java/app/p2psearchernext/android/MainActivity.java')
+          s=p.read_text()
+          needle='''                    tasks.add(new Callable<SourceBatch>() {
+                        @Override public SourceBatch call() {
+                            LegacyEd2kSearch.SearchBatch result = LegacyEd2kSearch.search(query);
+                            return new SourceBatch(result.items, result.errors);
+                        }
+                    });
+'''
+          addition=needle+'''                    tasks.add(new Callable<SourceBatch>() {
+                        @Override public SourceBatch call() {
+                            NativeKadSearch.SearchBatch result = NativeKadSearch.search(query);
+                            return new SourceBatch(result.items, result.errors);
+                        }
+                    });
+'''
+          if needle not in s:
+              raise SystemExit('Legacy eD2K task insertion anchor missing')
+          p.write_text(s.replace(needle, addition, 1))
+          PY
+          sed -i 's/--version-code 4/--version-code 6/' p2p-build/build_manual.sh
+          sed -i 's/--version-name 0.4.0/--version-name 0.6.0/' p2p-build/build_manual.sh
+          sed -i 's/P2P-Searcher-Next-Android-v0.4.0.apk/P2P-Searcher-Next-Android-v0.6.0.apk/' p2p-build/build_manual.sh
+          chmod +x p2p-build/build_manual.sh
+      - name: Build and verify APK
+        env:
+          ANDROID_SDK_LOCAL: ${{ env.ANDROID_HOME }}
+        run: |
+          cd p2p-build
+          ./build_manual.sh
+          test -s dist/P2P-Searcher-Next-Android-v0.6.0.apk
+          $ANDROID_HOME/build-tools/35.0.1/apksigner verify --verbose --print-certs dist/P2P-Searcher-Next-Android-v0.6.0.apk
+          sha256sum dist/P2P-Searcher-Next-Android-v0.6.0.apk > dist/P2P-Searcher-Next-Android-v0.6.0.apk.sha256
+      - name: Package v0.6 source
+        run: |
+          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.6.0.apk ./P2P-Searcher-Next-Android-v0.6.0.apk
+          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.6.0.apk.sha256 ./P2P-Searcher-Next-Android-v0.6.0.apk.sha256
+          rm -rf p2p-build/build-manual p2p-build/signing p2p-build/dist
+          cp p2p-searcher-v06/RELEASE_NOTES_v0.6.0.md p2p-build/RELEASE_NOTES_v0.6.0.md
+          (cd p2p-build && zip -qr ../P2P-Searcher-Next-v0.6.0-source.zip .)
+          sha256sum P2P-Searcher-Next-v0.6.0-source.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: P2P-Searcher-Next-v0.6.0
+          path: |
+            P2P-Searcher-Next-Android-v0.6.0.apk
+            P2P-Searcher-Next-Android-v0.6.0.apk.sha256
+            P2P-Searcher-Next-v0.6.0-source.zip
+            p2p-searcher-v06/RELEASE_NOTES_v0.6.0.md
