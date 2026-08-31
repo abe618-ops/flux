@@ -1,4 +1,4 @@
-name: Build P2P Searcher v0.5
+name: Build P2P Searcher v0.6 Native Kad
 
 on:
   pull_request:
@@ -25,12 +25,14 @@ jobs:
           rm -rf p2p-build
           mkdir p2p-build
           unzip -q baseline.zip -d p2p-build
-      - name: Apply native eD2K TCP core
+      - name: Apply native eD2K TCP and native Kad2 cores
         run: |
           cp p2p-searcher-v05/LegacyEd2kSearch.java p2p-build/app/src/main/java/app/p2psearchernext/android/LegacyEd2kSearch.java
-          sed -i 's/--version-code 4/--version-code 5/' p2p-build/build_manual.sh
-          sed -i 's/--version-name 0.4.0/--version-name 0.5.0/' p2p-build/build_manual.sh
-          sed -i 's/P2P-Searcher-Next-Android-v0.4.0.apk/P2P-Searcher-Next-Android-v0.5.0.apk/' p2p-build/build_manual.sh
+          cp p2p-searcher-v06/NativeKadSearch.java p2p-build/app/src/main/java/app/p2psearchernext/android/NativeKadSearch.java
+          python3 p2p-searcher-v06/patch_main.py
+          sed -i 's/--version-code 4/--version-code 6/' p2p-build/build_manual.sh
+          sed -i 's/--version-name 0.4.0/--version-name 0.6.0/' p2p-build/build_manual.sh
+          sed -i 's/P2P-Searcher-Next-Android-v0.4.0.apk/P2P-Searcher-Next-Android-v0.6.0.apk/' p2p-build/build_manual.sh
           chmod +x p2p-build/build_manual.sh
       - name: Build and verify APK
         env:
@@ -38,17 +40,18 @@ jobs:
         run: |
           cd p2p-build
           ./build_manual.sh
-          test -s dist/P2P-Searcher-Next-Android-v0.5.0.apk
-          $ANDROID_HOME/build-tools/35.0.1/apksigner verify --verbose --print-certs dist/P2P-Searcher-Next-Android-v0.5.0.apk
-      - name: Package v0.5 source
+          test -s dist/P2P-Searcher-Next-Android-v0.6.0.apk
+          $ANDROID_HOME/build-tools/35.0.1/apksigner verify --verbose --print-certs dist/P2P-Searcher-Next-Android-v0.6.0.apk
+      - name: Package v0.6 source
         run: |
           mkdir -p out
-          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.5.0.apk out/
-          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.5.0.apk.sha256 out/
+          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.6.0.apk out/
+          cp p2p-build/dist/P2P-Searcher-Next-Android-v0.6.0.apk.sha256 out/
+          cp p2p-searcher-v06/RELEASE_NOTES_v0.6.0.md out/
           rm -rf p2p-build/build-manual p2p-build/signing
-          (cd p2p-build && zip -qr ../out/P2P-Searcher-Next-v0.5.0-source.zip . -x 'dist/*')
-          sha256sum out/P2P-Searcher-Next-v0.5.0-source.zip
+          (cd p2p-build && zip -qr ../out/P2P-Searcher-Next-v0.6.0-source.zip . -x 'dist/*')
+          sha256sum out/P2P-Searcher-Next-v0.6.0-source.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: P2P-Searcher-Next-v0.5.0
+          name: P2P-Searcher-Next-v0.6.0
           path: out/
