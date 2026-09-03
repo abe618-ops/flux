@@ -5,6 +5,7 @@ import json
 import shutil
 
 from .adb import AdbClient, list_devices
+from .diagnostics import AndroidDiagnostics
 
 
 def doctor() -> int:
@@ -21,6 +22,16 @@ def main() -> int:
     sub.add_parser("doctor")
     sub.add_parser("devices")
     sub.add_parser("snapshot")
+    sub.add_parser("camera-state")
+
+    logcat = sub.add_parser("logcat")
+    logcat.add_argument("--package")
+    logcat.add_argument("--lines", type=int, default=1200)
+
+    diagnose = sub.add_parser("diagnose")
+    diagnose.add_argument("--package", help="Target Android package, e.g. com.example.app")
+    diagnose.add_argument("--output", default="android-diagnostic.json")
+    diagnose.add_argument("--no-camera", action="store_true")
 
     tap = sub.add_parser("tap")
     tap.add_argument("x", type=int)
@@ -42,6 +53,18 @@ def main() -> int:
         return doctor()
     if args.command == "devices":
         print(json.dumps(list_devices(), ensure_ascii=False, indent=2))
+        return 0
+
+    if args.command in {"diagnose", "logcat", "camera-state"}:
+        diag = AndroidDiagnostics(args.serial)
+        if args.command == "diagnose":
+            path = diag.save(args.output, args.package, include_camera=not args.no_camera)
+            print(str(path.resolve()))
+            return 0
+        if args.command == "logcat":
+            print(diag.logcat(lines=args.lines, package=args.package))
+            return 0
+        print(diag.camera_state())
         return 0
 
     client = AdbClient(args.serial)
