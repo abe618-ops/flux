@@ -16,8 +16,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import java.io.File
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,28 +31,67 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 BridgeDashboard(
-                    openAccessibility = {
-                        startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-                    }
+                    openAccessibility = { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
+                    startCameraDoctor = { CameraDoctor.start(this) },
+                    finishCameraDoctor = { CameraDoctor.finish(this) },
+                    shareReport = ::shareReport
                 )
             }
         }
     }
+
+    private fun shareReport(file: File) {
+        val uri = FileProvider.getUriForFile(this, "$packageName.files", file)
+        startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+            type = "application/json"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }, "Share diagnostic report"))
+    }
 }
 
 @Composable
-private fun BridgeDashboard(openAccessibility: () -> Unit) {
+private fun BridgeDashboard(
+    openAccessibility: () -> Unit,
+    startCameraDoctor: () -> Unit,
+    finishCameraDoctor: () -> File,
+    shareReport: (File) -> Unit
+) {
+    var doctorRunning by remember { mutableStateOf(CameraDoctor.isRunning()) }
+    var lastReport by remember { mutableStateOf<File?>(null) }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text("Android Codex Bridge", style = MaterialTheme.typography.headlineMedium)
-        Text("Local Android observation and control bridge for Codex/MCP agents.")
+        Text("v0.2 Camera Doctor — reproduce a camera failure and export evidence.")
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Camera Doctor", style = MaterialTheme.typography.titleMedium)
+                Text(if (doctorRunning) "Recording session. Open Camera, take a photo, reproduce the save/crash problem, then return here." else "Start a session before reproducing the camera problem.")
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Button(onClick = {
+                        startCameraDoctor()
+                        doctorRunning = true
+                    }, enabled = !doctorRunning) { Text("Start diagnosis") }
+                    Button(onClick = {
+                        lastReport = finishCameraDoctor()
+                        doctorRunning = false
+                    }, enabled = doctorRunning) { Text("Finish") }
+                }
+                lastReport?.let { report ->
+                    Text("Report: ${report.name}")
+                    Button(onClick = { shareReport(report) }) { Text("Share report") }
+                }
+            }
+        }
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Accessibility bridge", style = MaterialTheme.typography.titleMedium)
-                Text("Enable this manually to inspect visible UI and perform user-authorized gestures.")
+                Text("Enable this manually so Camera Doctor can capture the visible UI state.")
                 Button(onClick = openAccessibility) { Text("Open Accessibility settings") }
             }
         }
@@ -65,6 +110,6 @@ private fun BridgeDashboard(openAccessibility: () -> Unit) {
             Button(onClick = { BridgeAccessibilityService.instance?.performHome() }) { Text("Home") }
         }
 
-        Text("v0.1 foundation — host ADB/MCP bridge provides deeper diagnostics such as logcat and dumpsys.")
+        Text("Deep crash/logcat/CameraService evidence still requires an authorized ADB or privileged bridge; the report marks this explicitly.")
     }
 }
