@@ -65,7 +65,7 @@ private fun BridgeDashboard(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text("Android Codex Bridge", style = MaterialTheme.typography.headlineMedium)
-        Text("v0.2 Camera Doctor — reproduce a camera failure and export evidence.")
+        Text("v0.3 ADB Deep Mode — Camera Doctor + bounded system-log capture.")
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -90,6 +90,14 @@ private fun BridgeDashboard(
 
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("ADB Deep Mode", style = MaterialTheme.typography.titleMedium)
+                Text("Connect the phone to a computer with USB debugging enabled, then run the host bridge camera-session command. It clears old logcat first and captures only the reproduction window.")
+                Text("Captured targets: CameraService, CameraProvider/HAL, MediaProvider/MediaStore, FUSE/vold/storage, SELinux/AppOps, crash and ANR evidence.")
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Accessibility bridge", style = MaterialTheme.typography.titleMedium)
                 Text("Enable this manually so Camera Doctor can capture the visible UI state.")
                 Button(onClick = openAccessibility) { Text("Open Accessibility settings") }
@@ -109,7 +117,5 @@ private fun BridgeDashboard(
             Button(onClick = { BridgeAccessibilityService.instance?.performBack() }) { Text("Back") }
             Button(onClick = { BridgeAccessibilityService.instance?.performHome() }) { Text("Home") }
         }
-
-        Text("Deep crash/logcat/CameraService evidence still requires an authorized ADB or privileged bridge; the report marks this explicitly.")
     }
 }
