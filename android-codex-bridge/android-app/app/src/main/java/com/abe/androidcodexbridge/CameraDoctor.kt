@@ -29,7 +29,6 @@ object CameraDoctor {
         val before = baselineImageCount
         val after = queryImageCount(context)
         val stat = StatFs(Environment.getDataDirectory().absolutePath)
-        val freeBytes = stat.availableBytes
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val memoryInfo = ActivityManager.MemoryInfo().also(am::getMemoryInfo)
         val accessibility = BridgeAccessibilityService.instance
@@ -44,11 +43,11 @@ object CameraDoctor {
             put("android", Build.VERSION.RELEASE)
             put("sdk", Build.VERSION.SDK_INT)
             put("accessibilityConnected", accessibility != null)
-            put("foregroundUiTree", accessibility?.dumpUiTreeJson() ?: JSONObject().put("status", "unavailable"))
+            put("foregroundUiTree", accessibility?.uiTreeJson() ?: JSONObject().put("available", false))
             put("mediaImageCountBefore", before ?: JSONObject.NULL)
             put("mediaImageCountAfter", after ?: JSONObject.NULL)
             put("mediaImageDelta", if (before != null && after != null) after - before else JSONObject.NULL)
-            put("freeStorageBytes", freeBytes)
+            put("freeStorageBytes", stat.availableBytes)
             put("availableMemoryBytes", memoryInfo.availMem)
             put("lowMemory", memoryInfo.lowMemory)
             put("deepSystemLogs", "unavailable_without_ADB_or_authorized_privileged_bridge")
@@ -60,11 +59,10 @@ object CameraDoctor {
 
         val stamp = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date(end))
         val dir = File(context.getExternalFilesDir(null), "diagnostics").apply { mkdirs() }
-        val file = File(dir, "camera-doctor-$stamp.json")
-        file.writeText(report.toString(2))
-        startedAt = null
-        baselineImageCount = null
-        return file
+        return File(dir, "camera-doctor-$stamp.json").also { it.writeText(report.toString(2)) }.also {
+            startedAt = null
+            baselineImageCount = null
+        }
     }
 
     private fun queryImageCount(context: Context): Long? = try {
