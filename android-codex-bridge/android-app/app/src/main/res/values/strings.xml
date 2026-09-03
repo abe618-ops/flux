@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Android Codex Bridge</string>
+    <string name="accessibility_description">Allows Android Codex Bridge to inspect visible UI and perform user-authorized automation actions.</string>
+</resources>
