@@ -36,6 +36,11 @@ def main() -> int:
     diagnose.add_argument("--output", default="android-diagnostic.json")
     diagnose.add_argument("--no-camera", action="store_true")
 
+    camera_session = sub.add_parser("camera-session")
+    camera_session.add_argument("--package", help="Camera app package if known")
+    camera_session.add_argument("--seconds", type=int, default=30, help="Reproduction window, 5-180 seconds")
+    camera_session.add_argument("--output", default="camera-adb-session.json")
+
     tap = sub.add_parser("tap")
     tap.add_argument("x", type=int)
     tap.add_argument("y", type=int)
@@ -58,10 +63,15 @@ def main() -> int:
         print(json.dumps(list_devices(), ensure_ascii=False, indent=2))
         return 0
 
-    if args.command in {"diagnose", "logcat", "camera-state"}:
+    if args.command in {"diagnose", "logcat", "camera-state", "camera-session"}:
         diag = AndroidDiagnostics(args.serial)
         if args.command == "diagnose":
             path = diag.save(args.output, args.package, include_camera=not args.no_camera)
+            print(str(path.resolve()))
+            return 0
+        if args.command == "camera-session":
+            print(f"Camera reproduction window started for {args.seconds}s. Reproduce the save/crash issue now...", flush=True)
+            path = diag.save_camera_session(args.output, args.package, args.seconds)
             print(str(path.resolve()))
             return 0
         if args.command == "logcat":
