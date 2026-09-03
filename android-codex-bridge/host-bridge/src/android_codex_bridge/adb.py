@@ -3,7 +3,9 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -35,6 +37,37 @@ class AdbClient:
 
     def shell(self, *args: str, timeout: int = 20) -> AdbResult:
         return self.run("shell", *args, timeout=timeout)
+
+    def screenshot(self, output: str | Path) -> Path:
+        path = Path(output)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        cmd = self._base() + ["exec-out", "screencap", "-p"]
+        proc = subprocess.run(cmd, capture_output=True, timeout=30)
+        if proc.returncode != 0:
+            raise RuntimeError(proc.stderr.decode("utf-8", errors="replace"))
+        path.write_bytes(proc.stdout)
+        return path
+
+    def ui_dump(self) -> str:
+        remote = "/sdcard/window_dump.xml"
+        dump = self.shell("uiautomator", "dump", remote, timeout=30)
+        if dump.returncode != 0:
+            raise RuntimeError(dump.stderr or dump.stdout)
+        content = self.shell("cat", remote, timeout=20)
+        self.shell("rm", "-f", remote, timeout=10)
+        return content.stdout
+
+    def visual_snapshot(self, output_dir: str | Path) -> dict:
+        root = Path(output_dir)
+        root.mkdir(parents=True, exist_ok=True)
+        screen = self.screenshot(root / "screen.png")
+        xml = self.ui_dump()
+        ui_path = root / "window_dump.xml"
+        ui_path.write_text(xml, encoding="utf-8")
+        return {
+            "screenshot": str(screen.resolve()),
+            "ui_dump": str(ui_path.resolve()),
+        }
 
     def snapshot(self) -> dict:
         props = self.shell("getprop")
