@@ -24,6 +24,9 @@ def main() -> int:
     sub.add_parser("snapshot")
     sub.add_parser("camera-state")
 
+    visual = sub.add_parser("visual-snapshot")
+    visual.add_argument("--output-dir", default="android-visual-snapshot")
+
     logcat = sub.add_parser("logcat")
     logcat.add_argument("--package")
     logcat.add_argument("--lines", type=int, default=1200)
@@ -70,6 +73,8 @@ def main() -> int:
     client = AdbClient(args.serial)
     if args.command == "snapshot":
         print(json.dumps(client.snapshot(), ensure_ascii=False, indent=2))
+    elif args.command == "visual-snapshot":
+        print(json.dumps(client.visual_snapshot(args.output_dir), ensure_ascii=False, indent=2))
     elif args.command == "tap":
         result = client.shell("input", "tap", str(args.x), str(args.y))
         print(result.stderr or result.stdout)
