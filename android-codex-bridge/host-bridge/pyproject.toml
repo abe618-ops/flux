@@ -1,0 +1,13 @@
+[project]
+name = "android-codex-bridge"
+version = "0.1.0"
+description = "Safe ADB diagnostics and control bridge for Android AI agents"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+android-codex-bridge = "android_codex_bridge.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
