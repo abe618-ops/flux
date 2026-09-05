@@ -39,14 +39,21 @@ public class MainActivity extends Activity {
 
         addressBar = new EditText(this);
         addressBar.setSingleLine(true);
-        addressBar.setHint("Search or enter address");
+        addressBar.setHint("搜索或输入网址");
         addressBar.setText("https://www.google.com");
         toolbar.addView(addressBar, new LinearLayout.LayoutParams(0, dp(48), 1f));
 
         Button go = new Button(this);
-        go.setText("Go");
+        go.setText("打开");
+        go.setAllCaps(false);
         go.setOnClickListener(v -> loadInput(addressBar.getText().toString()));
         toolbar.addView(go, new LinearLayout.LayoutParams(dp(72), dp(48)));
+
+        Button extensions = new Button(this);
+        extensions.setText("扩展");
+        extensions.setAllCaps(false);
+        extensions.setOnClickListener(v -> startActivity(new Intent(this, ExtensionsActivity.class)));
+        toolbar.addView(extensions, new LinearLayout.LayoutParams(dp(76), dp(48)));
 
         GeckoView webView = new GeckoView(this);
         root.addView(toolbar, new LinearLayout.LayoutParams(
