@@ -21,6 +21,7 @@ public class ExtensionsActivity extends Activity {
     private static final int PICK_EXTENSION_ZIP = 4101;
     private TextView result;
     private LinearLayout installedList;
+    private LinearLayout fluxPackageList;
     private EditText signedUrl;
     private GeckoRuntime runtime;
 
@@ -44,7 +45,7 @@ public class ExtensionsActivity extends Activity {
         root.addView(title);
 
         TextView intro = new TextView(this);
-        intro.setText("一个 APK 承载 WebExtension。\n\nA：可直接运行 · B：需要 Flux Android Bridge · C：依赖桌面/不兼容 API。\n\nGecko 原生安装通道用于 Mozilla 签名的 XPI/WebExtension；普通 Chrome ZIP 先进入 Flux 兼容层检查，不绕过签名校验。");
+        intro.setText("一个 APK 承载 WebExtension。\n\nA：可直接运行 · B：需要 Flux Android Bridge · C：依赖桌面/不兼容 API。\n\nGecko 原生安装通道用于 Mozilla 签名的 XPI/WebExtension；普通 Chrome ZIP 进入 Flux 兼容层，不绕过 Gecko 签名校验。");
         intro.setTextSize(16);
         intro.setPadding(0, dp(12), 0, dp(18));
         root.addView(intro);
@@ -67,7 +68,7 @@ public class ExtensionsActivity extends Activity {
         root.addView(installSigned, fullButtonParams());
 
         Button importZip = new Button(this);
-        importZip.setText("导入 Chrome / WebExtension ZIP（兼容检查）");
+        importZip.setText("导入 Chrome / WebExtension ZIP");
         importZip.setAllCaps(false);
         importZip.setOnClickListener(v -> pickZip());
         root.addView(importZip, fullButtonParams());
@@ -79,15 +80,32 @@ public class ExtensionsActivity extends Activity {
         result.setPadding(0, dp(18), 0, dp(18));
         root.addView(result);
 
+        TextView fluxTitle = new TextView(this);
+        fluxTitle.setText("Flux 兼容扩展包");
+        fluxTitle.setTextSize(20);
+        root.addView(fluxTitle);
+
+        TextView fluxIntro = new TextView(this);
+        fluxIntro.setText("A/B 级 Chrome ZIP 会保存到 App 私有仓库，供 Flux Compatibility Runtime 使用。C 级只报告问题，不保存执行包。");
+        fluxIntro.setPadding(0, dp(8), 0, dp(8));
+        root.addView(fluxIntro);
+
+        fluxPackageList = new LinearLayout(this);
+        fluxPackageList.setOrientation(LinearLayout.VERTICAL);
+        root.addView(fluxPackageList, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+
         TextView installedTitle = new TextView(this);
-        installedTitle.setText("已安装扩展");
+        installedTitle.setText("Gecko 已安装扩展");
         installedTitle.setTextSize(20);
+        installedTitle.setPadding(0, dp(20), 0, 0);
         root.addView(installedTitle);
 
         Button refresh = new Button(this);
-        refresh.setText("刷新列表");
+        refresh.setText("刷新全部列表");
         refresh.setAllCaps(false);
-        refresh.setOnClickListener(v -> refreshInstalled());
+        refresh.setOnClickListener(v -> refreshAll());
         root.addView(refresh, fullButtonParams());
 
         installedList = new LinearLayout(this);
@@ -97,7 +115,7 @@ public class ExtensionsActivity extends Activity {
                 ViewGroup.LayoutParams.WRAP_CONTENT));
 
         setContentView(scroll);
-        refreshInstalled();
+        refreshAll();
     }
 
     private LinearLayout.LayoutParams fullButtonParams() {
@@ -105,6 +123,45 @@ public class ExtensionsActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(52));
         p.topMargin = dp(10);
         return p;
+    }
+
+    private void refreshAll() {
+        renderFluxPackages();
+        refreshInstalled();
+    }
+
+    private void renderFluxPackages() {
+        fluxPackageList.removeAllViews();
+        List<FluxPackageStore.PackageInfo> packages = FluxPackageStore.list(this);
+        if (packages.isEmpty()) {
+            TextView empty = new TextView(this);
+            empty.setText("暂无已导入 Chrome ZIP");
+            empty.setPadding(0, dp(10), 0, dp(10));
+            fluxPackageList.addView(empty);
+            return;
+        }
+        for (FluxPackageStore.PackageInfo p : packages) {
+            LinearLayout card = new LinearLayout(this);
+            card.setOrientation(LinearLayout.VERTICAL);
+            card.setPadding(dp(12), dp(10), dp(12), dp(10));
+
+            TextView info = new TextView(this);
+            info.setText(p.name() + "\n版本：" + p.version() + " · 兼容等级：" + p.compatibility());
+            info.setTextSize(15);
+            card.addView(info);
+
+            Button remove = new Button(this);
+            remove.setText("从 Flux 仓库删除");
+            remove.setAllCaps(false);
+            remove.setOnClickListener(v -> {
+                FluxPackageStore.remove(this, p);
+                result.setText("已删除 Flux 包：" + p.name());
+                renderFluxPackages();
+            });
+            card.addView(remove, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, dp(48)));
+            fluxPackageList.addView(card);
+        }
     }
 
     private void installSignedExtension() {
@@ -125,7 +182,7 @@ public class ExtensionsActivity extends Activity {
 
             @Override public void onError(Throwable error) {
                 runOnUiThread(() -> result.setText("安装失败：" + safeError(error)
-                        + "\n\n提示：Gecko 普通安装要求 Mozilla 签名。未签名 Chrome ZIP 请使用下方 ZIP 兼容检查入口。"));
+                        + "\n\n提示：Gecko 普通安装要求 Mozilla 签名。未签名 Chrome ZIP 请使用 ZIP 导入入口。"));
             }
         });
     }
@@ -156,7 +213,7 @@ public class ExtensionsActivity extends Activity {
         installedList.removeAllViews();
         if (extensions == null || extensions.isEmpty()) {
             TextView empty = new TextView(this);
-            empty.setText("暂无扩展");
+            empty.setText("暂无 Gecko 扩展");
             empty.setPadding(0, dp(12), 0, dp(12));
             installedList.addView(empty);
             return;
@@ -260,6 +317,13 @@ public class ExtensionsActivity extends Activity {
                 String permissions = info.permissions().isEmpty()
                         ? "无显式权限"
                         : String.join(", ", info.permissions());
+
+                FluxPackageStore.PackageInfo stored = null;
+                if (!"C".equals(info.compatibility())) {
+                    stored = FluxPackageStore.importPackage(this, uri, info);
+                }
+                boolean saved = stored != null;
+
                 String text = "检查通过\n\n"
                         + "名称：" + info.name() + "\n"
                         + "版本：" + info.version() + "\n"
@@ -267,8 +331,13 @@ public class ExtensionsActivity extends Activity {
                         + "权限：" + permissions + "\n\n"
                         + "兼容等级：" + info.compatibility() + "\n"
                         + "说明：" + info.reason() + "\n\n"
-                        + "该 ZIP 尚未执行。后续由 Flux Compatibility Runtime 对 A/B 级 Chrome ZIP 提供受限运行。";
-                runOnUiThread(() -> result.setText(text));
+                        + (saved
+                            ? "✓ 已保存到 Flux 私有扩展仓库，等待 Compatibility Runtime 执行。"
+                            : "C 级扩展未保存为可执行包。请移除桌面专属依赖后再导入。");
+                runOnUiThread(() -> {
+                    result.setText(text);
+                    renderFluxPackages();
+                });
             } catch (Exception e) {
                 runOnUiThread(() -> result.setText("扩展包检查失败：\n" + safeError(e)));
             }
