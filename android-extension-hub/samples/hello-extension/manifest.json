@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "name": "Hello Extension Hub",
+  "version": "0.1.0",
+  "description": "Minimal WebExtension sample for Android Extension Hub.",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
