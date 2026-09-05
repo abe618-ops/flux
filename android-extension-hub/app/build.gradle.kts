@@ -30,5 +30,5 @@ dependencies {
     // Stable GeckoView is intentionally pinned. Nightly 157 currently pulls
     // Android API 37 / AGP 9.1-era dependencies, while Flux WebOS targets
     // stable Android 16 (API 36) for the first installable MVP.
-    implementation("org.mozilla.geckoview:geckoview:145.0.20251215155055")
+    implementation("org.mozilla.geckoview:geckoview:145.0.20251124145406")
 }
