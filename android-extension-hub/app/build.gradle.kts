@@ -10,8 +10,11 @@ android {
         applicationId = "com.flux.webos"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.2.0"
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     compileOptions {
@@ -27,8 +30,7 @@ android {
 }
 
 dependencies {
-    // Stable GeckoView is intentionally pinned. Nightly 157 currently pulls
-    // Android API 37 / AGP 9.1-era dependencies, while Flux WebOS targets
-    // stable Android 16 (API 36) for the first installable MVP.
+    // Stable GeckoView pinned for Android 16/API 36. ARM64-only packaging
+    // keeps the phone build substantially smaller than the universal APK.
     implementation("org.mozilla.geckoview:geckoview:145.0.20251124145406")
 }
