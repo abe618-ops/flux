@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+*.pem
+*.key
+build/
+dist/*.crx
+dist/*.pem
+*.log
+tmp/
+chrome-crx-build/
