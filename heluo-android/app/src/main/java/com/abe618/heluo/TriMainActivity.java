@@ -34,6 +34,8 @@ public class TriMainActivity extends MainActivity {
     private final List<String> methodOrder = new ArrayList<>();
     private LinearLayout methodRows;
     private TextView consensusView;
+    private TextView whoView;
+    private TextView statsView;
     private TriMethodEngine.Result triResult;
     private SharedPreferences prefs;
 
@@ -77,14 +79,23 @@ public class TriMainActivity extends MainActivity {
         title.setGravity(Gravity.CENTER);
         panel.addView(title, lpMatch(dp(30)));
 
-        TextView sub = text("太玄判大小｜策轨数 + 周易策数判单双；单双冲突自动重抽直到一致", 12, MUTED, Typeface.NORMAL);
-        sub.setGravity(Gravity.CENTER);
-        panel.addView(sub, lpMatch(dp(34)));
-
-        consensusView = text("", 17, RED, Typeface.BOLD);
+        consensusView = text("", 18, RED, Typeface.BOLD);
         consensusView.setGravity(Gravity.CENTER);
         consensusView.setBackgroundColor(Color.rgb(255, 239, 210));
-        panel.addView(consensusView, lpMatch(dp(38)));
+        panel.addView(consensusView, lpMatch(dp(40)));
+
+        whoView = text("", 13, BROWN, Typeface.BOLD);
+        whoView.setGravity(Gravity.CENTER_VERTICAL);
+        whoView.setPadding(dp(8), dp(5), dp(8), dp(5));
+        panel.addView(whoView, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        statsView = text("", 15, BLUE, Typeface.BOLD);
+        statsView.setGravity(Gravity.CENTER);
+        statsView.setBackgroundColor(Color.rgb(238, 245, 252));
+        statsView.setPadding(dp(6), dp(5), dp(6), dp(5));
+        panel.addView(statsView, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         methodRows = new LinearLayout(this);
         methodRows.setOrientation(LinearLayout.VERTICAL);
@@ -105,7 +116,7 @@ public class TriMainActivity extends MainActivity {
         View gap = new View(this);
         actions.addView(gap, new LinearLayout.LayoutParams(dp(8), 1));
 
-        Button copy = button("复制三法结果");
+        Button copy = button("复制统计结果");
         copy.setOnClickListener(v -> copyTriResult());
         actions.addView(copy, new LinearLayout.LayoutParams(0, dp(42), 1f));
         panel.addView(actions, new LinearLayout.LayoutParams(
@@ -117,8 +128,43 @@ public class TriMainActivity extends MainActivity {
 
     private void renderTop() {
         if (triResult == null || methodRows == null) return;
-        consensusView.setText("大小：" + triResult.taiXuan.size + "    单双：" + triResult.parity
-                + "    ｜一致用时 " + triResult.attempts + " 轮");
+
+        consensusView.setText("最终：" + triResult.taiXuan.size + " ｜ " + triResult.parity);
+
+        int single = 0;
+        int dbl = 0;
+        List<String> singleNames = new ArrayList<>();
+        List<String> doubleNames = new ArrayList<>();
+
+        if ("单".equals(triResult.ceGui.parity)) {
+            single++;
+            singleNames.add("策轨数");
+        } else {
+            dbl++;
+            doubleNames.add("策轨数");
+        }
+
+        if ("单".equals(triResult.zhouYiCe.parity)) {
+            single++;
+            singleNames.add("周易策数");
+        } else {
+            dbl++;
+            doubleNames.add("周易策数");
+        }
+
+        int big = "大".equals(triResult.taiXuan.size) ? 1 : 0;
+        int small = "小".equals(triResult.taiXuan.size) ? 1 : 0;
+        String bigNames = big == 1 ? "太玄数" : "无";
+        String smallNames = small == 1 ? "太玄数" : "无";
+
+        whoView.setText(
+                "单：" + names(singleNames) + "    双：" + names(doubleNames) + "\n" +
+                "大：" + bigNames + "    小：" + smallNames);
+
+        statsView.setText(
+                "单双统计：单 " + single + " 家 · 双 " + dbl + " 家    ｜    " +
+                "大小统计：大 " + big + " 家 · 小 " + small + " 家");
+
         methodRows.removeAllViews();
         for (int i = 0; i < methodOrder.size(); i++) {
             final int pos = i;
@@ -128,34 +174,39 @@ public class TriMainActivity extends MainActivity {
             row.setGravity(Gravity.CENTER_VERTICAL);
             row.setPadding(dp(4), dp(2), dp(2), dp(2));
 
-            TextView info = text(methodText(key), 13,
+            TextView info = text(methodText(key), 14,
                     "TX".equals(key) ? RED : ("CG".equals(key) ? BLUE : GREEN), Typeface.BOLD);
             info.setGravity(Gravity.CENTER_VERTICAL);
-            row.addView(info, new LinearLayout.LayoutParams(0, dp(43), 1f));
+            row.addView(info, new LinearLayout.LayoutParams(0, dp(40), 1f));
 
             Button up = miniButton("↑");
             up.setEnabled(pos > 0);
             up.setOnClickListener(v -> move(pos, -1));
-            row.addView(up, new LinearLayout.LayoutParams(dp(42), dp(38)));
+            row.addView(up, new LinearLayout.LayoutParams(dp(42), dp(36)));
 
             Button down = miniButton("↓");
             down.setEnabled(pos < methodOrder.size() - 1);
             down.setOnClickListener(v -> move(pos, 1));
-            row.addView(down, new LinearLayout.LayoutParams(dp(42), dp(38)));
+            row.addView(down, new LinearLayout.LayoutParams(dp(42), dp(36)));
 
             methodRows.addView(row, new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
     }
 
+    private String names(List<String> xs) {
+        if (xs.isEmpty()) return "无";
+        return String.join("、", xs);
+    }
+
     private String methodText(String key) {
         if ("TX".equals(key)) {
-            return "太玄数【" + triResult.taiXuan.size + "】  " + triResult.taiXuan.detail();
+            return "太玄数：" + triResult.taiXuan.size;
         }
         if ("CG".equals(key)) {
-            return "策轨数【" + triResult.ceGui.parity + "】  " + triResult.ceGui.detail();
+            return "策轨数：" + triResult.ceGui.parity;
         }
-        return "周易策数【" + triResult.zhouYiCe.parity + "】  " + triResult.zhouYiCe.detail();
+        return "周易策数：" + triResult.zhouYiCe.parity;
     }
 
     private void move(int pos, int delta) {
@@ -188,15 +239,37 @@ public class TriMainActivity extends MainActivity {
 
     private void copyTriResult() {
         if (triResult == null) return;
+
+        int single = 0;
+        int dbl = 0;
+        List<String> singleNames = new ArrayList<>();
+        List<String> doubleNames = new ArrayList<>();
+        if ("单".equals(triResult.ceGui.parity)) {
+            single++; singleNames.add("策轨数");
+        } else {
+            dbl++; doubleNames.add("策轨数");
+        }
+        if ("单".equals(triResult.zhouYiCe.parity)) {
+            single++; singleNames.add("周易策数");
+        } else {
+            dbl++; doubleNames.add("周易策数");
+        }
+        int big = "大".equals(triResult.taiXuan.size) ? 1 : 0;
+        int small = "小".equals(triResult.taiXuan.size) ? 1 : 0;
+
         String s = "三法联判\n"
-                + "太玄大小：" + triResult.taiXuan.size + "｜" + triResult.taiXuan.detail() + "\n"
-                + "策轨单双：" + triResult.ceGui.parity + "｜" + triResult.ceGui.detail() + "\n"
-                + "周易策数单双：" + triResult.zhouYiCe.parity + "｜" + triResult.zhouYiCe.detail() + "\n"
-                + "一致单双：" + triResult.parity + "｜重抽轮次：" + triResult.attempts;
+                + "最终：" + triResult.taiXuan.size + "｜" + triResult.parity + "\n"
+                + "太玄数：" + triResult.taiXuan.size + "\n"
+                + "策轨数：" + triResult.ceGui.parity + "\n"
+                + "周易策数：" + triResult.zhouYiCe.parity + "\n"
+                + "单：" + names(singleNames) + "｜双：" + names(doubleNames) + "\n"
+                + "单双统计：单" + single + "家｜双" + dbl + "家\n"
+                + "大小统计：大" + big + "家｜小" + small + "家";
+
         ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (cm != null) {
-            cm.setPrimaryClip(ClipData.newPlainText("三法联判", s));
-            Toast.makeText(this, "三法结果已复制", Toast.LENGTH_SHORT).show();
+            cm.setPrimaryClip(ClipData.newPlainText("三法联判统计", s));
+            Toast.makeText(this, "统计结果已复制", Toast.LENGTH_SHORT).show();
         }
     }
 
