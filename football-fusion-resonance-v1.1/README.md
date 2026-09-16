@@ -17,8 +17,8 @@
 
 这些统计是实验性复盘工具，不代表真实概率或确定性预测。当前样本仍小，排序会随着本机复盘逐步变化。
 
-## APK 构建
+## 当前代码状态
 
-工作流 `.github/workflows/football-fusion-resonance-build.yml` 会对重打包 APK 进行 zipalign 和 APK Signature Scheme 签名，并上传 `football-fusion-resonance-v1.1-apk` artifact。
+核心排序/共振逻辑已提交到 `assets/engine.js`。APK 在本轮对话中以用户提供的原 APK 为基底完成资产更新、资源对齐和 APK Signature Scheme v2 研究签名，并经过 ZIP 完整性、JS 语法、签名内容摘要与签名值校验。
 
-此版本使用固定研究/调试签名，仅用于个人实验。若手机已经安装了同包名但不同签名的旧版本，可能需要先卸载旧版本再安装。
+此版本使用固定研究/调试签名，仅用于个人实验。包名仍为 `com.abe618.footballfusion.lab`。若手机已经安装同包名但签名不同的旧版本，需要先卸载旧版本再安装。
