@@ -38,7 +38,7 @@ gradle :app:assembleDebug
 
 APK：`app/build/outputs/apk/debug/app-debug.apk`
 
-GitHub Actions 工作流 `pojie-android.yml` 会自动构建并上传 APK artifact。
+GitHub Actions 工作流 `pojie-android.yml` 会自动构建并上传 APK artifact；当前 Runner 直接使用预装 Android SDK，以避免旧 `tools` 包造成的环境初始化失败。
 
 ## 当前版本边界
 
