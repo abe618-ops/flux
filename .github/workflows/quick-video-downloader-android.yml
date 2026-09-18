@@ -1,0 +1,86 @@
+name: QuickSave Video Android
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'quick-video-downloader/source.b64.*'
+      - '.github/workflows/quick-video-downloader-android.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Restore source archive
+        shell: bash
+        run: |
+          cat quick-video-downloader/source.b64.* | tr -d '[:space:]' | base64 -d > /tmp/quick-video-downloader-source.zip
+          unzip -t /tmp/quick-video-downloader-source.zip
+          rm -rf /tmp/quick-video-src
+          mkdir -p /tmp/quick-video-src
+          unzip -q /tmp/quick-video-downloader-source.zip -d /tmp/quick-video-src
+          PROJECT_DIR="/tmp/quick-video-src/quick-video-downloader"
+          test -f "$PROJECT_DIR/settings.gradle"
+          test -f "$PROJECT_DIR/app/build.gradle"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+      - name: Install Android SDK 35
+        shell: bash
+        run: |
+          SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          SDKMANAGER="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$(command -v sdkmanager)"
+          fi
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        shell: bash
+        run: gradle --no-daemon --stacktrace -p "$PROJECT_DIR" assembleDebug
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          APK="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          cp "$APK" /tmp/QuickSaveVideo-v0.1.0-android.apk
+          sha256sum /tmp/QuickSaveVideo-v0.1.0-android.apk | tee /tmp/QuickSaveVideo-v0.1.0-SHA256.txt
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuickSaveVideo-v0.1.0
+          path: |
+            /tmp/QuickSaveVideo-v0.1.0-android.apk
+            /tmp/QuickSaveVideo-v0.1.0-SHA256.txt
+            /tmp/quick-video-downloader-source.zip
+          if-no-files-found: error
+
+      - name: Publish/update GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="quick-video-v0.1.0"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG"               /tmp/QuickSaveVideo-v0.1.0-android.apk               /tmp/QuickSaveVideo-v0.1.0-SHA256.txt               /tmp/quick-video-downloader-source.zip               --clobber
+          else
+            gh release create "$TAG"               /tmp/QuickSaveVideo-v0.1.0-android.apk               /tmp/QuickSaveVideo-v0.1.0-SHA256.txt               /tmp/quick-video-downloader-source.zip               --target "$GITHUB_SHA"               --title "快存视频 v0.1.0"               --notes "抖音/快手/今日头条/微信视频号分享与剪贴板轻量下载原型。只处理公开可访问媒体地址，不绕过登录、付费或 DRM。"
+          fi
