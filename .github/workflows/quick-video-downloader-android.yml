@@ -3,8 +3,14 @@ name: QuickSave Video Android
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - 'quick-video-downloader/source.b64.*'
+      - '.github/workflows/quick-video-downloader-android.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'quick-video-downloader/**'
       - '.github/workflows/quick-video-downloader-android.yml'
 
 permissions:
@@ -74,13 +80,24 @@ jobs:
           if-no-files-found: error
 
       - name: Publish/update GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="quick-video-v0.1.0"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG"               /tmp/QuickSaveVideo-v0.1.0-android.apk               /tmp/QuickSaveVideo-v0.1.0-SHA256.txt               /tmp/quick-video-downloader-source.zip               --clobber
+            gh release upload "$TAG" \
+              /tmp/QuickSaveVideo-v0.1.0-android.apk \
+              /tmp/QuickSaveVideo-v0.1.0-SHA256.txt \
+              /tmp/quick-video-downloader-source.zip \
+              --clobber
           else
-            gh release create "$TAG"               /tmp/QuickSaveVideo-v0.1.0-android.apk               /tmp/QuickSaveVideo-v0.1.0-SHA256.txt               /tmp/quick-video-downloader-source.zip               --target "$GITHUB_SHA"               --title "快存视频 v0.1.0"               --notes "抖音/快手/今日头条/微信视频号分享与剪贴板轻量下载原型。只处理公开可访问媒体地址，不绕过登录、付费或 DRM。"
+            gh release create "$TAG" \
+              /tmp/QuickSaveVideo-v0.1.0-android.apk \
+              /tmp/QuickSaveVideo-v0.1.0-SHA256.txt \
+              /tmp/quick-video-downloader-source.zip \
+              --target "$GITHUB_SHA" \
+              --title "快存视频 v0.1.0" \
+              --notes "抖音/快手/今日头条/微信视频号分享与剪贴板轻量下载原型。只处理公开可访问媒体地址，不绕过登录、付费或 DRM。"
           fi
