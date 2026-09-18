@@ -4,6 +4,19 @@
 
 > 新品牌整理版已发布到 [`PageMail/`](./PageMail/)：**PageMail（页邮）**。原 Send2Mail 根目录继续保留，避免影响现有安装脚本与旧用户。
 
+## Projects / 项目
+
+### JShare / 极简分享
+
+一个面向 Android 的极简局域网文件与应用分享工具：打开即发现附近设备，支持文件、照片、视频、APK 与 Split APK 传输，不需要账号，也不经过云端服务器。
+
+- 项目主页：[minimal-share/](./minimal-share/)
+- APK 下载：[JShare-v0.1.0-debug.apk](./dist/jshare/JShare-v0.1.0-debug.apk)
+- Android：8.0+（minSdk 26），面向 Android 16 / API 36
+- License：MIT
+
+---
+
 支持 **腾讯 Agent 邮箱（含微信）** 与 **网易 Agent 邮箱（ClawEmail）** 双通道，纯文字与带图 HTML 双格式。
 
 ## 效果
@@ -82,6 +95,7 @@ Send2Mail/
 ├── install/
 ├── dist/
 ├── PageMail/                   # 新品牌整理版
+├── minimal-share/              # JShare / 极简分享 Android 项目
 ├── README.md
 ├── LICENSE
 └── .gitignore
