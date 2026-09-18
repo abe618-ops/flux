@@ -1,0 +1,66 @@
+name: Build Meihua Yishu APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/meihua-yishu/source.zip.b64'
+      - '.github/workflows/build-meihua-yishu.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Restore source
+        run: |
+          rm -rf /tmp/meihua-src
+          mkdir -p /tmp/meihua-src
+          base64 -d apps/meihua-yishu/source.zip.b64 > /tmp/meihua-src/source.zip
+          unzip -q /tmp/meihua-src/source.zip -d /tmp/meihua-src
+
+      - name: Build debug APK
+        working-directory: /tmp/meihua-src/meihua-yishu-app
+        run: gradle --no-daemon :app:assembleDebug
+
+      - name: Publish APK into repository
+        run: |
+          mkdir -p dist/meihua-yishu
+          cp /tmp/meihua-src/meihua-yishu-app/app/build/outputs/apk/debug/app-debug.apk dist/meihua-yishu/MeihuaYishu-v1.0.0-debug.apk
+          sha256sum dist/meihua-yishu/MeihuaYishu-v1.0.0-debug.apk > dist/meihua-yishu/SHA256SUMS.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/meihua-yishu
+          if git diff --cached --quiet; then
+            echo "APK unchanged"
+          else
+            git commit -m "build(meihua-yishu): publish v1.0.0 debug apk"
+            git push
+          fi
