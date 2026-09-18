@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'apps/meihua-yishu/source.zip.b64'
+      - 'apps/meihua-yishu/source/**'
       - '.github/workflows/build-meihua-yishu.yml'
   workflow_dispatch:
 
@@ -43,7 +43,7 @@ jobs:
         run: |
           rm -rf /tmp/meihua-src
           mkdir -p /tmp/meihua-src
-          base64 -d apps/meihua-yishu/source.zip.b64 > /tmp/meihua-src/source.zip
+          cat apps/meihua-yishu/source/part-* | tr -d '\n\r' | base64 -d > /tmp/meihua-src/source.zip
           unzip -q /tmp/meihua-src/source.zip -d /tmp/meihua-src
 
       - name: Build debug APK
