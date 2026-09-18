@@ -1,0 +1,6 @@
+<resources>
+    <color name="jshare_primary">#1F6FEB</color>
+    <color name="jshare_surface">#F7F9FC</color>
+    <color name="jshare_text">#172033</color>
+    <color name="jshare_muted">#667085</color>
+</resources>
