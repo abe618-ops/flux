@@ -1,0 +1,2341 @@
+{
+  "generated_at": "2026-09-19T01:03:29.411Z",
+  "kernel": {
+    "source": "fusion-lab-v13fix/kernel-audit/app.js",
+    "exact_core": true,
+    "note": "UI tail removed only; makeForecast/advice/method formulas are executed from the extracted v1.3 app.js source.",
+    "top2": [
+      "qimen",
+      "liuyao"
+    ],
+    "method_order": [
+      "qimen",
+      "liuyao",
+      "meihua",
+      "taixuan",
+      "cegui_position",
+      "jinkou",
+      "cegui",
+      "zhouyi_ce",
+      "daliuren",
+      "lingqi",
+      "lingqi_classic",
+      "wuxing",
+      "small_liuren",
+      "shenyi",
+      "meihua_canonical"
+    ]
+  },
+  "matches": [
+    {
+      "match": {
+        "row_index": 49537,
+        "date": "2026-08-07",
+        "home_team": "Vietnam",
+        "away_team": "Cambodia",
+        "tournament": "ASEAN Championship",
+        "city": "Hanoi",
+        "country": "Vietnam",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "ou": {
+            "counts": [
+              7,
+              3
+            ],
+            "share0": 0.7,
+            "share1": 0.3,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              1,
+              9
+            ],
+            "share0": 0.1,
+            "share1": 0.9,
+            "winner": 1
+          },
+          "attemptsAvg": 2.8,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "2528678111-3539460543-1805922965-2318607305-3",
+              "attempts": 3,
+              "result": 1,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "2929017304-4157385693-4078328588-587846693-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "1864579963-538497019-569076701-741336332-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "3207201617-1867118751-547841369-4001076564-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "2122439892-458416964-4019290379-3800482957-7",
+              "attempts": 7,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "3069358595-3092130176-1967628501-3249517785-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "3604719338-2866352666-2337159935-1920572830-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "2336702064-4096111547-2131116746-690546546-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "2043339469-2527687253-2547837212-3970834869-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "2655072828-772378206-200876442-1830509789-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              62,
+              38
+            ],
+            "share0": 0.62,
+            "share1": 0.38,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              53,
+              47
+            ],
+            "share0": 0.53,
+            "share1": 0.47,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              44,
+              56
+            ],
+            "share0": 0.44,
+            "share1": 0.56,
+            "winner": 1
+          },
+          "attemptsAvg": 1.92,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              581,
+              419
+            ],
+            "share0": 0.581,
+            "share1": 0.419,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              499,
+              501
+            ],
+            "share0": 0.499,
+            "share1": 0.501,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              450,
+              550
+            ],
+            "share0": 0.45,
+            "share1": 0.55,
+            "winner": 1
+          },
+          "attemptsAvg": 1.96,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49538,
+        "date": "2026-08-07",
+        "home_team": "Singapore",
+        "away_team": "Indonesia",
+        "tournament": "ASEAN Championship",
+        "city": "Kallang",
+        "country": "Singapore",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              7,
+              3
+            ],
+            "share0": 0.7,
+            "share1": 0.3,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "parity": {
+            "counts": [
+              4,
+              6
+            ],
+            "share0": 0.4,
+            "share1": 0.6,
+            "winner": 1
+          },
+          "attemptsAvg": 2.3,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "1156957327-834389039-3027745559-260532264-6",
+              "attempts": 6,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "1360758021-3035192579-3677668049-2595667947-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "2515850447-2902110419-914537031-3511968242-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "522706176-1995125962-4217544262-3452942164-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "1432394575-290959644-1930489256-2428537535-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "1717224453-2943590175-3167798525-1862134124-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "3340289046-3223437886-3221165625-801404754-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "2137637594-2768182533-3745985244-3173296148-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "152078995-3486125091-1682133939-4031870916-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "3027494427-4198547697-2750415397-1410205642-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              56,
+              44
+            ],
+            "share0": 0.56,
+            "share1": 0.44,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              62,
+              38
+            ],
+            "share0": 0.62,
+            "share1": 0.38,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              48,
+              52
+            ],
+            "share0": 0.48,
+            "share1": 0.52,
+            "winner": 1
+          },
+          "attemptsAvg": 1.89,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              588,
+              412
+            ],
+            "share0": 0.588,
+            "share1": 0.412,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              481,
+              519
+            ],
+            "share0": 0.481,
+            "share1": 0.519,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              447,
+              553
+            ],
+            "share0": 0.447,
+            "share1": 0.553,
+            "winner": 1
+          },
+          "attemptsAvg": 2.044,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49539,
+        "date": "2026-08-08",
+        "home_team": "Thailand",
+        "away_team": "Myanmar",
+        "tournament": "ASEAN Championship",
+        "city": "Bangkok",
+        "country": "Thailand",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              7,
+              3
+            ],
+            "share0": 0.7,
+            "share1": 0.3,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              4,
+              6
+            ],
+            "share0": 0.4,
+            "share1": 0.6,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "attemptsAvg": 1.7,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "1276679055-1999013104-277374041-2681868355-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "1466325872-520554001-3706014802-212616384-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "1780589239-4218982941-184564917-2774882792-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "643641445-1168192507-3410086242-53113896-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "2375083603-137213924-1750095994-4096497800-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "685186935-109316761-844501165-2148111480-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "3470912278-4202586221-3567060989-2810325103-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "493452624-3532286255-3996204056-4270814755-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "2530701099-3643211134-937243406-1861085747-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "3154138254-1597700230-255323849-1222204118-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              62,
+              38
+            ],
+            "share0": 0.62,
+            "share1": 0.38,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              48,
+              52
+            ],
+            "share0": 0.48,
+            "share1": 0.52,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              51,
+              49
+            ],
+            "share0": 0.51,
+            "share1": 0.49,
+            "winner": 0
+          },
+          "attemptsAvg": 2.02,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              598,
+              402
+            ],
+            "share0": 0.598,
+            "share1": 0.402,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              472,
+              528
+            ],
+            "share0": 0.472,
+            "share1": 0.528,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              446,
+              554
+            ],
+            "share0": 0.446,
+            "share1": 0.554,
+            "winner": 1
+          },
+          "attemptsAvg": 2.002,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49540,
+        "date": "2026-08-08",
+        "home_team": "Malaysia",
+        "away_team": "Philippines",
+        "tournament": "ASEAN Championship",
+        "city": "Kuala Lumpur",
+        "country": "Malaysia",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "ou": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "parity": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "attemptsAvg": 2,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "2635642893-752901755-3931737325-779618041-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "2733650745-402428879-3801969622-941819130-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "2235094950-1869839076-1169582292-3398823998-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "115610100-2136585915-3070544390-2247011843-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "3099766588-2716247338-3184952278-1536477485-3",
+              "attempts": 3,
+              "result": 1,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "3460269034-1685995015-570509209-3136632581-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "1524191001-2887940158-199552584-19708931-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "635146354-867116922-2356827382-1943285196-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "1972823139-3128972256-1805841114-4286709347-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "1584629313-4099634920-822372669-1945594888-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              63,
+              37
+            ],
+            "share0": 0.63,
+            "share1": 0.37,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              46,
+              54
+            ],
+            "share0": 0.46,
+            "share1": 0.54,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              43,
+              57
+            ],
+            "share0": 0.43,
+            "share1": 0.57,
+            "winner": 1
+          },
+          "attemptsAvg": 1.81,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              602,
+              398
+            ],
+            "share0": 0.602,
+            "share1": 0.398,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              482,
+              518
+            ],
+            "share0": 0.482,
+            "share1": 0.518,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              495,
+              505
+            ],
+            "share0": 0.495,
+            "share1": 0.505,
+            "winner": 1
+          },
+          "attemptsAvg": 1.953,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49541,
+        "date": "2026-08-15",
+        "home_team": "Singapore",
+        "away_team": "Thailand",
+        "tournament": "ASEAN Championship",
+        "city": "Kallang",
+        "country": "Singapore",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "ou": {
+            "counts": [
+              7,
+              3
+            ],
+            "share0": 0.7,
+            "share1": 0.3,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              3,
+              7
+            ],
+            "share0": 0.3,
+            "share1": 0.7,
+            "winner": 1
+          },
+          "attemptsAvg": 1.6,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "1217045328-1457537785-995802871-3131545760-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "3908567352-3485676722-236255124-3947949172-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "2007335186-4242155213-992590068-337807584-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "2838499185-4202151465-3788847569-511387405-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "2745774857-4255875221-1181515832-1792311969-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "3115649479-1289463168-4234897819-105035419-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "972894503-674084876-3965771449-3000902275-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "2123302630-3831142516-2735591159-3968649497-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "3024708413-3779037729-1730034045-1507320352-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "3899430102-2723131116-572479837-2701387323-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              57,
+              43
+            ],
+            "share0": 0.57,
+            "share1": 0.43,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              50,
+              50
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "parity": {
+            "counts": [
+              45,
+              55
+            ],
+            "share0": 0.45,
+            "share1": 0.55,
+            "winner": 1
+          },
+          "attemptsAvg": 1.96,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              588,
+              412
+            ],
+            "share0": 0.588,
+            "share1": 0.412,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              494,
+              506
+            ],
+            "share0": 0.494,
+            "share1": 0.506,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              450,
+              550
+            ],
+            "share0": 0.45,
+            "share1": 0.55,
+            "winner": 1
+          },
+          "attemptsAvg": 1.961,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49542,
+        "date": "2026-08-16",
+        "home_team": "Malaysia",
+        "away_team": "Vietnam",
+        "tournament": "ASEAN Championship",
+        "city": "Kuala Lumpur",
+        "country": "Malaysia",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              10,
+              0
+            ],
+            "share0": 1,
+            "share1": 0,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              4,
+              6
+            ],
+            "share0": 0.4,
+            "share1": 0.6,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              6,
+              4
+            ],
+            "share0": 0.6,
+            "share1": 0.4,
+            "winner": 0
+          },
+          "attemptsAvg": 2.1,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "1008591803-2210250556-3440944053-1892494787-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "1152077210-618029960-2733302017-2614165866-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "1533895832-284162856-4128983871-340438394-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "1781625814-2987549139-2872208012-2461484633-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "3463434084-3022617447-2518645745-3265199737-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "4004043429-1971954396-3258541403-1382555993-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "3132701676-323937083-2335621451-3913090111-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "3630827416-366879533-4279678402-2714115465-5",
+              "attempts": 5,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "1861729280-2325429800-354648214-3628269830-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "930348390-921095916-1605586194-836185190-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              61,
+              39
+            ],
+            "share0": 0.61,
+            "share1": 0.39,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              51,
+              49
+            ],
+            "share0": 0.51,
+            "share1": 0.49,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              47,
+              53
+            ],
+            "share0": 0.47,
+            "share1": 0.53,
+            "winner": 1
+          },
+          "attemptsAvg": 2.12,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              587,
+              413
+            ],
+            "share0": 0.587,
+            "share1": 0.413,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              515,
+              485
+            ],
+            "share0": 0.515,
+            "share1": 0.485,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              460,
+              540
+            ],
+            "share0": 0.46,
+            "share1": 0.54,
+            "winner": 1
+          },
+          "attemptsAvg": 2.032,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49543,
+        "date": "2026-08-18",
+        "home_team": "Thailand",
+        "away_team": "Singapore",
+        "tournament": "ASEAN Championship",
+        "city": "Bangkok",
+        "country": "Thailand",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "ou": {
+            "counts": [
+              3,
+              7
+            ],
+            "share0": 0.3,
+            "share1": 0.7,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              2,
+              8
+            ],
+            "share0": 0.2,
+            "share1": 0.8,
+            "winner": 1
+          },
+          "attemptsAvg": 2.2,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "1306490184-1505283835-737490591-2671748821-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "3537439092-895827643-1208174563-3364656422-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "834222769-3653202722-332846445-733863629-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "1427458216-1496124149-2924478827-2639238096-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "1079955841-1068532997-2106443913-316118433-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "2203925741-3344095962-1185842102-603879292-3",
+              "attempts": 3,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "4220772372-3076608168-3293320801-3880374466-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "1532556343-2810424955-3912025913-1366474982-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "1977157428-1415777462-1233736482-1672460370-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "328566550-2961698632-3975907060-1796501112-1",
+              "attempts": 1,
+              "result": 1,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              56,
+              44
+            ],
+            "share0": 0.56,
+            "share1": 0.44,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              64,
+              36
+            ],
+            "share0": 0.64,
+            "share1": 0.36,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              34,
+              66
+            ],
+            "share0": 0.34,
+            "share1": 0.66,
+            "winner": 1
+          },
+          "attemptsAvg": 2.2,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              605,
+              395
+            ],
+            "share0": 0.605,
+            "share1": 0.395,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              491,
+              509
+            ],
+            "share0": 0.491,
+            "share1": 0.509,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              486,
+              514
+            ],
+            "share0": 0.486,
+            "share1": 0.514,
+            "winner": 1
+          },
+          "attemptsAvg": 2.06,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49544,
+        "date": "2026-08-19",
+        "home_team": "Vietnam",
+        "away_team": "Malaysia",
+        "tournament": "ASEAN Championship",
+        "city": "Hanoi",
+        "country": "Vietnam",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              9,
+              1
+            ],
+            "share0": 0.9,
+            "share1": 0.1,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              6,
+              4
+            ],
+            "share0": 0.6,
+            "share1": 0.4,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              3,
+              7
+            ],
+            "share0": 0.3,
+            "share1": 0.7,
+            "winner": 1
+          },
+          "attemptsAvg": 2.5,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "1285860923-2482559393-1847819444-971891747-6",
+              "attempts": 6,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "2998588620-40245764-1061868656-857992167-3",
+              "attempts": 3,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "3773813885-3415235174-1055876819-2063817450-5",
+              "attempts": 5,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "174517839-2284465398-1121506485-2789972070-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "1813133645-1527779852-2833645137-2046790018-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "1004833415-4103174983-1259704908-2899838753-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "4247887650-4101139071-933214617-1525729569-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "2353823149-3651672953-955854869-1981059054-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "1956088398-1201767888-3960172997-692237521-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "3208263994-73663930-1045197974-3045399961-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              56,
+              44
+            ],
+            "share0": 0.56,
+            "share1": 0.44,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              45,
+              55
+            ],
+            "share0": 0.45,
+            "share1": 0.55,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              42,
+              58
+            ],
+            "share0": 0.42,
+            "share1": 0.58,
+            "winner": 1
+          },
+          "attemptsAvg": 2.01,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              587,
+              413
+            ],
+            "share0": 0.587,
+            "share1": 0.413,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              524,
+              476
+            ],
+            "share0": 0.524,
+            "share1": 0.476,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              432,
+              568
+            ],
+            "share0": 0.432,
+            "share1": 0.568,
+            "winner": 1
+          },
+          "attemptsAvg": 2.035,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49545,
+        "date": "2026-08-22",
+        "home_team": "Thailand",
+        "away_team": "Vietnam",
+        "tournament": "ASEAN Championship",
+        "city": "Bangkok",
+        "country": "Thailand",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              6,
+              4
+            ],
+            "share0": 0.6,
+            "share1": 0.4,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              7,
+              3
+            ],
+            "share0": 0.7,
+            "share1": 0.3,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "attemptsAvg": 2.5,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "3921288340-2459112283-1199913853-3217201140-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "1587187665-4216935728-1015310882-1300127276-3",
+              "attempts": 3,
+              "result": 1,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "4248211484-3811072543-4016182376-765698511-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "305242280-2530308726-1648151400-3780014898-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "3136916593-2723285994-3629041586-3943494957-5",
+              "attempts": 5,
+              "result": 1,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "2100701598-2475571034-2101416108-3835753998-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "3487380120-2317350482-3137126312-4255459069-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "2764753286-144927044-3007570293-2575993997-4",
+              "attempts": 4,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "4046056664-1011776234-1154461473-1894186338-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "1504507874-1858359396-2947884948-1822012500-2",
+              "attempts": 2,
+              "result": 1,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              49,
+              51
+            ],
+            "share0": 0.49,
+            "share1": 0.51,
+            "winner": 1
+          },
+          "ou": {
+            "counts": [
+              52,
+              48
+            ],
+            "share0": 0.52,
+            "share1": 0.48,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              55,
+              45
+            ],
+            "share0": 0.55,
+            "share1": 0.45,
+            "winner": 0
+          },
+          "attemptsAvg": 2.28,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              597,
+              403
+            ],
+            "share0": 0.597,
+            "share1": 0.403,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              507,
+              493
+            ],
+            "share0": 0.507,
+            "share1": 0.493,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              448,
+              552
+            ],
+            "share0": 0.448,
+            "share1": 0.552,
+            "winner": 1
+          },
+          "attemptsAvg": 2.068,
+          "rounds": []
+        }
+      }
+    },
+    {
+      "match": {
+        "row_index": 49546,
+        "date": "2026-08-26",
+        "home_team": "Vietnam",
+        "away_team": "Thailand",
+        "tournament": "ASEAN Championship",
+        "city": "Hanoi",
+        "country": "Vietnam",
+        "neutral": "FALSE"
+      },
+      "tests": {
+        "10": {
+          "n": 10,
+          "result": {
+            "counts": [
+              10,
+              0
+            ],
+            "share0": 1,
+            "share1": 0,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "parity": {
+            "counts": [
+              5,
+              5
+            ],
+            "share0": 0.5,
+            "share1": 0.5,
+            "winner": null
+          },
+          "attemptsAvg": 2.9,
+          "rounds": [
+            {
+              "round": 1,
+              "seed": "3434977878-1082365838-1213044937-1277402656-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 2,
+              "seed": "4188082292-1438692001-918295115-2192622336-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 3,
+              "seed": "4186801170-949062367-251127331-656651721-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 4,
+              "seed": "2605789777-3291759933-2806237594-613561007-7",
+              "attempts": 7,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 5,
+              "seed": "3626297842-871681024-384868612-1398067404-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 6,
+              "seed": "3544846321-1148185907-3456693710-3267434894-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 1,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 7,
+              "seed": "1269396643-266358893-2009907000-2175266388-3",
+              "attempts": 3,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 8,
+              "seed": "4230030090-2495106463-2116819223-2775285456-2",
+              "attempts": 2,
+              "result": 0,
+              "ou": 0,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 9,
+              "seed": "2227527235-3142692674-2523197784-3249385233-1",
+              "attempts": 1,
+              "result": 0,
+              "ou": 0,
+              "parity": 0,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            },
+            {
+              "round": 10,
+              "seed": "826705886-1752123938-3323631843-1139288387-10",
+              "attempts": 10,
+              "result": 0,
+              "ou": 1,
+              "parity": 1,
+              "top2": [
+                "qimen",
+                "liuyao"
+              ]
+            }
+          ]
+        },
+        "100": {
+          "n": 100,
+          "result": {
+            "counts": [
+              56,
+              44
+            ],
+            "share0": 0.56,
+            "share1": 0.44,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              43,
+              57
+            ],
+            "share0": 0.43,
+            "share1": 0.57,
+            "winner": 1
+          },
+          "parity": {
+            "counts": [
+              37,
+              63
+            ],
+            "share0": 0.37,
+            "share1": 0.63,
+            "winner": 1
+          },
+          "attemptsAvg": 1.76,
+          "rounds": []
+        },
+        "1000": {
+          "n": 1000,
+          "result": {
+            "counts": [
+              601,
+              399
+            ],
+            "share0": 0.601,
+            "share1": 0.399,
+            "winner": 0
+          },
+          "ou": {
+            "counts": [
+              503,
+              497
+            ],
+            "share0": 0.503,
+            "share1": 0.497,
+            "winner": 0
+          },
+          "parity": {
+            "counts": [
+              441,
+              559
+            ],
+            "share0": 0.441,
+            "share1": 0.559,
+            "winner": 1
+          },
+          "attemptsAvg": 2.047,
+          "rounds": []
+        }
+      }
+    }
+  ]
+}
