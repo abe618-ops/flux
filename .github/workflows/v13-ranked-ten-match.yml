@@ -1,0 +1,33 @@
+name: V1.3 Ranked Ten-Match Statistics
+
+on:
+  push:
+    branches: [ "lab/v13-kernel-backtest" ]
+    paths:
+      - ".github/workflows/v13-ranked-ten-match.yml"
+      - "fusion-lab-v13fix/kernel-audit/method-rank/make-ranked-ten-match-report.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: lab/v13-kernel-backtest
+      - name: Build ranked statistics
+        run: python3 fusion-lab-v13fix/kernel-audit/method-rank/make-ranked-ten-match-report.py
+      - name: Commit ranked report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fusion-lab-v13fix/kernel-audit/method-rank/ten-match-ranked-statistics.json                   fusion-lab-v13fix/kernel-audit/method-rank/ten-match-ranked-statistics.md
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "test(v1.3): add ranked 10-match statistics"
+            git push origin HEAD:lab/v13-kernel-backtest
+          fi
