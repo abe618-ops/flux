@@ -24,6 +24,20 @@ jobs:
         with:
           ref: lab/v14-three-stage-consensus
 
+      - name: O/U hybrid balance diagnostic
+        shell: bash
+        run: |
+          mkdir -p fusion-lab-v14-three-button/diagnostics
+          node fusion-lab-v14-three-button/ou-hybrid-diagnostic.js 5000             fusion-lab-v14-three-button/diagnostics/ou-hybrid-5000.json
+          python3 - <<'PY'
+          import json
+          p='fusion-lab-v14-three-button/diagnostics/ou-hybrid-5000.json'
+          d=json.load(open(p))
+          s=d['final']['bigShare']
+          print('final big share=',s)
+          assert 0.15 < s < 0.85, 'O/U output is still structurally locked to one side'
+          PY
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
