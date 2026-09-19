@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:allowBackup="true"
-        android:label="三轮合参"
+        android:label="三轮合参·大小修复"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
