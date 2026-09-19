@@ -7,10 +7,10 @@ android {
     compileSdk 36
 
     defaultConfig {
-        applicationId 'com.abe618.footballfusion.v14three'
+        applicationId 'com.abe618.footballfusion.v14oufix'
         minSdk 26
         targetSdk 36
-        versionCode 15
-        versionName '1.4-three-button'
+        versionCode 16
+        versionName '1.4.1-oufix'
     }
 }
