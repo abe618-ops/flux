@@ -1,0 +1,270 @@
+name: Fusion Lab v1.3 Per-Method Blind Ranking
+
+on:
+  push:
+    branches: [ "lab/v13-kernel-backtest" ]
+    paths:
+      - ".github/workflows/v13-method-rank.yml"
+      - "fusion-lab-v13fix/kernel-audit/method-benchmark.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rank-methods:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout test branch
+        uses: actions/checkout@v4
+        with:
+          ref: lab/v13-kernel-backtest
+          fetch-depth: 0
+
+      - name: Fetch pinned historical results dataset
+        shell: bash
+        run: |
+          curl -L --fail --retry 3 \
+            "https://raw.githubusercontent.com/martj42/international_results/394fe81893b062fbc2cf6257e988ac7cc4c039a1/results.csv" \
+            -o /tmp/results.csv
+          test -s /tmp/results.csv
+
+      - name: Phase 1 - freeze 10 batches x 10 matches without scores
+        shell: bash
+        run: |
+          mkdir -p fusion-lab-v13fix/kernel-audit/method-rank
+          python3 - <<'PY'
+          import csv, json
+          rows=list(csv.DictReader(open('/tmp/results.csv',encoding='utf-8-sig')))
+          eligible=[]
+          for idx,row in enumerate(rows):
+              if '2025-01-01' <= row.get('date','') <= '2026-08-26':
+                  eligible.append((idx,row))
+          selected=eligible[-100:]
+          payload={
+              'dataset_repo':'martj42/international_results',
+              'dataset_commit':'394fe81893b062fbc2cf6257e988ac7cc4c039a1',
+              'selection':'last 100 rows between 2025-01-01 and 2026-08-26, chronological, no score/outcome filter; partitioned into ten consecutive 10-match batches',
+              'batch_size':10,
+              'batch_count':10,
+              'matches':[]
+          }
+          for j,(idx,row) in enumerate(selected):
+              payload['matches'].append({
+                  'batch':j//10+1,
+                  'slot':j%10+1,
+                  'row_index':idx,
+                  'date':row.get('date'),
+                  'home_team':row.get('home_team'),
+                  'away_team':row.get('away_team'),
+                  'tournament':row.get('tournament'),
+                  'city':row.get('city'),
+                  'country':row.get('country'),
+                  'neutral':row.get('neutral')
+              })
+          out='fusion-lab-v13fix/kernel-audit/method-rank/frozen_100_matches.json'
+          json.dump(payload,open(out,'w',encoding='utf-8'),ensure_ascii=False,indent=2)
+          print(json.dumps(payload,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Phase 1 - run exact v1.3 core 1000 times per match and retain every method
+        shell: bash
+        run: |
+          node fusion-lab-v13fix/kernel-audit/method-benchmark.js \
+            fusion-lab-v13fix/kernel-audit/method-rank/frozen_100_matches.json \
+            fusion-lab-v13fix/kernel-audit/method-rank/frozen_method_predictions.json \
+            1000
+
+      - name: Phase 1 - commit frozen list and all method probabilities before reveal
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fusion-lab-v13fix/kernel-audit/method-rank/frozen_100_matches.json \
+                  fusion-lab-v13fix/kernel-audit/method-rank/frozen_method_predictions.json
+          git commit -m "test(v1.3): freeze 100-match per-method probability benchmark"
+          git push origin HEAD:lab/v13-kernel-backtest
+
+      - name: Phase 2 - reveal, rank by win/loss, O/U, parity and equal-weight composite
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv, json, math, statistics
+          from pathlib import Path
+          base=Path('fusion-lab-v13fix/kernel-audit/method-rank')
+          pred=json.load(open(base/'frozen_method_predictions.json',encoding='utf-8'))
+          rows=list(csv.DictReader(open('/tmp/results.csv',encoding='utf-8-sig')))
+          names=pred['kernel']['method_names']
+          order=pred['kernel']['method_order']
+          repeats=pred['repeats_per_match']
+
+          # Per-method repeated-run and per-match-majority scoring.
+          agg={}
+          for mid in order:
+              agg[mid]={
+                  'result_hits':0,'result_n':0,'ou_hits':0,'ou_n':0,'parity_hits':0,'parity_n':0,
+                  'result_majority_hits':0,'result_majority_n':0,
+                  'ou_majority_hits':0,'ou_majority_n':0,
+                  'parity_majority_hits':0,'parity_majority_n':0,
+                  'result_home_votes':0,'result_votes':0,
+                  'ou_under_votes':0,'ou_votes':0,
+                  'parity_even_votes':0,'parity_votes':0,
+                  'batches':{str(b):{'result_hits':0,'result_n':0,'ou_hits':0,'ou_n':0,'parity_hits':0,'parity_n':0,
+                                      'result_majority_hits':0,'result_majority_n':0,
+                                      'ou_majority_hits':0,'ou_majority_n':0,
+                                      'parity_majority_hits':0,'parity_majority_n':0} for b in range(1,11)}
+              }
+
+          actual_base={'home':0,'away':0,'draw':0,'under':0,'over':0,'even':0,'odd':0}
+          revealed=[]
+          for item in pred['matches']:
+              m=item['match']; row=rows[m['row_index']]
+              h=int(row['home_score']); a=int(row['away_score']); total=h+a
+              actual={
+                  'h':h,'a':a,
+                  'result':0 if h>a else (1 if h<a else None),
+                  'ou':1 if total>2.5 else 0,
+                  'parity':total%2
+              }
+              if actual['result']==0: actual_base['home']+=1
+              elif actual['result']==1: actual_base['away']+=1
+              else: actual_base['draw']+=1
+              actual_base['over' if actual['ou'] else 'under']+=1
+              actual_base['odd' if actual['parity'] else 'even']+=1
+              b=str(m['batch'])
+              rec={'match':m,'actual':actual,'methods':{}}
+              for mid in order:
+                  x=item['methods'][mid]; A=agg[mid]; B=A['batches'][b]
+                  A['result_home_votes']+=x['result']['counts'][0]; A['result_votes']+=repeats
+                  A['ou_under_votes']+=x['ou']['counts'][0]; A['ou_votes']+=repeats
+                  A['parity_even_votes']+=x['parity']['counts'][0]; A['parity_votes']+=repeats
+
+                  if actual['result'] is not None:
+                      hits=x['result']['counts'][actual['result']]
+                      A['result_hits']+=hits; A['result_n']+=repeats
+                      B['result_hits']+=hits; B['result_n']+=repeats
+                      w=x['result']['winner']
+                      if w is not None:
+                          A['result_majority_n']+=1; B['result_majority_n']+=1
+                          if w==actual['result']:
+                              A['result_majority_hits']+=1; B['result_majority_hits']+=1
+
+                  hits=x['ou']['counts'][actual['ou']]
+                  A['ou_hits']+=hits; A['ou_n']+=repeats
+                  B['ou_hits']+=hits; B['ou_n']+=repeats
+                  w=x['ou']['winner']
+                  if w is not None:
+                      A['ou_majority_n']+=1; B['ou_majority_n']+=1
+                      if w==actual['ou']:
+                          A['ou_majority_hits']+=1; B['ou_majority_hits']+=1
+
+                  hits=x['parity']['counts'][actual['parity']]
+                  A['parity_hits']+=hits; A['parity_n']+=repeats
+                  B['parity_hits']+=hits; B['parity_n']+=repeats
+                  w=x['parity']['winner']
+                  if w is not None:
+                      A['parity_majority_n']+=1; B['parity_majority_n']+=1
+                      if w==actual['parity']:
+                          A['parity_majority_hits']+=1; B['parity_majority_hits']+=1
+                  rec['methods'][mid]=x
+              revealed.append(rec)
+
+          def safe(h,n): return h/n if n else None
+          result=[]
+          for mid in order:
+              A=agg[mid]
+              rp=safe(A['result_hits'],A['result_n'])
+              op=safe(A['ou_hits'],A['ou_n'])
+              pp=safe(A['parity_hits'],A['parity_n'])
+              comp=sum(v for v in (rp,op,pp) if v is not None)/3
+              batch_rates={'result':[],'ou':[],'parity':[],'composite':[]}
+              for b in map(str,range(1,11)):
+                  B=A['batches'][b]
+                  br=safe(B['result_hits'],B['result_n'])
+                  bo=safe(B['ou_hits'],B['ou_n'])
+                  bp=safe(B['parity_hits'],B['parity_n'])
+                  if br is not None: batch_rates['result'].append(br)
+                  if bo is not None: batch_rates['ou'].append(bo)
+                  if bp is not None: batch_rates['parity'].append(bp)
+                  if None not in (br,bo,bp): batch_rates['composite'].append((br+bo+bp)/3)
+              result.append({
+                  'id':mid,'name':names[mid],
+                  'prob':{'result':rp,'ou':op,'parity':pp,'composite':comp},
+                  'majority':{
+                      'result':safe(A['result_majority_hits'],A['result_majority_n']),
+                      'result_record':[A['result_majority_hits'],A['result_majority_n']],
+                      'ou':safe(A['ou_majority_hits'],A['ou_majority_n']),
+                      'ou_record':[A['ou_majority_hits'],A['ou_majority_n']],
+                      'parity':safe(A['parity_majority_hits'],A['parity_majority_n']),
+                      'parity_record':[A['parity_majority_hits'],A['parity_majority_n']]
+                  },
+                  'bias':{
+                      'home':A['result_home_votes']/A['result_votes'],
+                      'under':A['ou_under_votes']/A['ou_votes'],
+                      'even':A['parity_even_votes']/A['parity_votes']
+                  },
+                  'batch_mean':{k:(statistics.mean(v) if v else None) for k,v in batch_rates.items()},
+                  'batch_sd':{k:(statistics.pstdev(v) if len(v)>1 else 0) for k,v in batch_rates.items()}
+              })
+
+          rankings={
+              'result':sorted(result,key=lambda x:x['prob']['result'],reverse=True),
+              'ou':sorted(result,key=lambda x:x['prob']['ou'],reverse=True),
+              'parity':sorted(result,key=lambda x:x['prob']['parity'],reverse=True),
+              'composite':sorted(result,key=lambda x:x['prob']['composite'],reverse=True)
+          }
+          payload={'actual_base':actual_base,'methods':result,'rankings':{k:[x['id'] for x in v] for k,v in rankings.items()},'revealed':revealed}
+          json.dump(payload,open(base/'method_ranking_revealed.json','w',encoding='utf-8'),ensure_ascii=False,indent=2)
+
+          lines=[]
+          lines.append('# Fusion Lab v1.3 单术数 100场盲测概率排序')
+          lines.append('')
+          lines.append('设计：10批 × 每批10场，共100场；每场原V1.3内核独立演算1000次。比赛名单与全部单术数概率先提交冻结，再读取比分开盒。')
+          lines.append('')
+          lines.append(f"实际样本分布：主胜 {actual_base['home']}，客胜 {actual_base['away']}，平局 {actual_base['draw']}；小2.5 {actual_base['under']}，大2.5 {actual_base['over']}；双 {actual_base['even']}，单 {actual_base['odd']}。")
+          lines.append('')
+          title={'result':'胜负','ou':'大小球','parity':'单双','composite':'综合'}
+          for dim in ('result','ou','parity','composite'):
+              lines.append(f"## {title[dim]}概率排序")
+              lines.append('')
+              if dim!='composite':
+                  lines.append('| 排名 | 方法 | 多轮命中概率 | 100场多数票 | 输出结构 | 10批均值±波动 |')
+                  lines.append('|---:|---|---:|---:|---:|---:|')
+                  for i,x in enumerate(rankings[dim],1):
+                      p=x['prob'][dim]
+                      maj=x['majority'][dim]
+                      rec=x['majority'][dim+'_record']
+                      if dim=='result':
+                          bias=f"主{x['bias']['home']:.1%}/客{1-x['bias']['home']:.1%}"
+                      elif dim=='ou':
+                          bias=f"小{x['bias']['under']:.1%}/大{1-x['bias']['under']:.1%}"
+                      else:
+                          bias=f"双{x['bias']['even']:.1%}/单{1-x['bias']['even']:.1%}"
+                      bm=x['batch_mean'][dim]; sd=x['batch_sd'][dim]
+                      lines.append(f"| {i} | {x['name']} | {p:.2%} | {rec[0]}/{rec[1]} = {(maj or 0):.1%} | {bias} | {bm:.2%} ± {sd:.2%} |")
+              else:
+                  lines.append('| 排名 | 方法 | 综合概率* | 胜负 | 大小 | 单双 | 10批综合均值±波动 |')
+                  lines.append('|---:|---|---:|---:|---:|---:|---:|')
+                  for i,x in enumerate(rankings[dim],1):
+                      lines.append(f"| {i} | {x['name']} | {x['prob']['composite']:.2%} | {x['prob']['result']:.2%} | {x['prob']['ou']:.2%} | {x['prob']['parity']:.2%} | {x['batch_mean']['composite']:.2%} ± {x['batch_sd']['composite']:.2%} |")
+                  lines.append('')
+                  lines.append('*综合概率为胜负、大小、单双三个多轮命中概率等权平均；不沿用V1.3原有先验权重。')
+              lines.append('')
+
+          lines.append('## 解释')
+          lines.append('')
+          lines.append('- “多轮命中概率”统计每场1000次原内核输出与真实赛果的一致比例；胜负遇到真实平局时按V1.3原逻辑不计分。')
+          lines.append('- “100场多数票”把每场1000次先取多数方向，再按比赛计一次，更接近实际一场只出一个结论的用法。')
+          lines.append('- 10批均值±波动用于观察某方法是否只在某一批偶然突出。')
+          lines.append('- 当前V1.3没有读取球队、比赛或赔率信息，因此此表衡量的是各术数编码/门控与该100场结果分布的统计一致性，不应当把重复随机次数当成独立的100000场样本。')
+          (base/'method-ranking-report.md').write_text('\n'.join(lines),encoding='utf-8')
+          print('\n'.join(lines))
+          PY
+
+      - name: Phase 2 - commit revealed rankings
+        shell: bash
+        run: |
+          git add fusion-lab-v13fix/kernel-audit/method-rank/method_ranking_revealed.json \
+                  fusion-lab-v13fix/kernel-audit/method-rank/method-ranking-report.md
+          git commit -m "test(v1.3): reveal 100-match per-method rankings"
+          git push origin HEAD:lab/v13-kernel-backtest
