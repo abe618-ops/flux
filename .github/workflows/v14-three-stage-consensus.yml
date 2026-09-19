@@ -1,0 +1,161 @@
+name: V1.4 Three-Stage Consensus Blind Validation
+
+on:
+  push:
+    branches: [ "lab/v14-three-stage-consensus" ]
+    paths:
+      - ".github/workflows/v14-three-stage-consensus.yml"
+      - "fusion-lab-v13fix/kernel-audit/v14-three-stage-consensus.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout experiment branch
+        uses: actions/checkout@v4
+        with:
+          ref: lab/v14-three-stage-consensus
+          fetch-depth: 0
+
+      - name: Run convergence diagnostic
+        run: |
+          mkdir -p fusion-lab-v13fix/kernel-audit/v14-three-stage
+          node fusion-lab-v13fix/kernel-audit/v14-three-stage-consensus.js diagnostic 5000             fusion-lab-v13fix/kernel-audit/v14-three-stage/diagnostic-5000.json
+
+      - name: Fetch pinned historical dataset
+        run: |
+          curl -L --fail --retry 3             "https://raw.githubusercontent.com/martj42/international_results/394fe81893b062fbc2cf6257e988ac7cc4c039a1/results.csv"             -o /tmp/results.csv
+          test -s /tmp/results.csv
+
+      - name: Phase 1 - freeze disjoint previous 100 matches without scores
+        run: |
+          python3 - <<'PY'
+          import csv,json
+          from pathlib import Path
+          old=json.load(open('fusion-lab-v13fix/kernel-audit/method-rank/frozen_100_matches.json',encoding='utf-8'))
+          first_old=min(m['row_index'] for m in old['matches'])
+          rows=list(csv.DictReader(open('/tmp/results.csv',encoding='utf-8-sig')))
+          eligible=[(i,r) for i,r in enumerate(rows) if i < first_old]
+          selected=eligible[-100:]
+          payload={
+              'selection':'100 rows immediately preceding the prior 100-match development sample; chronological; no score/outcome filter',
+              'disjoint_from':'fusion-lab-v13fix/kernel-audit/method-rank/frozen_100_matches.json',
+              'dataset_commit':'394fe81893b062fbc2cf6257e988ac7cc4c039a1',
+              'matches':[]
+          }
+          for j,(idx,row) in enumerate(selected):
+              payload['matches'].append({
+                  'batch':j//10+1,'slot':j%10+1,'row_index':idx,
+                  'date':row.get('date'),'home_team':row.get('home_team'),'away_team':row.get('away_team'),
+                  'tournament':row.get('tournament'),'city':row.get('city'),'country':row.get('country'),
+                  'neutral':row.get('neutral')
+              })
+          out='fusion-lab-v13fix/kernel-audit/v14-three-stage/frozen_previous_100.json'
+          json.dump(payload,open(out,'w',encoding='utf-8'),ensure_ascii=False,indent=2)
+          print(json.dumps(payload,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Phase 1 - run one accepted three-stage result per frozen match
+        run: |
+          node fusion-lab-v13fix/kernel-audit/v14-three-stage-consensus.js predict             fusion-lab-v13fix/kernel-audit/v14-three-stage/frozen_previous_100.json             fusion-lab-v13fix/kernel-audit/v14-three-stage/frozen_predictions.json
+
+      - name: Phase 1 - commit predictions before reveal
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fusion-lab-v13fix/kernel-audit/v14-three-stage/diagnostic-5000.json                   fusion-lab-v13fix/kernel-audit/v14-three-stage/frozen_previous_100.json                   fusion-lab-v13fix/kernel-audit/v14-three-stage/frozen_predictions.json
+          git commit -m "test(v1.4): freeze disjoint 100-match three-stage predictions"
+          git push origin HEAD:lab/v14-three-stage-consensus
+
+      - name: Phase 2 - reveal scores and evaluate by 10-match batches
+        run: |
+          python3 - <<'PY'
+          import csv,json
+          from pathlib import Path
+          base=Path('fusion-lab-v13fix/kernel-audit/v14-three-stage')
+          pred=json.load(open(base/'frozen_predictions.json',encoding='utf-8'))
+          rows=list(csv.DictReader(open('/tmp/results.csv',encoding='utf-8-sig')))
+
+          revealed=[]
+          for item in pred['matches']:
+              m=item['match']; row=rows[m['row_index']]
+              h=int(row['home_score']); a=int(row['away_score']); total=h+a
+              actual={'h':h,'a':a,'result':0 if h>a else (1 if h<a else None),'ou':1 if total>2.5 else 0,'parity':total%2}
+              p=item['prediction']
+              revealed.append({'match':m,'actual':actual,'prediction':p})
+
+          def calc(items):
+              s={'result_h':0,'result_n':0,'ou_h':0,'ou_n':0,'parity_h':0,'parity_n':0,
+                 'result_attempts':[],'ou_attempts':[],'parity_attempts':[]}
+              for x in items:
+                  a=x['actual']; p=x['prediction']
+                  if a['result'] is not None:
+                      s['result_n']+=1; s['result_h']+=int(p['result']['value']==a['result'])
+                  s['ou_n']+=1; s['ou_h']+=int(p['ou']['value']==a['ou'])
+                  s['parity_n']+=1; s['parity_h']+=int(p['parity']['value']==a['parity'])
+                  s['result_attempts'].append(p['result']['attempts'])
+                  s['ou_attempts'].append(p['ou']['attempts'])
+                  s['parity_attempts'].append(p['parity']['attempts'])
+              rr=s['result_h']/s['result_n'] if s['result_n'] else None
+              oo=s['ou_h']/s['ou_n']; pp=s['parity_h']/s['parity_n']
+              comp=sum(v for v in (rr,oo,pp) if v is not None)/len([v for v in (rr,oo,pp) if v is not None])
+              return {
+                  'result':[s['result_h'],s['result_n'],rr],
+                  'ou':[s['ou_h'],s['ou_n'],oo],
+                  'parity':[s['parity_h'],s['parity_n'],pp],
+                  'composite':comp,
+                  'mean_attempts':{
+                      'result':sum(s['result_attempts'])/len(s['result_attempts']),
+                      'ou':sum(s['ou_attempts'])/len(s['ou_attempts']),
+                      'parity':sum(s['parity_attempts'])/len(s['parity_attempts'])
+                  }
+              }
+
+          batches=[]
+          for b in range(1,11):
+              items=[x for x in revealed if x['match']['batch']==b]
+              batches.append({'batch':b,'stats':calc(items),'items':items})
+          cumulative=[]
+          for b in range(1,11):
+              items=[x for x in revealed if x['match']['batch']<=b]
+              cumulative.append({'through_batch':b,'matches':len(items),'stats':calc(items)})
+
+          payload={'revealed':revealed,'batches':batches,'cumulative':cumulative}
+          json.dump(payload,open(base/'revealed_validation.json','w',encoding='utf-8'),ensure_ascii=False,indent=2)
+
+          def pct(v): return '—' if v is None else f'{v:.1%}'
+          lines=[]
+          lines.append('# V1.4 三阶段三方法一致模型：独立100场盲测')
+          lines.append('')
+          lines.append('规则：胜负阶段只看 灵棋计数/策轨数/三位数梅花，三者不一致就自动重抽，直到一致；大小球阶段只看 周易策数/灵棋经计数/小六壬实验变体；单双阶段只看 梅花卦数/策轨元会运世实验/三位数梅花。三个阶段彼此独立。未使用V1.3旧权重和旧“奇门+六爻前2同向”门控。')
+          lines.append('')
+          lines.append('这100场与用于确定三组方法的上一批100场完全不重叠；比赛名单和预测先提交，再读取比分开盒。')
+          lines.append('')
+          lines.append('## 每10场')
+          lines.append('')
+          lines.append('| 批次 | 胜负 | 大小 | 单双 | 综合 | 胜负平均抽取 | 大小平均抽取 | 单双平均抽取 |')
+          lines.append('|---:|---:|---:|---:|---:|---:|---:|---:|')
+          for b in batches:
+              s=b['stats']; ma=s['mean_attempts']
+              lines.append(f"| {b['batch']} | {s['result'][0]}/{s['result'][1]}={pct(s['result'][2])} | {s['ou'][0]}/{s['ou'][1]}={pct(s['ou'][2])} | {s['parity'][0]}/{s['parity'][1]}={pct(s['parity'][2])} | {pct(s['composite'])} | {ma['result']:.2f} | {ma['ou']:.2f} | {ma['parity']:.2f} |")
+          lines.append('')
+          lines.append('## 累计')
+          lines.append('')
+          lines.append('| 累计场数 | 胜负 | 大小 | 单双 | 综合 |')
+          lines.append('|---:|---:|---:|---:|---:|')
+          for c in cumulative:
+              s=c['stats']
+              lines.append(f"| {c['matches']} | {s['result'][0]}/{s['result'][1]}={pct(s['result'][2])} | {s['ou'][0]}/{s['ou'][1]}={pct(s['ou'][2])} | {s['parity'][0]}/{s['parity'][1]}={pct(s['parity'][2])} | {pct(s['composite'])} |")
+          (base/'validation-report.md').write_text('\n'.join(lines),encoding='utf-8')
+          print('\n'.join(lines))
+          PY
+
+      - name: Commit revealed validation
+        run: |
+          git add fusion-lab-v13fix/kernel-audit/v14-three-stage/revealed_validation.json                   fusion-lab-v13fix/kernel-audit/v14-three-stage/validation-report.md
+          git commit -m "test(v1.4): reveal disjoint 100-match three-stage validation"
+          git push origin HEAD:lab/v14-three-stage-consensus
