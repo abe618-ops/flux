@@ -1,0 +1,57 @@
+name: Extract Fusion Lab v1.3 Kernel
+
+on:
+  push:
+    branches: [ "lab/v13-kernel-backtest" ]
+    paths:
+      - ".github/workflows/v13-kernel-extract.yml"
+      - "fusion-lab-v13fix/source.zip.b64"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout test branch
+        uses: actions/checkout@v4
+        with:
+          ref: lab/v13-kernel-backtest
+
+      - name: Restore source bundle
+        shell: bash
+        run: |
+          rm -rf /tmp/fusion-v13
+          mkdir -p /tmp/fusion-v13
+          base64 -d fusion-lab-v13fix/source.zip.b64 > /tmp/fusion-source.zip
+          unzip -q /tmp/fusion-source.zip -d /tmp/fusion-v13
+          test -f /tmp/fusion-v13/fusion_src/app/src/main/assets/app.js
+
+      - name: Export exact kernel source for audit
+        shell: bash
+        run: |
+          mkdir -p fusion-lab-v13fix/kernel-audit
+          cp /tmp/fusion-v13/fusion_src/app/src/main/assets/app.js fusion-lab-v13fix/kernel-audit/app.js
+          sha256sum fusion-lab-v13fix/kernel-audit/app.js > fusion-lab-v13fix/kernel-audit/app.js.sha256
+          {
+            echo "# Fusion Lab v1.3 kernel audit"
+            echo
+            echo "Source: fusion-lab-v13fix/source.zip.b64"
+            echo "Extracted file: fusion_src/app/src/main/assets/app.js"
+            echo "Purpose: exact-source blind backtest harness; no production APK behavior changed."
+          } > fusion-lab-v13fix/kernel-audit/README.md
+
+      - name: Commit extracted kernel audit copy
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fusion-lab-v13fix/kernel-audit
+          if git diff --cached --quiet; then
+            echo "Kernel audit copy unchanged"
+          else
+            git commit -m "test(v1.3): extract exact kernel source for blind backtest"
+            git push origin HEAD:lab/v13-kernel-backtest
+          fi
