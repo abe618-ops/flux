@@ -97,8 +97,8 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -c -P 16 -v 4 "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
-          grep -q "package: name='com.abe618.footballfusion.v14oufix'" /tmp/badging.txt
-          grep -q "application-label:'三轮合参·大小修复'" /tmp/badging.txt
+          grep -q "package: name='com.abe618.footballfusion.v14ou3fix'" /tmp/badging.txt
+          grep -q "application-label:'三轮合参·大小三法'" /tmp/badging.txt
 
       - name: Copy APK
         shell: bash
