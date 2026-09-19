@@ -53,7 +53,8 @@ jobs:
           )
           s = s.replace(
               'req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "快存视频/" + fileName);',
-              'req.allowScanningByMediaScanner();\\n                req.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "快存视频/" + fileName);'
+              '''req.allowScanningByMediaScanner();
+                req.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "快存视频/" + fileName);'''
           )
           s = s.replace(
               'setStatus("已建立下载任务 #" + id + "\\n保存到 Download/快存视频", false);',
