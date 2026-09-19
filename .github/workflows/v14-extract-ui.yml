@@ -1,0 +1,42 @@
+name: Extract Fusion Lab UI for v1.4
+
+on:
+  push:
+    branches: [ "lab/v14-three-stage-consensus" ]
+    paths:
+      - ".github/workflows/v14-extract-ui.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: lab/v14-three-stage-consensus
+      - name: Extract source bundle
+        run: |
+          rm -rf /tmp/fusion-ui
+          mkdir -p /tmp/fusion-ui
+          base64 -d fusion-lab-v13fix/source.zip.b64 > /tmp/fusion-source.zip
+          unzip -q /tmp/fusion-source.zip -d /tmp/fusion-ui
+          mkdir -p fusion-lab-v14-three-button/source-overlay
+          cp /tmp/fusion-ui/fusion_src/app/src/main/assets/index.html fusion-lab-v14-three-button/source-overlay/index.html
+          cp /tmp/fusion-ui/fusion_src/app/src/main/assets/style.css fusion-lab-v14-three-button/source-overlay/style.css
+          cp /tmp/fusion-ui/fusion_src/app/src/main/assets/app.js fusion-lab-v14-three-button/source-overlay/app.original.js
+          cp /tmp/fusion-ui/fusion_src/app/build.gradle fusion-lab-v14-three-button/source-overlay/app-build.gradle
+          cp /tmp/fusion-ui/fusion_src/app/src/main/AndroidManifest.xml fusion-lab-v14-three-button/source-overlay/AndroidManifest.xml
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fusion-lab-v14-three-button/source-overlay
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "test(v1.4): extract original UI and Android config"
+            git push origin HEAD:lab/v14-three-stage-consensus
+          fi
