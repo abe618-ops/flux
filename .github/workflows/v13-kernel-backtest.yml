@@ -1,0 +1,209 @@
+name: Fusion Lab v1.3 Blind Backtest
+
+on:
+  push:
+    branches: [ "lab/v13-kernel-backtest" ]
+    paths:
+      - ".github/workflows/v13-kernel-backtest.yml"
+      - "fusion-lab-v13fix/kernel-audit/backtest.js"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  blind-backtest:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout test branch
+        uses: actions/checkout@v4
+        with:
+          ref: lab/v13-kernel-backtest
+          fetch-depth: 0
+
+      - name: Fetch pinned historical results dataset
+        shell: bash
+        run: |
+          curl -L --fail --retry 3 \
+            "https://raw.githubusercontent.com/martj42/international_results/394fe81893b062fbc2cf6257e988ac7cc4c039a1/results.csv" \
+            -o /tmp/results.csv
+          test -s /tmp/results.csv
+
+      - name: Phase 1 - freeze match list without scores
+        shell: bash
+        run: |
+          mkdir -p fusion-lab-v13fix/kernel-audit/backtest
+          python3 - <<'PY'
+          import csv, json
+          src='/tmp/results.csv'
+          out='fusion-lab-v13fix/kernel-audit/backtest/frozen_matches.json'
+          rows=list(csv.DictReader(open(src,encoding='utf-8-sig')))
+          cutoff='2026-08-26'
+          eligible=[]
+          for idx,row in enumerate(rows):
+              if row.get('date','') <= cutoff:
+                  eligible.append((idx,row))
+          selected=eligible[-10:]
+          payload={
+              'dataset_repo':'martj42/international_results',
+              'dataset_commit':'394fe81893b062fbc2cf6257e988ac7cc4c039a1',
+              'selection_rule':'chronological last 10 rows with date <= 2026-08-26; no score/outcome filter',
+              'cutoff':cutoff,
+              'matches':[]
+          }
+          for idx,row in selected:
+              payload['matches'].append({
+                  'row_index':idx,
+                  'date':row.get('date'),
+                  'home_team':row.get('home_team'),
+                  'away_team':row.get('away_team'),
+                  'tournament':row.get('tournament'),
+                  'city':row.get('city'),
+                  'country':row.get('country'),
+                  'neutral':row.get('neutral')
+              })
+          with open(out,'w',encoding='utf-8') as f:
+              json.dump(payload,f,ensure_ascii=False,indent=2)
+          print(json.dumps(payload,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Phase 1 - run exact v1.3 core at 10/100/1000 rounds per match
+        shell: bash
+        run: |
+          node fusion-lab-v13fix/kernel-audit/backtest.js predict \
+            fusion-lab-v13fix/kernel-audit/backtest/frozen_matches.json \
+            fusion-lab-v13fix/kernel-audit/backtest/frozen_predictions.json
+
+      - name: Phase 1 - commit frozen list and predictions before reveal
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fusion-lab-v13fix/kernel-audit/backtest/frozen_matches.json \
+                  fusion-lab-v13fix/kernel-audit/backtest/frozen_predictions.json
+          git commit -m "test(v1.3): freeze 10-match blind list and kernel predictions"
+          git push origin HEAD:lab/v13-kernel-backtest
+
+      - name: Phase 2 - reveal scores and evaluate frozen predictions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv, json, statistics
+          from pathlib import Path
+
+          base=Path('fusion-lab-v13fix/kernel-audit/backtest')
+          frozen=json.load(open(base/'frozen_matches.json',encoding='utf-8'))
+          pred=json.load(open(base/'frozen_predictions.json',encoding='utf-8'))
+          rows=list(csv.DictReader(open('/tmp/results.csv',encoding='utf-8-sig')))
+
+          labels={
+              'result':{0:'主胜',1:'客胜',None:'平局/无方向'},
+              'ou':{0:'小2.5',1:'大2.5',None:'平手'},
+              'parity':{0:'双',1:'单',None:'平手'}
+          }
+          reveal=[]
+          for item in pred['matches']:
+              m=item['match']
+              row=rows[m['row_index']]
+              h=int(row['home_score']); a=int(row['away_score'])
+              actual={
+                  'h':h,'a':a,
+                  'result':0 if h>a else (1 if h<a else None),
+                  'ou':1 if h+a>2.5 else 0,
+                  'parity':(h+a)%2
+              }
+              reveal.append({'match':m,'actual':actual,'tests':item['tests']})
+
+          summary={}
+          for depth in ('10','100','1000'):
+              rh=rn=oh=ph=0
+              trend={'result':[0,0],'ou':[0,0],'parity':[0,0]}
+              attempts=[]
+              for x in reveal:
+                  t=x['tests'][depth]
+                  ac=x['actual']
+                  for dim in ('result','ou','parity'):
+                      trend[dim][0]+=t[dim]['counts'][0]
+                      trend[dim][1]+=t[dim]['counts'][1]
+                  attempts.append(t['attemptsAvg'])
+                  if ac['result'] is not None and t['result']['winner'] is not None:
+                      rn+=1
+                      rh+= int(t['result']['winner']==ac['result'])
+                  oh+= int(t['ou']['winner'] is not None and t['ou']['winner']==ac['ou'])
+                  ph+= int(t['parity']['winner'] is not None and t['parity']['winner']==ac['parity'])
+              total=int(depth)*len(reveal)
+              summary[depth]={
+                  'result_hits':rh,'result_n':rn,
+                  'ou_hits':oh,'ou_n':len(reveal),
+                  'parity_hits':ph,'parity_n':len(reveal),
+                  'trend':{
+                      'result_home_share':trend['result'][0]/total,
+                      'result_away_share':trend['result'][1]/total,
+                      'ou_under_share':trend['ou'][0]/total,
+                      'ou_over_share':trend['ou'][1]/total,
+                      'parity_even_share':trend['parity'][0]/total,
+                      'parity_odd_share':trend['parity'][1]/total
+                  },
+                  'mean_attempts':statistics.mean(attempts)
+              }
+
+          json.dump({'reveal':reveal,'summary':summary},open(base/'revealed_results.json','w',encoding='utf-8'),ensure_ascii=False,indent=2)
+
+          lines=[]
+          lines.append('# Fusion Lab v1.3 盲测回放报告')
+          lines.append('')
+          lines.append('数据源：martj42/international_results，固定提交 394fe81893b062fbc2cf6257e988ac7cc4c039a1。')
+          lines.append('')
+          lines.append('冻结规则：不按比分筛选，直接取 2026-08-26 及以前按数据集顺序最后 10 场；先提交比赛列表和预测，再读取比分开盒。')
+          lines.append('')
+          lines.append('## 冻结比赛与开盒结果')
+          lines.append('')
+          lines.append('| # | 日期 | 主队 | 客队 | 赛果 |')
+          lines.append('|---:|---|---|---|---:|')
+          for i,x in enumerate(reveal,1):
+              m=x['match']; a=x['actual']
+              lines.append(f"| {i} | {m['date']} | {m['home_team']} | {m['away_team']} | {a['h']}:{a['a']} |")
+          lines.append('')
+          lines.append('## 多轮平均')
+          lines.append('')
+          lines.append('| 每场演算轮数 | 胜负命中* | 大小命中 | 单双命中 | 主胜输出占比 | 小球输出占比 | 双数输出占比 | 平均前2同向抽取次数 |')
+          lines.append('|---:|---:|---:|---:|---:|---:|---:|---:|')
+          for d in ('10','100','1000'):
+              s=summary[d]; tr=s['trend']
+              r=f"{s['result_hits']}/{s['result_n']}" if s['result_n'] else '—'
+              lines.append(
+                  f"| {d} | {r} | {s['ou_hits']}/{s['ou_n']} | {s['parity_hits']}/{s['parity_n']} | "
+                  f"{tr['result_home_share']:.1%} | {tr['ou_under_share']:.1%} | {tr['parity_even_share']:.1%} | {s['mean_attempts']:.2f} |"
+              )
+          lines.append('')
+          lines.append('*v1.3 原内核没有“平局”输出；真实平局在软件复盘中 result=null，因此胜负命中率只对非平局样本计分。')
+          lines.append('')
+          lines.append('## 每场 10 轮多数结果')
+          lines.append('')
+          lines.append('| # | 实际 | 胜负多数 | 大小多数 | 单双多数 |')
+          lines.append('|---:|---:|---|---|---|')
+          for i,x in enumerate(reveal,1):
+              a=x['actual']; t=x['tests']['10']
+              rr=labels['result'][t['result']['winner']]
+              oo=labels['ou'][t['ou']['winner']]
+              pp=labels['parity'][t['parity']['winner']]
+              lines.append(f"| {i} | {a['h']}:{a['a']} | {rr} | {oo} | {pp} |")
+          lines.append('')
+          lines.append('## 内核审计提示')
+          lines.append('')
+          lines.append('- 本测试直接执行从 v1.3 APK 源包抽出的 app.js 核心函数，只裁掉 DOM/UI 尾部。')
+          lines.append('- 当前 makeForecast 不读取球队、联赛、日期、赔率、实力或比赛标签；每场差异来自随机种子与拒绝采样。')
+          lines.append('- “前两项”实际固定为奇门拆补盘与六爻纳甲；两者胜负方向不同就重抽。')
+          lines.append('- 胜负层是二元主胜/客胜，没有平局类别，因此不能把其胜负命中率直接视为完整 1X2 准确率。')
+          lines.append('- 100/1000 轮若逐渐收敛到稳定输出比例，反映的是内核结构性先验/门控偏向，而不是比赛特异性信息。')
+          (base/'backtest-report.md').write_text('\n'.join(lines),encoding='utf-8')
+          print('\n'.join(lines))
+          PY
+
+      - name: Phase 2 - commit revealed results and report
+        shell: bash
+        run: |
+          git add fusion-lab-v13fix/kernel-audit/backtest/revealed_results.json \
+                  fusion-lab-v13fix/kernel-audit/backtest/backtest-report.md
+          git commit -m "test(v1.3): reveal scores and summarize multi-round blind backtest"
+          git push origin HEAD:lab/v13-kernel-backtest
