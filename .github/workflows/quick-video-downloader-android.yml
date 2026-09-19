@@ -66,16 +66,16 @@ jobs:
           APK="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
           test -s "$APK"
           unzip -t "$APK"
-          cp "$APK" /tmp/QuickSaveVideo-v0.1.0-android.apk
-          sha256sum /tmp/QuickSaveVideo-v0.1.0-android.apk | tee /tmp/QuickSaveVideo-v0.1.0-SHA256.txt
+          cp "$APK" /tmp/QuickSaveVideo-v0.2.0-android.apk
+          sha256sum /tmp/QuickSaveVideo-v0.2.0-android.apk | tee /tmp/QuickSaveVideo-v0.2.0-SHA256.txt
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: QuickSaveVideo-v0.1.0
+          name: QuickSaveVideo-v0.2.0
           path: |
-            /tmp/QuickSaveVideo-v0.1.0-android.apk
-            /tmp/QuickSaveVideo-v0.1.0-SHA256.txt
+            /tmp/QuickSaveVideo-v0.2.0-android.apk
+            /tmp/QuickSaveVideo-v0.2.0-SHA256.txt
             /tmp/quick-video-downloader-source.zip
           if-no-files-found: error
 
@@ -85,19 +85,19 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="quick-video-v0.1.0"
+          TAG="quick-video-v0.2.0"
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" \
-              /tmp/QuickSaveVideo-v0.1.0-android.apk \
-              /tmp/QuickSaveVideo-v0.1.0-SHA256.txt \
+              /tmp/QuickSaveVideo-v0.2.0-android.apk \
+              /tmp/QuickSaveVideo-v0.2.0-SHA256.txt \
               /tmp/quick-video-downloader-source.zip \
               --clobber
           else
             gh release create "$TAG" \
-              /tmp/QuickSaveVideo-v0.1.0-android.apk \
-              /tmp/QuickSaveVideo-v0.1.0-SHA256.txt \
+              /tmp/QuickSaveVideo-v0.2.0-android.apk \
+              /tmp/QuickSaveVideo-v0.2.0-SHA256.txt \
               /tmp/quick-video-downloader-source.zip \
               --target "$GITHUB_SHA" \
-              --title "快存视频 v0.1.0" \
-              --notes "抖音/快手/今日头条/微信视频号分享与剪贴板轻量下载原型。只处理公开可访问媒体地址，不绕过登录、付费或 DRM。"
+              --title "快存视频 v0.2.0" \
+              --notes "重点增强今日头条免登录匿名解析：短链跳转、匿名 ttwid 访客会话、移动端 RENDER_DATA、ByteDance VOD、多路兜底；保留分享、剪贴板识别、系统下载与自动关闭。"
           fi
