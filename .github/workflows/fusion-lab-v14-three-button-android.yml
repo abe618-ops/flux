@@ -1,4 +1,4 @@
-name: Build Fusion Lab v1.4 Three Buttons
+name: Build Fusion Lab v1.4.1 O/U Fix
 
 on:
   push:
@@ -61,8 +61,8 @@ jobs:
           cp fusion-lab-v14-three-button/source-overlay/app.js "$SRC/app/src/main/assets/app.js"
           cp fusion-lab-v14-three-button/source-overlay/app-build.gradle "$SRC/app/build.gradle"
           cp fusion-lab-v14-three-button/source-overlay/AndroidManifest.xml "$SRC/app/src/main/AndroidManifest.xml"
-          grep -q "com.abe618.footballfusion.v14three" "$SRC/app/build.gradle"
-          grep -q "三轮合参" "$SRC/app/src/main/AndroidManifest.xml"
+          grep -q "com.abe618.footballfusion.v14oufix" "$SRC/app/build.gradle"
+          grep -q "三轮合参·大小修复" "$SRC/app/src/main/AndroidManifest.xml"
           grep -q "三者共同指向" "$SRC/app/src/main/assets/app.js"
 
       - name: Build debug APK
@@ -77,23 +77,23 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/zipalign" -c -P 16 -v 4 "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee /tmp/badging.txt
-          grep -q "package: name='com.abe618.footballfusion.v14three'" /tmp/badging.txt
-          grep -q "application-label:'三轮合参'" /tmp/badging.txt
+          grep -q "package: name='com.abe618.footballfusion.v14oufix'" /tmp/badging.txt
+          grep -q "application-label:'三轮合参·大小修复'" /tmp/badging.txt
 
       - name: Copy APK
         shell: bash
         run: |
           mkdir -p dist
-          cp /tmp/fusion-v14-build/fusion_src/app/build/outputs/apk/debug/app-debug.apk             dist/FusionLab-v1.4-ThreeStage-3Buttons-coexist.apk
-          sha256sum dist/FusionLab-v1.4-ThreeStage-3Buttons-coexist.apk             > dist/FusionLab-v1.4-ThreeStage-3Buttons-coexist.apk.sha256
+          cp /tmp/fusion-v14-build/fusion_src/app/build/outputs/apk/debug/app-debug.apk             dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk
+          sha256sum dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk             > dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk.sha256
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FusionLab-v1.4-ThreeStage-3Buttons-coexist
+          name: FusionLab-v1.4.1-ThreeStage-OUFix-coexist
           path: |
-            dist/FusionLab-v1.4-ThreeStage-3Buttons-coexist.apk
-            dist/FusionLab-v1.4-ThreeStage-3Buttons-coexist.apk.sha256
+            dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk
+            dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk.sha256
           if-no-files-found: error
           retention-days: 30
 
@@ -102,10 +102,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/FusionLab-v1.4-ThreeStage-3Buttons-coexist.apk                   dist/FusionLab-v1.4-ThreeStage-3Buttons-coexist.apk.sha256
+          git add dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk                   dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk.sha256
           if git diff --cached --quiet; then
             echo "APK unchanged"
           else
-            git commit -m "Build Fusion Lab v1.4 three-button coexist APK"
+            git commit -m "Build Fusion Lab v1.4.1 O/U-fix coexist APK"
             git push origin HEAD:lab/v14-three-stage-consensus
           fi
