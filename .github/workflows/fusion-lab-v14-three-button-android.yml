@@ -1,4 +1,4 @@
-name: Build Fusion Lab v1.4.1 O/U Fix
+name: Build Fusion Lab v1.4.2 O/U Three Methods
 
 on:
   push:
@@ -33,9 +33,15 @@ jobs:
           import json
           p='fusion-lab-v14-three-button/diagnostics/ou-hybrid-5000.json'
           d=json.load(open(p))
-          s=d['final']['bigShare']
-          print('final big share=',s)
-          assert 0.15 < s < 0.85, 'O/U output is still structurally locked to one side'
+          vals={
+            'final':d['final']['bigShare'],
+            'top2':d['top2']['bigShare'],
+            'top3':d['top3']['bigShare'],
+            'weighted':d['weighted']['bigShare'],
+          }
+          print('big shares=',vals)
+          for k,s in vals.items():
+              assert 0.15 < s < 0.85, f'{k} O/U output is structurally locked to one side'
           PY
 
       - name: Set up JDK 17
@@ -75,8 +81,8 @@ jobs:
           cp fusion-lab-v14-three-button/source-overlay/app.js "$SRC/app/src/main/assets/app.js"
           cp fusion-lab-v14-three-button/source-overlay/app-build.gradle "$SRC/app/build.gradle"
           cp fusion-lab-v14-three-button/source-overlay/AndroidManifest.xml "$SRC/app/src/main/AndroidManifest.xml"
-          grep -q "com.abe618.footballfusion.v14oufix" "$SRC/app/build.gradle"
-          grep -q "三轮合参·大小修复" "$SRC/app/src/main/AndroidManifest.xml"
+          grep -q "com.abe618.footballfusion.v14ou3fix" "$SRC/app/build.gradle"
+          grep -q "三轮合参·大小三法" "$SRC/app/src/main/AndroidManifest.xml"
           grep -q "三者共同指向" "$SRC/app/src/main/assets/app.js"
 
       - name: Build debug APK
@@ -98,16 +104,16 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          cp /tmp/fusion-v14-build/fusion_src/app/build/outputs/apk/debug/app-debug.apk             dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk
-          sha256sum dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk             > dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk.sha256
+          cp /tmp/fusion-v14-build/fusion_src/app/build/outputs/apk/debug/app-debug.apk             dist/FusionLab-v1.4.2-ThreeStage-OU3Fix-coexist.apk
+          sha256sum dist/FusionLab-v1.4.2-ThreeStage-OU3Fix-coexist.apk             > dist/FusionLab-v1.4.2-ThreeStage-OU3Fix-coexist.apk.sha256
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FusionLab-v1.4.1-ThreeStage-OUFix-coexist
+          name: FusionLab-v1.4.2-ThreeStage-OU3Fix-coexist
           path: |
-            dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk
-            dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk.sha256
+            dist/FusionLab-v1.4.2-ThreeStage-OU3Fix-coexist.apk
+            dist/FusionLab-v1.4.2-ThreeStage-OU3Fix-coexist.apk.sha256
           if-no-files-found: error
           retention-days: 30
 
@@ -116,10 +122,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk                   dist/FusionLab-v1.4.1-ThreeStage-OUFix-coexist.apk.sha256
+          git add dist/FusionLab-v1.4.2-ThreeStage-OU3Fix-coexist.apk                   dist/FusionLab-v1.4.2-ThreeStage-OU3Fix-coexist.apk.sha256
           if git diff --cached --quiet; then
             echo "APK unchanged"
           else
-            git commit -m "Build Fusion Lab v1.4.1 O/U-fix coexist APK"
+            git commit -m "Build Fusion Lab v1.4.2 O/U-three-method coexist APK"
             git push origin HEAD:lab/v14-three-stage-consensus
           fi
