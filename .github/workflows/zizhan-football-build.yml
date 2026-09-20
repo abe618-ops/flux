@@ -1,8 +1,8 @@
-name: Build ZiZhan Football APK
+name: Build ZiZhan WenWang LingQi APK
 on:
   workflow_dispatch:
   push:
-    branches: [ "zi-football-apk" ]
+    branches: [ "zi-football-ui-v2" ]
 
 jobs:
   build:
@@ -26,10 +26,14 @@ jobs:
           gradle-version: '8.9'
       - name: Build installable APK
         run: gradle --no-daemon :app:assembleDebug
-      - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk ZiZhan-Football-v1.0.0.apk
+      - name: Package outputs
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk ZiZhan-WenWang-LingQi-v1.1.0.apk
+          zip -qr ZiZhan-WenWang-LingQi-source-v1.1.0.zip app build.gradle settings.gradle ZIZHAN_README.md .github/workflows/zizhan-football-build.yml
       - uses: actions/upload-artifact@v4
         with:
-          name: ZiZhan-Football-v1.0.0
-          path: ZiZhan-Football-v1.0.0.apk
+          name: ZiZhan-WenWang-LingQi-v1.1.0
+          path: |
+            ZiZhan-WenWang-LingQi-v1.1.0.apk
+            ZiZhan-WenWang-LingQi-source-v1.1.0.zip
           if-no-files-found: error
