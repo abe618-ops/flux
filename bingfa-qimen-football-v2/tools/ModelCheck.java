@@ -92,5 +92,18 @@ public class ModelCheck {
         System.out.printf(java.util.Locale.US,"JIA_FUGENG n=%d avg=%+.4f min=%+.3f max=%+.3f sign=%d/%d/%d%n",nJia,sumFG/nJia,minFG,maxFG,fgp,fgz,fgn);
         for(int k=0;k<fths.length;k++) System.out.println(String.format(java.util.Locale.US,"JIA_SCAN th=%.2f %s",fths[k],fmt(fh[k])));
 
+        double[] cfths={0.70,0.90,1.10,1.30,1.50};
+        int[][] cfh=new int[cfths.length][3];
+        for(int i=1;i<=1080;i++){
+            QimenEngine.Board b=QimenEngine.generateBySerial(i);
+            if(b.hourIndex%10!=0) continue;
+            double z=b.prediction.fuGeng+0.1843;
+            for(int k=0;k<cfths.length;k++){
+                String rr=z>cfths[k]?"主胜":(z<-cfths[k]?"客胜":"平");
+                add(cfh[k],rr);
+            }
+        }
+        for(int k=0;k<cfths.length;k++) System.out.println(String.format(java.util.Locale.US,"JIA_CENTER th=%.2f %s",cfths[k],fmt(cfh[k])));
+
     }
 }
