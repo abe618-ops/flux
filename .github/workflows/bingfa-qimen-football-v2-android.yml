@@ -1,0 +1,93 @@
+name: Build Bingfa Qimen Football V2 Android
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'build-seed/bingfa-qimen-football-v2-seed.zip'
+      - '.github/workflows/bingfa-qimen-football-v2-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore source from seed
+        shell: bash
+        run: |
+          if [ ! -f bingfa-qimen-football-v2/settings.gradle ]; then
+            unzip -o build-seed/bingfa-qimen-football-v2-seed.zip -d .
+          fi
+          test -f bingfa-qimen-football-v2/settings.gradle
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Prepare Android 36 SDK
+        shell: bash
+        run: |
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Check 1080-state model
+        working-directory: bingfa-qimen-football-v2
+        shell: bash
+        run: |
+          rm -rf /tmp/qimen-model-check
+          mkdir -p /tmp/qimen-model-check
+          javac -encoding UTF-8 -d /tmp/qimen-model-check app/src/main/java/com/abe618/bingfaqimenv2/QimenEngine.java tools/ModelCheck.java
+          java -Dfile.encoding=UTF-8 -cp /tmp/qimen-model-check ModelCheck
+
+      - name: Build debug APK
+        working-directory: bingfa-qimen-football-v2
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Verify APK
+        working-directory: bingfa-qimen-football-v2
+        run: test -s app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Copy APK
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp bingfa-qimen-football-v2/app/build/outputs/apk/debug/app-debug.apk dist/BingfaQimenFootballV2-debug.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BingfaQimenFootballV2-debug-apk
+          path: dist/BingfaQimenFootballV2-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit source and APK
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add bingfa-qimen-football-v2 dist/BingfaQimenFootballV2-debug.apk
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+          else
+            git commit -m "Add Bingfa Qimen Football V2 source and APK"
+            git push origin HEAD:main
+          fi
