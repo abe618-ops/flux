@@ -46,7 +46,7 @@ public class ModelCheck {
         System.out.printf(java.util.Locale.US,"AVG primary=%+.4f tech=%+.4f medal=%+.4f process=%+.4f secondary=%+.4f final=%+.4f%n",
                 sumP/1080,sumT/1080,sumM/1080,sumProc/1080,sumSec/1080,sumF/1080);
         System.out.println("SIGNS primary "+pPos+"/"+pNeg+" tech "+tPos+"/"+tNeg+" medal "+mPos+"/"+mNeg+" process "+procPos+"/"+procNeg+" secondary "+secPos+"/"+secNeg);
-        double[] ths={0.12,0.16,0.20,0.24,0.28,0.32};
+        double[] ths={0.12,0.16,0.20,0.24,0.28,0.32,0.36,0.40,0.44,0.48};
         for(double th:ths){
             int[] a2=new int[3], a3=new int[3];
             for(int i=1;i<=1080;i++){
