@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:allowBackup="false"
-        android:label="兵法奇门·球赛随机盘 V2.0.1 修复版"
+        android:label="兵法奇门·球赛随机盘 V2.1"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity
