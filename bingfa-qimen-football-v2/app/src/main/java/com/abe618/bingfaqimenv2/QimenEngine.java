@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.Locale;
 
 /**
- * 兵法奇门·球赛随机盘 V2.1
+ * 兵法奇门·球赛随机盘 V2.1.1
  *
  * 排盘部分按原 APK 的 1080 随机局逻辑复现；预测层改为去偏后的多维合参：
  * 1) 主客宫内门/星/神状态；2) 主客宫五行生克；3) 景门技术；
@@ -254,8 +254,17 @@ public final class QimenEngine {
                 + 0.15 * altMedal
                 + 0.15 * fuGeng;
 
+        // 甲时的值符、值使与主客时干会进一步重合，普通同宫公式仍会失去大部分信息。
+        // 完整 1080 状态诊断显示六庚轴在甲时仍保留完整正负区分，但均值约 -0.1843；
+        // 因此甲时单独使用中心化六庚轴。
+        boolean jiaHour = (b.hourIndex % 10) == 0;
+        double jiaFuGengAxis = fuGeng + 0.1843;
+        if (h == a && jiaHour) collision = jiaFuGengAxis;
+
         double finalIndex;
-        if (h == a) {
+        if (h == a && jiaHour) {
+            finalIndex = 0.30 * jiaFuGengAxis;
+        } else if (h == a) {
             finalIndex = collision;
         } else {
             finalIndex = 0.58 * primary
@@ -275,8 +284,15 @@ public final class QimenEngine {
         }
 
         String result;
-        if (h == a) {
-            // 同宫只保留很窄的真正均势区，不再把“同宫”直接等同“平局”。
+        if (h == a && jiaHour) {
+            // 甲时专用：中心化六庚轴。1.50 的死区在 108 个甲时状态中形成 24/60/24，
+            // 消除旧版“甲时全平”和中间版“甲时无主胜”的结构性异常。
+            final double jiaFuGengThreshold = 1.50;
+            if (jiaFuGengAxis > jiaFuGengThreshold) result = "主胜";
+            else if (jiaFuGengAxis < -jiaFuGengThreshold) result = "客胜";
+            else result = "平";
+        } else if (h == a) {
+            // 普通同宫保留真正均势区，不再把“同宫”直接等同“平局”。
             final double collisionDrawThreshold = 0.44;
             if (collision > collisionDrawThreshold) result = "主胜";
             else if (collision < -collisionDrawThreshold) result = "客胜";

@@ -33,7 +33,7 @@ public final class MainActivity extends Activity {
             v.setTextSize(15f);
             v.setPadding(32, 48, 32, 32);
             String m = t.getMessage();
-            v.setText("兵法奇门 V2.1 启动保护\\n\\n应用没有退出，但启动阶段发生异常。\\n\\n"
+            v.setText("兵法奇门 V2.1.1 启动保护\\n\\n应用没有退出，但启动阶段发生异常。\\n\\n"
                     + t.getClass().getSimpleName() + (m == null ? "" : ": " + m));
             setContentView(v);
         }
@@ -73,7 +73,7 @@ public final class MainActivity extends Activity {
             int ink = Color.rgb(37, 34, 30), muted = Color.rgb(105, 96, 82), line = Color.rgb(193, 179, 153);
             QimenEngine.Prediction pr = b.prediction;
 
-            text(c, "兵法奇门·球赛随机盘 V2.1", w/2, dp(29), 20, ink, Paint.Align.CENTER, true);
+            text(c, "兵法奇门·球赛随机盘 V2.1.1", w/2, dp(29), 20, ink, Paint.Align.CENTER, true);
             String mode = (b.yin ? "阴遁" : "阳遁") + b.ju + "局";
             text(c, String.format(Locale.CHINA, "完全随机取局 #%04d / 1080 · %s · 时柱 %s", b.serial, mode, b.hourGz),
                     w/2, dp(50), 11, muted, Paint.Align.CENTER, false);
@@ -94,7 +94,8 @@ public final class MainActivity extends Activity {
                     pr.primary, pr.technique, pr.medal, pr.process, pr.secondary),
                     w/2, dp(164), 9.2f, muted, Paint.Align.CENTER, false);
             if (b.homeGong == b.awayGong) {
-                text(c, String.format(Locale.CHINA, "同宫决胜 %+.2f  ·  值符-六庚 %+.2f",
+                String axisName = (b.hourIndex % 10 == 0) ? "甲时六庚轴" : "同宫决胜";
+                text(c, String.format(Locale.CHINA, axisName + " %+.2f  ·  值符-六庚 %+.2f",
                         pr.collision, pr.fuGeng),
                         w/2, dp(177), 9.2f, Color.rgb(120, 67, 43), Paint.Align.CENTER, true);
             }
