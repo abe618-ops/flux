@@ -8,12 +8,10 @@ import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
+import android.widget.TextView;
 
-import java.security.SecureRandom;
 import java.util.Locale;
+import java.util.Random;
 
 public final class MainActivity extends Activity {
     private static final int BG = Color.rgb(245, 241, 231);
