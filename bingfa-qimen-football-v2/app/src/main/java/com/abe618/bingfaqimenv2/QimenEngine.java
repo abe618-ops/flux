@@ -55,6 +55,8 @@ public final class QimenEngine {
         public double medal;
         public double process;
         public double secondary;
+        public double collision;
+        public double fuGeng;
         public int totalGoals;
         public int homeGoals;
         public int awayGoals;
@@ -206,31 +208,89 @@ public final class QimenEngine {
         double process = supportFromRef(processElement, element(h))
                 - supportFromRef(processElement, element(a));
 
-        // 维度5：值符原宫 vs 值使宫作为次判，尤其处理地/天盘时干同宫时的“全平”问题。
+        // 维度5：值符原宫 vs 值使宫作为次判。
         double secondary = pairScore(b, b.zhiFuOrigin, b.zhiShiGong);
-        double tieFactor = h == a ? 0.75 : 0.35;
 
-        // 去偏加权。阈值经 1080 全局枚举校正，不再默认大量落入平局。
-        double finalIndex = 0.58 * primary
-                + 0.12 * technique
-                + 0.09 * medal
-                + 0.08 * process
-                + tieFactor * 0.13 * secondary;
+        // V2.1 同宫决胜层：
+        // 当地盘时干与天盘时干同宫时，原来的宫态/景门/辛/值使四维会机械归零。
+        // 这时改用传统备用主客轴：值符-值使、值符-六庚，并让景门与辛作用到备用轴。
+        int groundGeng = findStem(b.di, "庚");
+        int skyGeng = findStem(b.tian, "庚");
+        double fuGeng = 0.0;
+        int gengCount = 0;
+        if (groundGeng >= 1) {
+            fuGeng += pairScore(b, b.zhiFuOrigin, groundGeng);
+            gengCount++;
+        }
+        if (skyGeng >= 1) {
+            fuGeng += pairScore(b, b.zhiFuOrigin, skyGeng);
+            gengCount++;
+        }
+        if (gengCount > 0) fuGeng /= gengCount;
 
-        double[] dims = {primary, technique, medal, process, secondary};
+        String altHomeElement = element(b.zhiFuOrigin);
+        String altAwayElement = element(b.zhiShiGong);
+        double altTechnique = supportFromRef(jingElement, altHomeElement)
+                - supportFromRef(jingElement, altAwayElement);
+        double altMedal = 0.0;
+        int xinCount = 0;
+        if (groundXin >= 1) {
+            altMedal += supportFromRef(element(groundXin), altHomeElement)
+                    - supportFromRef(element(groundXin), altAwayElement);
+            xinCount++;
+        }
+        if (skyXin >= 1) {
+            altMedal += supportFromRef(element(skyXin), altHomeElement)
+                    - supportFromRef(element(skyXin), altAwayElement);
+            xinCount++;
+        }
+        if (xinCount > 0) altMedal /= xinCount;
+
+        // secondary 在完整 1080 状态空间均值约 +0.1324，中心化后再进入同宫决胜，
+        // 防止“解平”以后又结构性偏向主胜。
+        double secondaryCentered = secondary - 0.1324;
+        double collision = 0.52 * secondaryCentered
+                + 0.18 * altTechnique
+                + 0.15 * altMedal
+                + 0.15 * fuGeng;
+
+        double finalIndex;
+        if (h == a) {
+            finalIndex = collision;
+        } else {
+            finalIndex = 0.58 * primary
+                    + 0.12 * technique
+                    + 0.09 * medal
+                    + 0.08 * process
+                    + 0.0455 * secondary;
+        }
+
+        double[] dims = h == a
+                ? new double[]{secondaryCentered, altTechnique, altMedal, fuGeng, collision}
+                : new double[]{primary, technique, medal, process, secondary};
         int votes = 0;
         for (double d : dims) {
             if (d > 0.12) votes++;
             else if (d < -0.12) votes--;
         }
 
-        final double drawThreshold = 0.15;
         String result;
-        if (finalIndex > drawThreshold) result = "主胜";
-        else if (finalIndex < -drawThreshold) result = "客胜";
-        else if (votes >= 3) result = "主胜";
-        else if (votes <= -3) result = "客胜";
-        else result = "平";
+        if (h == a) {
+            // 同宫只保留很窄的真正均势区，不再把“同宫”直接等同“平局”。
+            final double collisionDrawThreshold = 0.12;
+            if (collision > collisionDrawThreshold) result = "主胜";
+            else if (collision < -collisionDrawThreshold) result = "客胜";
+            else if (votes >= 2) result = "主胜";
+            else if (votes <= -2) result = "客胜";
+            else result = "平";
+        } else {
+            final double drawThreshold = 0.15;
+            if (finalIndex > drawThreshold) result = "主胜";
+            else if (finalIndex < -drawThreshold) result = "客胜";
+            else if (votes >= 3) result = "主胜";
+            else if (votes <= -3) result = "客胜";
+            else result = "平";
+        }
 
         p.result = result;
         p.finalIndex = finalIndex;
@@ -240,6 +300,8 @@ public final class QimenEngine {
         p.medal = medal;
         p.process = process;
         p.secondary = secondary;
+        p.collision = collision;
+        p.fuGeng = fuGeng;
 
         buildGoalEstimate(b, p);
         return p;
