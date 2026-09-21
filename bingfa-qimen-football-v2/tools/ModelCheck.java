@@ -46,5 +46,33 @@ public class ModelCheck {
         System.out.printf(java.util.Locale.US,"AVG primary=%+.4f tech=%+.4f medal=%+.4f process=%+.4f secondary=%+.4f final=%+.4f%n",
                 sumP/1080,sumT/1080,sumM/1080,sumProc/1080,sumSec/1080,sumF/1080);
         System.out.println("SIGNS primary "+pPos+"/"+pNeg+" tech "+tPos+"/"+tNeg+" medal "+mPos+"/"+mNeg+" process "+procPos+"/"+procNeg+" secondary "+secPos+"/"+secNeg);
+        double[] ths={0.12,0.16,0.20,0.24,0.28,0.32};
+        for(double th:ths){
+            int[] a2=new int[3], a3=new int[3];
+            for(int i=1;i<=1080;i++){
+                QimenEngine.Board b=QimenEngine.generateBySerial(i);
+                QimenEngine.Prediction p=b.prediction;
+                if(b.homeGong!=b.awayGong){
+                    add(a2,p.result); add(a3,p.result);
+                }else{
+                    String r2;
+                    if(p.collision>th) r2="主胜";
+                    else if(p.collision<-th) r2="客胜";
+                    else if(p.votes>=2) r2="主胜";
+                    else if(p.votes<=-2) r2="客胜";
+                    else r2="平";
+                    add(a2,r2);
+                    String r3;
+                    if(p.collision>th) r3="主胜";
+                    else if(p.collision<-th) r3="客胜";
+                    else if(p.votes>=3) r3="主胜";
+                    else if(p.votes<=-3) r3="客胜";
+                    else r3="平";
+                    add(a3,r3);
+                }
+            }
+            System.out.println(String.format(java.util.Locale.US,"SCAN th=%.2f vote2 %s | vote3 %s",th,fmt(a2),fmt(a3)));
+        }
+
     }
 }
