@@ -5,11 +5,11 @@ android {
     compileSdk 36
 
     defaultConfig {
-        applicationId 'com.abe618.bingfaqimenv201fix'
+        applicationId 'com.abe618.bingfaqimenv21fix'
         minSdk 23
         targetSdk 34
-        versionCode 21
-        versionName '2.0.1'
+        versionCode 30
+        versionName '2.1.0'
     }
 
     buildTypes {
