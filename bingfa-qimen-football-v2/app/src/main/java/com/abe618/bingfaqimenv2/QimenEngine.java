@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.Locale;
 
 /**
- * 兵法奇门·球赛随机盘 V2
+ * 兵法奇门·球赛随机盘 V2.1
  *
  * 排盘部分按原 APK 的 1080 随机局逻辑复现；预测层改为去偏后的多维合参：
  * 1) 主客宫内门/星/神状态；2) 主客宫五行生克；3) 景门技术；
@@ -277,11 +277,11 @@ public final class QimenEngine {
         String result;
         if (h == a) {
             // 同宫只保留很窄的真正均势区，不再把“同宫”直接等同“平局”。
-            final double collisionDrawThreshold = 0.12;
+            final double collisionDrawThreshold = 0.44;
             if (collision > collisionDrawThreshold) result = "主胜";
             else if (collision < -collisionDrawThreshold) result = "客胜";
-            else if (votes >= 2) result = "主胜";
-            else if (votes <= -2) result = "客胜";
+            else if (votes >= 3) result = "主胜";
+            else if (votes <= -3) result = "客胜";
             else result = "平";
         } else {
             final double drawThreshold = 0.15;
