@@ -4,6 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
+      - 'bingfa-qimen-football-v2/**'
       - 'build-seed/bingfa-qimen-football-v2-seed.zip'
       - '.github/workflows/bingfa-qimen-football-v2-android.yml'
   workflow_dispatch:
