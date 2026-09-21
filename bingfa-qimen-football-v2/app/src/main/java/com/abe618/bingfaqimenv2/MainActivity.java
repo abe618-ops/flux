@@ -16,22 +16,33 @@ import java.security.SecureRandom;
 import java.util.Locale;
 
 public final class MainActivity extends Activity {
+    private static final int BG = Color.rgb(245, 241, 231);
+
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setStatusBarColor(Color.rgb(245, 241, 231));
-        getWindow().setNavigationBarColor(Color.rgb(245, 241, 231));
-        if (android.os.Build.VERSION.SDK_INT >= 30) {
-            WindowInsetsController c = getWindow().getInsetsController();
-            if (c != null) c.setSystemBarsAppearance(
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS);
+
+        // Theme is already NoActionBar. Avoid redundant requestWindowFeature /
+        // WindowInsetsController mutations during startup on Android 16/OEM ROMs.
+        try { getWindow().setStatusBarColor(BG); } catch (Throwable ignored) {}
+        try { getWindow().setNavigationBarColor(BG); } catch (Throwable ignored) {}
+
+        try {
+            setContentView(new QimenView(this));
+        } catch (Throwable t) {
+            TextView v = new TextView(this);
+            v.setBackgroundColor(BG);
+            v.setTextColor(Color.rgb(70, 45, 35));
+            v.setTextSize(15f);
+            v.setPadding(32, 48, 32, 32);
+            String m = t.getMessage();
+            v.setText("兵法奇门 V2.0.1 启动保护\\n\\n应用没有退出，但启动阶段发生异常。\\n\\n"
+                    + t.getClass().getSimpleName() + (m == null ? "" : ": " + m));
+            setContentView(v);
         }
-        setContentView(new QimenView(this));
     }
 
     static final class QimenView extends View {
-        private final SecureRandom rng = new SecureRandom();
+        private final Random rng = new Random(System.nanoTime());
         private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final RectF randomButton = new RectF();
         private QimenEngine.Board b;
@@ -41,7 +52,7 @@ public final class MainActivity extends Activity {
             super(ctx);
             den = getResources().getDisplayMetrics().density;
             b = QimenEngine.generate(rng);
-            setBackgroundColor(Color.rgb(245, 241, 231));
+            setBackgroundColor(BG);
             setFocusable(true);
             setClickable(true);
         }
@@ -64,7 +75,7 @@ public final class MainActivity extends Activity {
             int ink = Color.rgb(37, 34, 30), muted = Color.rgb(105, 96, 82), line = Color.rgb(193, 179, 153);
             QimenEngine.Prediction pr = b.prediction;
 
-            text(c, "兵法奇门·球赛随机盘 V2", w/2, dp(29), 20, ink, Paint.Align.CENTER, true);
+            text(c, "兵法奇门·球赛随机盘 V2.0.1", w/2, dp(29), 20, ink, Paint.Align.CENTER, true);
             String mode = (b.yin ? "阴遁" : "阳遁") + b.ju + "局";
             text(c, String.format(Locale.CHINA, "完全随机取局 #%04d / 1080 · %s · 时柱 %s", b.serial, mode, b.hourGz),
                     w/2, dp(50), 11, muted, Paint.Align.CENTER, false);

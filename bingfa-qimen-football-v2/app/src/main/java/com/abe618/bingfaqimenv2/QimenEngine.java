@@ -1,6 +1,6 @@
 package com.abe618.bingfaqimenv2;
 
-import java.security.SecureRandom;
+import java.util.Random;
 import java.util.Locale;
 
 /**
@@ -71,7 +71,7 @@ public final class QimenEngine {
         }
     }
 
-    public static Board generate(SecureRandom rng) {
+    public static Board generate(Random rng) {
         return generateBySerial(rng.nextInt(1080) + 1);
     }
 
