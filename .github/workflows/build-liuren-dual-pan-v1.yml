@@ -1,0 +1,83 @@
+name: Build DaLiuRen DualPan v1
+
+on:
+  push:
+    branches: [ "feature/daliuren-dual-pan-v1" ]
+    paths:
+      - "android/daliuren-dual-pan-v1/**"
+      - ".github/workflows/build-liuren-dual-pan-v1.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Expand project source
+        run: |
+          cd "$RUNNER_TEMP"
+          base64 -d "$GITHUB_WORKSPACE/android/daliuren-dual-pan-v1/project.tar.gz.b64" > project.tgz
+          tar -xzf project.tgz
+          test -f daliuren_dual_pan_v1/app/build.gradle
+          echo "PROJECT=$RUNNER_TEMP/daliuren_dual_pan_v1" >> "$GITHUB_ENV"
+
+      - name: Import Apache-2.0 DaLiuRen engine
+        run: |
+          git clone --depth 1 https://github.com/woaiys3/pusuan-agent.git "$RUNNER_TEMP/pusuan-agent"
+          mkdir -p "$PROJECT/app/src/main/assets/app/engine" "$PROJECT/app/src/main/assets/app/js" "$PROJECT/app/src/main/assets/licenses"
+          cp "$RUNNER_TEMP/pusuan-agent/assets/app/engine/liuren/lrpp.js" "$PROJECT/app/src/main/assets/app/engine/lrpp.js"
+          cp "$RUNNER_TEMP/pusuan-agent/assets/app/engine/liuren/nongli.js" "$PROJECT/app/src/main/assets/app/engine/nongli.js"
+          cp "$RUNNER_TEMP/pusuan-agent/assets/app/engine/liuren/tys_20230527.js" "$PROJECT/app/src/main/assets/app/engine/tys_20230527.js"
+          cp "$RUNNER_TEMP/pusuan-agent/assets/app/js/engine/liuren.js" "$PROJECT/app/src/main/assets/app/js/liuren.js"
+          cp "$RUNNER_TEMP/pusuan-agent/LICENSE" "$PROJECT/app/src/main/assets/licenses/pusuan-agent-LICENSE.txt"
+          test -s "$PROJECT/app/src/main/assets/app/engine/lrpp.js"
+
+      - name: Build signed release APK
+        working-directory: ${{ env.PROJECT }}
+        run: |
+          gradle --no-daemon :app:assembleRelease
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk dist/DaLiuRen-DualPan-Shensha-Yunyi-v1.0.0.apk
+          cp app/build/outputs/apk/release/app-release.apk "dist/六壬双盘-神煞运移-v1.0.0.apk"
+          sha256sum dist/*.apk | tee dist/SHA256SUMS.txt
+
+      - name: Verify APK
+        run: |
+          APK="$PROJECT/dist/DaLiuRen-DualPan-Shensha-Yunyi-v1.0.0.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 10
+
+      - name: Package source snapshot
+        run: |
+          cd "$RUNNER_TEMP"
+          zip -qr "$PROJECT/dist/DaLiuRen-DualPan-Shensha-Yunyi-v1.0.0-source.zip" daliuren_dual_pan_v1
+
+      - name: Upload APK and source
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaLiuRen-DualPan-v1.0.0
+          path: |
+            ${{ env.PROJECT }}/dist/*
+          if-no-files-found: error
+          retention-days: 30
