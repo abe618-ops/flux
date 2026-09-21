@@ -74,5 +74,23 @@ public class ModelCheck {
             System.out.println(String.format(java.util.Locale.US,"SCAN th=%.2f vote2 %s | vote3 %s",th,fmt(a2),fmt(a3)));
         }
 
+        double sumFG=0,minFG=999,maxFG=-999; int nJia=0,fgp=0,fgn=0,fgz=0;
+        int[] fgT={0,0,0};
+        double[] fths={0.30,0.50,0.70,0.90,1.10};
+        int[][] fh=new int[fths.length][3];
+        for(int i=1;i<=1080;i++){
+            QimenEngine.Board b=QimenEngine.generateBySerial(i);
+            if(b.hourIndex%10!=0) continue;
+            QimenEngine.Prediction p=b.prediction;
+            nJia++; sumFG+=p.fuGeng; minFG=Math.min(minFG,p.fuGeng); maxFG=Math.max(maxFG,p.fuGeng);
+            if(p.fuGeng>0.12)fgp++; else if(p.fuGeng<-0.12)fgn++; else fgz++;
+            for(int k=0;k<fths.length;k++){
+                String rr=p.fuGeng>fths[k]?"主胜":(p.fuGeng<-fths[k]?"客胜":"平");
+                add(fh[k],rr);
+            }
+        }
+        System.out.printf(java.util.Locale.US,"JIA_FUGENG n=%d avg=%+.4f min=%+.3f max=%+.3f sign=%d/%d/%d%n",nJia,sumFG/nJia,minFG,maxFG,fgp,fgz,fgn);
+        for(int k=0;k<fths.length;k++) System.out.println(String.format(java.util.Locale.US,"JIA_SCAN th=%.2f %s",fths[k],fmt(fh[k])));
+
     }
 }
