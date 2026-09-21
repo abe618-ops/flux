@@ -1,16 +1,50 @@
 import com.abe618.bingfaqimenv2.QimenEngine;
 
 public class ModelCheck {
+    static int[] c = new int[3];
+    static void add(int[] a, String r) {
+        if ("主胜".equals(r)) a[0]++;
+        else if ("平".equals(r)) a[1]++;
+        else a[2]++;
+    }
+    static String fmt(int[] a) {
+        int n=a[0]+a[1]+a[2];
+        return "N="+n+" 主="+a[0]+" 平="+a[1]+" 客="+a[2];
+    }
     public static void main(String[] args) {
-        int home=0, draw=0, away=0;
+        int[] all=new int[3], same=new int[3], diff=new int[3], yang=new int[3], yin=new int[3];
+        int[][] ju=new int[10][3], stem=new int[10][3];
+        int sameZero4=0, sameSecPos=0, sameSecNeg=0, sameSecZero=0;
+        double sumP=0,sumT=0,sumM=0,sumProc=0,sumSec=0,sumF=0;
+        int pPos=0,pNeg=0,tPos=0,tNeg=0,mPos=0,mNeg=0,procPos=0,procNeg=0,secPos=0,secNeg=0;
         for (int i=1;i<=1080;i++) {
             QimenEngine.Board b=QimenEngine.generateBySerial(i);
-            switch (b.prediction.result) {
-                case "主胜": home++; break;
-                case "客胜": away++; break;
-                default: draw++;
-            }
+            QimenEngine.Prediction p=b.prediction;
+            add(all,p.result);
+            if (b.homeGong==b.awayGong) {
+                add(same,p.result);
+                if (Math.abs(p.primary)<1e-9 && Math.abs(p.technique)<1e-9 && Math.abs(p.medal)<1e-9 && Math.abs(p.process)<1e-9) sameZero4++;
+                if (p.secondary>0.12) sameSecPos++; else if(p.secondary<-0.12) sameSecNeg++; else sameSecZero++;
+            } else add(diff,p.result);
+            add(b.yin?yin:yang,p.result);
+            add(ju[b.ju],p.result);
+            add(stem[b.hourIndex%10],p.result);
+            sumP+=p.primary; sumT+=p.technique; sumM+=p.medal; sumProc+=p.process; sumSec+=p.secondary; sumF+=p.finalIndex;
+            if(p.primary>0.12)pPos++; else if(p.primary<-0.12)pNeg++;
+            if(p.technique>0.12)tPos++; else if(p.technique<-0.12)tNeg++;
+            if(p.medal>0.12)mPos++; else if(p.medal<-0.12)mNeg++;
+            if(p.process>0.12)procPos++; else if(p.process<-0.12)procNeg++;
+            if(p.secondary>0.12)secPos++; else if(p.secondary<-0.12)secNeg++;
         }
-        System.out.println("主胜="+home+" 平="+draw+" 客胜="+away);
+        System.out.println("ALL "+fmt(all));
+        System.out.println("SAME "+fmt(same)+" zeroPrimary4="+sameZero4+" sec(+/0/-)="+sameSecPos+"/"+sameSecZero+"/"+sameSecNeg);
+        System.out.println("DIFF "+fmt(diff));
+        System.out.println("YANG "+fmt(yang));
+        System.out.println("YIN "+fmt(yin));
+        for(int j=1;j<=9;j++) System.out.println("JU"+j+" "+fmt(ju[j]));
+        for(int s=0;s<10;s++) System.out.println("STEM"+QimenEngine.GAN[s]+" "+fmt(stem[s]));
+        System.out.printf(java.util.Locale.US,"AVG primary=%+.4f tech=%+.4f medal=%+.4f process=%+.4f secondary=%+.4f final=%+.4f%n",
+                sumP/1080,sumT/1080,sumM/1080,sumProc/1080,sumSec/1080,sumF/1080);
+        System.out.println("SIGNS primary "+pPos+"/"+pNeg+" tech "+tPos+"/"+tNeg+" medal "+mPos+"/"+mNeg+" process "+procPos+"/"+procNeg+" secondary "+secPos+"/"+secNeg);
     }
 }
