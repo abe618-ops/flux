@@ -20,8 +20,16 @@ jobs:
           const fs = require('fs');
           const vm = require('vm');
           const base='/tmp/pusuan/assets/app/engine/liuren';
-          const ctx={console, Date, Math, JSON, setTimeout, clearTimeout};
-          ctx.window=ctx; ctx.globalThis=ctx;
+          const storage = new Map();
+          const localStorage = {
+            getItem:k => storage.has(String(k)) ? storage.get(String(k)) : null,
+            setItem:(k,v) => storage.set(String(k), String(v)),
+            removeItem:k => storage.delete(String(k)),
+            clear:() => storage.clear()
+          };
+          const ctx={console, Date, Math, JSON, setTimeout, clearTimeout, localStorage};
+          ctx.window=ctx; ctx.globalThis=ctx; ctx.navigator={userAgent:'node-probe'};
+          ctx.document={};
           vm.createContext(ctx);
           for (const f of ['nongli.js','tys_20230527.js','lrpp.js']) {
             vm.runInContext(fs.readFileSync(base+'/'+f,'utf8'), ctx, {filename:f});
