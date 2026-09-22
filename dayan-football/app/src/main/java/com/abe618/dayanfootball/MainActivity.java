@@ -62,6 +62,9 @@ public class MainActivity extends Activity {
         hint.setPadding(0, dp(3), 0, dp(12));
         root.addView(hint);
 
+        Button nextTop = nextButton();
+        root.addView(nextTop, fullWithBottom(12));
+
         LinearLayout headline = card();
         TextView h1 = text("合参预测结果", 13, true);
         h1.setTextColor(ACCENTS[accentIndex]);
@@ -163,20 +166,6 @@ public class MainActivity extends Activity {
         seedCard.addView(seed);
         root.addView(seedCard, fullWithBottom(14));
 
-        Button next = new Button(this);
-        next.setText("下一场  →");
-        next.setTextSize(20);
-        next.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        next.setTextColor(Color.WHITE);
-        next.setAllCaps(false);
-        next.setMinHeight(dp(58));
-        GradientDrawable nb = new GradientDrawable();
-        nb.setColor(ACCENTS[accentIndex]);
-        nb.setCornerRadius(dp(14));
-        next.setBackground(nb);
-        next.setOnClickListener(v -> showNextRound());
-        root.addView(next, fullWithBottom(10));
-
         TextView foot = text("仅作传统筮法盲测实验，不构成投注建议。", 11, false);
         foot.setGravity(android.view.Gravity.CENTER);
         foot.setTextColor(Color.GRAY);
@@ -265,6 +254,22 @@ public class MainActivity extends Activity {
         int g = (int)(Color.green(color) + (255 - Color.green(color)) * ratio);
         int b = (int)(Color.blue(color) + (255 - Color.blue(color)) * ratio);
         return Color.rgb(Math.min(255,r), Math.min(255,g), Math.min(255,b));
+    }
+
+    private Button nextButton() {
+        Button next = new Button(this);
+        next.setText("下一场  →");
+        next.setTextSize(20);
+        next.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        next.setTextColor(Color.WHITE);
+        next.setAllCaps(false);
+        next.setMinHeight(dp(58));
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(ACCENTS[accentIndex]);
+        bg.setCornerRadius(dp(14));
+        next.setBackground(bg);
+        next.setOnClickListener(v -> showNextRound());
+        return next;
     }
 
     private TextView text(String s, int sp, boolean bold) {
