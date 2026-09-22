@@ -56,10 +56,11 @@ jobs:
         working-directory: buildsrc
         run: gradle --no-daemon assembleDebug --stacktrace
 
-      - name: Copy APK
+      - name: Copy and verify APK
         run: |
           mkdir -p out
           cp buildsrc/app/build/outputs/apk/debug/app-debug.apk out/FootballPredictor-v1.0-debug.apk
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --verbose --print-certs out/FootballPredictor-v1.0-debug.apk | tee out/SIGNATURE.txt
           sha256sum out/FootballPredictor-v1.0-debug.apk | tee out/SHA256.txt
 
       - name: Upload APK artifact
