@@ -62,9 +62,6 @@ public class MainActivity extends Activity {
         hint.setPadding(0, dp(3), 0, dp(12));
         root.addView(hint);
 
-        Button nextTop = nextButton();
-        root.addView(nextTop, fullWithBottom(12));
-
         LinearLayout headline = card();
         TextView h1 = text("合参预测结果", 13, true);
         h1.setTextColor(ACCENTS[accentIndex]);
@@ -86,7 +83,10 @@ public class MainActivity extends Activity {
             16, false);
         quick.setPadding(0, dp(8), 0, 0);
         headline.addView(quick);
-        root.addView(headline, fullWithBottom(12));
+        root.addView(headline, fullWithBottom(10));
+
+        Button nextThumb = nextButton();
+        root.addView(nextThumb, fullWithBottom(12));
 
         LinearLayout chart = card();
         chart.addView(sectionTitle("大衍排盘"));
