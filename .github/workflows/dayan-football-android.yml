@@ -66,14 +66,14 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          cp dayan-football/app/build/outputs/apk/debug/app-debug.apk dist/DayanFootball-v1.2-top-next-debug.apk
-          test -s dist/DayanFootball-v1.2-top-next-debug.apk
+          cp dayan-football/app/build/outputs/apk/debug/app-debug.apk dist/DayanFootball-v1.3-thumb-next-debug.apk
+          test -s dist/DayanFootball-v1.3-thumb-next-debug.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DayanFootball-v1.2-top-next-debug-apk
-          path: dist/DayanFootball-v1.2-top-next-debug.apk
+          name: DayanFootball-v1.3-thumb-next-debug-apk
+          path: dist/DayanFootball-v1.3-thumb-next-debug.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -82,7 +82,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/DayanFootball-v1.2-top-next-debug.apk
+          git add dist/DayanFootball-v1.3-thumb-next-debug.apk
           if git diff --cached --quiet; then
             echo "APK unchanged"
           else
