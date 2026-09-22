@@ -1,10 +1,10 @@
-name: Build JianLiuren Football Yunyi v1.1
+name: Build DaLiuRen MultiLayer v2
 
 on:
   push:
     branches: [ "feature/daliuren-dual-pan-v1" ]
     paths:
-      - "android/daliuren-dual-pan-v1/**"
+      - "android/daliuren-dual-pan-v2/**"
       - ".github/workflows/build-liuren-dual-pan-v1.yml"
   workflow_dispatch:
 
@@ -36,10 +36,10 @@ jobs:
         with:
           gradle-version: "8.10.2"
 
-      - name: Expand v1.1 project source
+      - name: Expand v2 project source
         run: |
           cd "$RUNNER_TEMP"
-          cat "$GITHUB_WORKSPACE/android/daliuren-dual-pan-v1/v1.1.0-parts"/part* > project.b64
+          cat "$GITHUB_WORKSPACE"/android/daliuren-dual-pan-v2/project.b64.part* > project.b64
           base64 -d project.b64 > project.tgz
           tar -xzf project.tgz
           test -f daliuren_dual_pan_v1/app/build.gradle
@@ -58,42 +58,47 @@ jobs:
           test -s "$PROJECT/app/src/main/assets/app/engine/lrpp.js"
           test -s "$PROJECT/app/src/main/assets/app/js/liuren.js"
 
-      - name: Sanity check v1.1 UI
+      - name: Sanity check v2 features
         run: |
-          grep -q "足球预测" "$PROJECT/app/src/main/assets/app/index.html"
-          grep -q "时盘" "$PROJECT/app/src/main/assets/app/index.html"
-          grep -q "刻盘" "$PROJECT/app/src/main/assets/app/index.html"
-          grep -q "分盘" "$PROJECT/app/src/main/assets/app/index.html"
-          grep -q "秒盘" "$PROJECT/app/src/main/assets/app/index.html"
-          grep -q "逆摘5辰" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "神煞盘" "$PROJECT/app/src/main/assets/app/index.html"
           ! grep -q "神煞二" "$PROJECT/app/src/main/assets/app/index.html"
+          grep -q "运移盘" "$PROJECT/app/src/main/assets/app/index.html"
+          grep -q "时刻分秒" "$PROJECT/app/src/main/assets/app/index.html"
+          grep -q "足球预测" "$PROJECT/app/src/main/assets/app/index.html"
+          grep -q "MOVE_PALACES" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "tongdaoxian" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "五马遁" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "五狗遁" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "实验秒盘" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "四层共振" "$PROJECT/app/src/main/assets/app/app.js"
 
       - name: Build signed release APK
         working-directory: ${{ env.PROJECT }}
         run: |
           gradle --no-daemon :app:assembleRelease
           mkdir -p dist
-          cp app/build/outputs/apk/release/app-release.apk dist/JianLiuren-Football-Yunyi-v1.1.0.apk
-          cp app/build/outputs/apk/release/app-release.apk "dist/坚六壬-球局运移-v1.1.0.apk"
+          cp app/build/outputs/apk/release/app-release.apk dist/DaLiuRen-MultiLayer-Shensha-Yunyi-Football-v2.0.0.apk
+          cp app/build/outputs/apk/release/app-release.apk "dist/六壬多层-神煞运移-足球-v2.0.0.apk"
           sha256sum dist/*.apk | tee dist/SHA256SUMS.txt
 
       - name: Verify APK
         run: |
-          APK="$PROJECT/dist/JianLiuren-Football-Yunyi-v1.1.0.apk"
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          APK="$PROJECT/dist/DaLiuRen-MultiLayer-Shensha-Yunyi-Football-v2.0.0.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee "$PROJECT/dist/apksigner.txt"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee "$PROJECT/dist/aapt-badging.txt"
-          grep -q "versionName='1.1.0'" "$PROJECT/dist/aapt-badging.txt"
-          grep -q "application-label:'坚六壬·球局运移'" "$PROJECT/dist/aapt-badging.txt"
+          grep -q "versionCode='2'" "$PROJECT/dist/aapt-badging.txt"
+          grep -q "versionName='2.0.0'" "$PROJECT/dist/aapt-badging.txt"
+          grep -q "package: name='com.abe618.liuren.yunyi.v1'" "$PROJECT/dist/aapt-badging.txt"
 
       - name: Package source snapshot
         run: |
           cd "$RUNNER_TEMP"
-          zip -qr "$PROJECT/dist/JianLiuren-Football-Yunyi-v1.1.0-source.zip" daliuren_dual_pan_v1
+          zip -qr "$PROJECT/dist/DaLiuRen-MultiLayer-v2.0.0-source.zip" daliuren_dual_pan_v1
 
       - name: Upload APK and source
         uses: actions/upload-artifact@v4
         with:
-          name: JianLiuren-Football-Yunyi-v1.1.0
+          name: DaLiuRen-MultiLayer-v2.0.0
           path: |
             ${{ env.PROJECT }}/dist/*
           if-no-files-found: error
