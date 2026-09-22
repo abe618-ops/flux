@@ -1,0 +1,50 @@
+name: Publish DocDrop DMG release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docdrop-active-window/**"
+      - ".github/workflows/docdrop-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.repository == 'abe618-ops/flux'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rebuild and verify installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd docdrop-active-window
+          mkdir -p dist
+          cat .payload/part-*.b64 | tr -d '\r\n ' | base64 -d > dist/DocDrop_Active_Window.dmg
+          echo "3c4881b004fc4bb402f6b6c67410bbfca5d436bac1879f7e231b30f11bb58a4a  dist/DocDrop_Active_Window.dmg" | sha256sum -c -
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="docdrop-v1.3"
+          ASSET="docdrop-active-window/dist/DocDrop_Active_Window.dmg"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ASSET" --clobber
+          else
+            gh release create "$TAG" "$ASSET"               --title "DocDrop / 文档快投 v1.3"               --notes "macOS 12.0+ installer for DocDrop / 文档快投 v1.3 (Build 4).
+
+SHA-256:
+3c4881b004fc4bb402f6b6c67410bbfca5d436bac1879f7e231b30f11bb58a4a
+
+See docdrop-active-window/README.md for bilingual documentation, permissions, source status and notices."
+          fi
