@@ -1,0 +1,91 @@
+name: Build Dayan Football Android
+
+on:
+  push:
+    branches: [ dayan-football-apk ]
+    paths:
+      - 'dayan-football/**'
+      - '.github/workflows/dayan-football-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: dayan-football-apk
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Prepare Android 36 SDK
+        shell: bash
+        run: |
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Check Dayan model
+        working-directory: dayan-football
+        shell: bash
+        run: |
+          rm -rf /tmp/dayan-model-check
+          mkdir -p /tmp/dayan-model-check
+          javac -encoding UTF-8 -d /tmp/dayan-model-check             app/src/main/java/com/abe618/dayanfootball/DayanEngine.java             tools/ModelCheck.java
+          java -Dfile.encoding=UTF-8 -cp /tmp/dayan-model-check ModelCheck
+
+      - name: Build signed debug APK
+        working-directory: dayan-football
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Verify APK signature
+        shell: bash
+        run: |
+          APK="dayan-football/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "$APK"
+
+      - name: Copy APK
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp dayan-football/app/build/outputs/apk/debug/app-debug.apk dist/DayanFootball-v1.0-debug.apk
+          test -s dist/DayanFootball-v1.0-debug.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DayanFootball-v1.0-debug-apk
+          path: dist/DayanFootball-v1.0-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit installable APK to branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/DayanFootball-v1.0-debug.apk
+          if git diff --cached --quiet; then
+            echo "APK unchanged"
+          else
+            git commit -m "Build Dayan Football v1.0 APK"
+            git push origin HEAD:dayan-football-apk
+          fi
