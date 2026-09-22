@@ -41,7 +41,7 @@ jobs:
         with:
           gradle-version: '8.4'
 
-      - name: Reconstruct source
+      - name: Reconstruct and repair source
         run: |
           mkdir -p buildsrc
           cat builds/football-predictor/chunks/0*.b64 > /tmp/source.tar.gz.b64
@@ -50,6 +50,7 @@ jobs:
           base64 -d /tmp/source.tar.gz.b64 > /tmp/source.tar.gz
           echo "2e4f81a4979927721c8959f3979f34cb8dd4a4b7551b9b8884b0c6475fb0f55d  /tmp/source.tar.gz" | sha256sum -c -
           tar -xzf /tmp/source.tar.gz -C buildsrc
+          find buildsrc/app/src/main/res -type f -name '*.xml' -exec sed -i 's#http://schemas.android.com/apk/res/app#http://schemas.android.com/apk/res-auto#g' {} +
 
       - name: Build debug APK
         working-directory: buildsrc
