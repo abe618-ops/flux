@@ -1,0 +1,12 @@
+{
+  "name": "易学足球合参",
+  "version": {"name": "1.3.0", "code": 130},
+  "description": "足球预测、术数盘、下一场独立随机与赛后复盘",
+  "launch_path": "football.html",
+  "plus": {
+    "launch_path": "football.html",
+    "splashscreen": {"autoclose": true, "delay": 0, "waiting": false},
+    "uniStatistics": {"enable": false}
+  },
+  "_clean_build_note": "No adid/channel. androidPrivacy prompt is none."
+}
