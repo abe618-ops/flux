@@ -9,8 +9,8 @@ import java.util.regex.*;
 public final class FootballData {
     private FootballData() {}
     public static final TimeZone TZ = TimeZone.getTimeZone("Asia/Shanghai");
-    public static final String[] MARKETS = {"HAD","HHAD","CRS","TTG","HAFU","DS","OU","AH"};
-    public static final String[] TITLES = {"胜平负","让球胜平负","比分","总进球","半全场","上下单双","大小球","亚洲让球"};
+    public static final String[] MARKETS = {"HAD","HHAD","CRS","TTG","HAFU","DS","ODD","BTTS","OU","AH"};
+    public static final String[] TITLES = {"胜平负","让球胜平负","比分","总进球","半全场","上下单双","进球单双","双方进球","大小球","亚洲让球"};
     public static String title(String m) { for(int i=0;i<MARKETS.length;i++) if(MARKETS[i].equals(m)) return TITLES[i]; return m; }
     public static String[] labels(String m) {
         if(m.equals("HAD"))return new String[]{"胜","平","负"};
@@ -19,6 +19,8 @@ public final class FootballData {
         if(m.equals("TTG"))return "0球 1球 2球 3球 4球 5球 6球 7+球".split(" ");
         if(m.equals("HAFU"))return "胜/胜 胜/平 胜/负 平/胜 平/平 平/负 负/胜 负/平 负/负".split(" ");
         if(m.equals("DS"))return "上单 上双 下单 下双".split(" ");
+        if(m.equals("ODD"))return new String[]{"单","双"};
+        if(m.equals("BTTS"))return new String[]{"是","否"};
         if(m.equals("OU"))return new String[]{"大","小"};
         if(m.equals("AH"))return new String[]{"主","客"};
         return new String[0];
@@ -177,7 +179,16 @@ public final class FootballData {
         }
         Collections.sort(out,(a,b)->{int z=a.optString("number").compareTo(b.optString("number"));return z!=0?z:Long.compare(a.optLong("kickoff"),b.optLong("kickoff"));});return out;
     }
-    public static String infer(String label){if(label.startsWith("让"))return "HHAD";if(label.contains(":")||label.contains("其他")||label.contains("其它"))return "CRS";if(label.endsWith("球"))return "TTG";if(label.contains("/")||label.matches("[胜平负]{2}"))return "HAFU";if(label.matches("[上下][单双]"))return "DS";return "HAD";}
+    public static String infer(String label){
+        if(label.startsWith("让"))return "HHAD";
+        if(label.contains(":")||label.contains("其他")||label.contains("其它"))return "CRS";
+        if(label.endsWith("球"))return "TTG";
+        if(label.contains("/")||label.matches("[胜平负]{2}"))return "HAFU";
+        if(label.matches("[上下][单双]"))return "DS";
+        if(label.equals("单")||label.equals("双"))return "ODD";
+        if(label.equals("是")||label.equals("否"))return "BTTS";
+        return "HAD";
+    }
     static String outcome(int h,int a){return h>a?"胜":h<a?"负":"平";}
     /** NaN means unresolved, 0 loss, 1 void, otherwise saved decimal odds. */
     public static double factor(JSONObject p,JSONObject r){
@@ -189,6 +200,8 @@ public final class FootballData {
         else if(m.equals("TTG"))hit=l.equals((h+a)+"球")||l.equals("7+球")&&h+a>=7;
         else if(m.equals("HAFU")){int[] ht=score(r.optString("ht"));if(ht==null||ht[0]>h||ht[1]>a)return Double.NaN;hit=l.replace("/","").equals(outcome(ht[0],ht[1])+outcome(h,a));}
         else if(m.equals("DS"))hit=l.equals((h+a>=3?"上":"下")+((h+a)%2==0?"双":"单"));
+        else if(m.equals("ODD"))hit=l.equals((h+a)%2==0?"双":"单");
+        else if(m.equals("BTTS"))hit=l.equals(h>0&&a>0?"是":"否");
         else if(m.equals("OU")){double line=p.optDouble("line",Double.NaN);if(Double.isNaN(line))return Double.NaN;try{return MarketMath.asian(h+a,line,l.equals("大"),odd);}catch(Exception e){return Double.NaN;}}
         else if(m.equals("AH")){double line=p.optDouble("line",Double.NaN);if(Double.isNaN(line))return Double.NaN;try{return MarketMath.asian(h-a,-line,l.equals("主"),odd);}catch(Exception e){return Double.NaN;}}
         else if(m.equals("CRS")){String exact=h+":"+a;JSONArray recorded=p.optJSONArray("listedScores");Set<String> known=new HashSet<>();if(recorded!=null){for(int i=0;i<recorded.length();i++)known.add(recorded.optString(i));}else known.addAll(Arrays.asList(labels("CRS")));hit=l.equals(exact)||l.equals(outcome(h,a)+"其他")&&!known.contains(exact);}
