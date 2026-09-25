@@ -45,11 +45,13 @@ jobs:
           cp virtual-bet-v1.6.0/patch/MainActivity.java "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/MainActivity.java"
           cp virtual-bet-v1.6.0/patch/FootballData.java "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/FootballData.java"
           cp virtual-bet-v1.6.0/patch/MarketMath.java "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/MarketMath.java"
+          cp virtual-bet-v1.6.0/patch/DataClient.java "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/DataClient.java"
           sed -i -E "s/versionName '[^']+'/versionName '1.6.0-score-hafu-settlement'/" "$PROJECT_DIR/app/build.gradle"
           grep -q '"CRS"' "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/FootballData.java"
           grep -q '"HAFU"' "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/FootballData.java"
           grep -q '同步赛果并结算' "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/MainActivity.java"
           grep -q '保存并计算' "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/MainActivity.java"
+          grep -q 'String preferred' "$PROJECT_DIR/app/src/main/java/com/matchday/virtualbet/DataClient.java"
 
       - name: Install Android SDK 35
         shell: bash
