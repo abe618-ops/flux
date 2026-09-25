@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <application android:theme="@style/AppTheme" android:label="竞彩北单模拟 · 多源版" android:usesCleartextTraffic="false" android:allowBackup="true">
+    <application android:theme="@style/AppTheme" android:label="le xu 盘口训练·独立版 3.1.0" android:usesCleartextTraffic="false" android:allowBackup="true">
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
         </activity>
