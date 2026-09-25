@@ -1,4 +1,4 @@
-name: Build VirtualBet MultiSource v2.2
+name: Build le xu Pan Training v3.1.0
 on:
   push:
     branches: [ main ]
@@ -38,28 +38,28 @@ jobs:
         run: |
           APK=virtual-bet-multisource-v2.2/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep "package: name='com.flux.virtualbet.multisource'"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | grep "package: name='com.flux.lexu.training.v31'"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -P 16 -v 4 "$APK"
       - name: Publish APK
         shell: bash
         run: |
           mkdir -p dist
-          cp virtual-bet-multisource-v2.2/app/build/outputs/apk/debug/app-debug.apk dist/VirtualBet-MultiSource-v2.2-coexist.apk
-          sha256sum dist/VirtualBet-MultiSource-v2.2-coexist.apk | tee dist/VirtualBet-MultiSource-v2.2-coexist.apk.sha256
+          cp virtual-bet-multisource-v2.2/app/build/outputs/apk/debug/app-debug.apk dist/le-xu-pan-training-v3.1.0.apk
+          sha256sum dist/le-xu-pan-training-v3.1.0.apk | tee dist/le-xu-pan-training-v3.1.0.apk.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: VirtualBet-MultiSource-v2.2-coexist
+          name: le-xu-pan-training-v3.1.0
           path: |
-            dist/VirtualBet-MultiSource-v2.2-coexist.apk
-            dist/VirtualBet-MultiSource-v2.2-coexist.apk.sha256
+            dist/le-xu-pan-training-v3.1.0.apk
+            dist/le-xu-pan-training-v3.1.0.apk.sha256
           retention-days: 30
       - name: Commit APK
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/VirtualBet-MultiSource-v2.2-coexist.apk dist/VirtualBet-MultiSource-v2.2-coexist.apk.sha256
+          git add dist/le-xu-pan-training-v3.1.0.apk dist/le-xu-pan-training-v3.1.0.apk.sha256
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Build VirtualBet MultiSource v2.2 coexist APK"
+          git commit -m "Build le xu Pan Training v3.1.0 APK"
           git push origin HEAD:main
