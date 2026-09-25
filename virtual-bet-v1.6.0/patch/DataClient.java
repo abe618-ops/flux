@@ -37,6 +37,10 @@ public final class DataClient {
             }
         }finally{scope.connections.remove(c);c.disconnect();}
     }
+    public static String sourceName(String kind,int mode,int source){
+        if("fixture".equals(kind)){if(mode==0)return source==0?"新浪竞彩":"500竞彩";return source==0?"500北单":"球探北单";}
+        if(mode==0)return source==0?"球探赛果":source==1?"新浪赛果":"500赛果";return source==0?"球探赛果":"备用赛果";
+    }
     public static String sinaUrl(String k){return "https://mix.lottery.sina.com.cn/gateway/index/entry?format=json&__caller__=web&__version__=1.0.0&__verno__=1&cat1=jczqMatches&gameTypes=spf&date="+FootballData.iso(k)+"&isPrized=&isAll=1&dpc=1";}
     public static String fiveUrl(String k){return "https://trade.500.com/jczq/?date="+FootballData.iso(k)+"&playid=312&g=2";}
     public static String titanUrl(String k){return "https://bf.titan007.com/football/Over_"+k+".htm";}
