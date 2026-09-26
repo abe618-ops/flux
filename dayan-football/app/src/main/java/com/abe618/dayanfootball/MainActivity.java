@@ -166,9 +166,10 @@ public class MainActivity extends Activity {
         outcome.setText(p.outcome);
         ranking.setText(p.ranking);
         quick.setText(
-            "半全场  " + p.halfFull +
-            "\n进球  " + p.goalsMain + "球（次 " + p.goalsAlt + "球）" +
+            "半全场  " + p.halfFull + "（次 " + p.halfFullAlt + "）" +
+            "\n进球  " + p.goalsMain + "球（次 " + p.goalsAlt + "球｜" + p.goalsRange + "）" +
             "\n大小  " + p.overUnder + "    单双  " + p.oddEven +
+            "\n双方进球  " + p.btts +
             "\n比分  " + p.scoreMain + "（次 " + p.scoreAlt1 + "、" + p.scoreAlt2 + "）"
         );
 
@@ -212,19 +213,22 @@ public class MainActivity extends Activity {
         netGoalValue.setText(p.netGoal);
 
         logic.setText(
+            "\n盘型：" + p.pattern +
             "\n结构判断：" + directionText(c) +
+            "\n节奏：" + p.rhythm +
+            "\n风险：" + p.risk +
             "\n生克分：本卦 " + fmt(c.baseRelation) +
             "｜变卦 " + fmt(c.changedRelation) +
             "｜世应 " + fmt(c.shiYingRelation) +
             "\n动爻数：" + movingCount +
-            "｜模型分 " + fmt(p.rawScore) +
-            "｜进球强度 " + fmt(p.goalMean)
+            "｜方向分 " + fmt(p.rawScore)
         );
 
         seedTitle.setTextColor(accent);
         seedText.setText(
             "随机种子：" + c.seed +
             "\n冻结码：" + c.freezeCode +
+            "\n判定版本：Chat Logic V2（DY10-DY19回归校验）" +
             "\n十八变余策：" + remainsText(c)
         );
     }
