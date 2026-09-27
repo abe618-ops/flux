@@ -114,3 +114,12 @@ Send2Mail/
 ## License
 
 MIT
+
+
+## DocDrop / 文档快投
+
+DocDrop is a macOS menu-bar utility for identifying the active document and dragging or copying it into WeChat or an AI client. 文档快投是 macOS 菜单栏工具，用于识别当前文档，并将文件拖拽或复制到微信、AI 客户端等应用。
+
+- Project / 项目：[DocDrop/](./DocDrop/)
+- First release installer / 首版安装包：[DocDrop_Active_Window.dmg](./DocDrop/DocDrop_Active_Window.dmg)
+- Source, build script, bilingual guide and license are included in the project directory.
