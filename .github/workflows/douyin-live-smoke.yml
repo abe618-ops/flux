@@ -1,0 +1,102 @@
+name: Douyin Live Smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/douyin-live-smoke.yml'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Test supplied Douyin Lite share URL
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, re, urllib.request, urllib.parse
+          from urllib.parse import urlparse
+
+          SHORT = "https://v.douyin.com/ozwj_lHyNjQ/"
+          UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1"
+
+          def get(url):
+              req = urllib.request.Request(url, headers={
+                  "User-Agent": UA,
+                  "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
+                  "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+                  "Referer": "https://www.douyin.com/",
+              })
+              with urllib.request.urlopen(req, timeout=15) as r:
+                  return r.geturl(), r.read().decode("utf-8","ignore")
+
+          final, body = get(SHORT)
+          seed = SHORT + " " + final + " " + body
+          pats = [
+              r"(?:/video/|/share/(?:video|slides|note)/)([0-9]{17,20})",
+              r"(?:modal_id|aweme_id)=([0-9]{17,20})",
+              r"(?<![0-9])([0-9]{18,20})(?![0-9])",
+          ]
+          aweme = None
+          for p in pats:
+              m = re.search(p, seed)
+              if m:
+                  aweme = m.group(1); break
+          print("FINAL_HOST=", urlparse(final).netloc)
+          print("AWEME_ID=", aweme or "NONE")
+          if not aweme:
+              raise SystemExit("SMOKE_FAIL:no_aweme_id")
+
+          share = f"https://www.iesdouyin.com/share/video/{aweme}/?from_ssr=1"
+          share_final, html = get(share)
+          print("SHARE_HOST=", urlparse(share_final).netloc, "HTML_BYTES=", len(html))
+          marker = html.find("_ROUTER_DATA")
+          print("ROUTER_MARKER=", marker)
+          if marker < 0:
+              raise SystemExit("SMOKE_FAIL:no_router_data")
+
+          start = html.find("{", marker)
+          depth=0; ins=False; esc=False; end=-1
+          for i,ch in enumerate(html[start:], start):
+              if ins:
+                  if esc: esc=False
+                  elif ch=="\\": esc=True
+                  elif ch=='"': ins=False
+                  continue
+              if ch=='"': ins=True
+              elif ch=="{": depth += 1
+              elif ch=="}":
+                  depth -= 1
+                  if depth==0:
+                      end=i+1; break
+          if end < 0:
+              raise SystemExit("SMOKE_FAIL:router_unbalanced")
+
+          data=json.loads(html[start:end])
+          def find(node):
+              if isinstance(node, dict):
+                  for k in ("play_addr","play_addr_h264"):
+                      v=node.get(k)
+                      if isinstance(v,dict):
+                          us=v.get("url_list")
+                          if isinstance(us,list):
+                              for u in us:
+                                  if isinstance(u,str) and u.startswith(("http://","https://")):
+                                      return u
+                  for v in node.values():
+                      x=find(v)
+                      if x:return x
+              elif isinstance(node,list):
+                  for v in node:
+                      x=find(v)
+                      if x:return x
+              return None
+          media=find(data)
+          print("MEDIA_FOUND=", bool(media))
+          if media:
+              print("MEDIA_HOST=", urlparse(media).netloc)
+              print("SMOKE_OK")
+          else:
+              raise SystemExit("SMOKE_FAIL:no_play_addr")
+          PY
