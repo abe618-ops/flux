@@ -11,6 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Inspect original WebView probe source
+        shell: bash
+        run: |
+          cat quick-video-downloader/source.b64.* | tr -d '[:space:]' | base64 -d > /tmp/q.zip
+          rm -rf /tmp/qsrc && mkdir -p /tmp/qsrc
+          unzip -q /tmp/q.zip -d /tmp/qsrc
+          F=/tmp/qsrc/quick-video-downloader/app/src/main/java/com/abe/quickvideo/MainActivity.java
+          python3 - "$F" <<'PY'
+          import sys
+          s=open(sys.argv[1]).read()
+          for key in ["private void startWebProbe(String url)", "void startDownload", "DownloadManager.Request", "resolveHttp(String originalUrl)"]:
+              i=s.find(key)
+              print("\n===== SOURCE", key, i, "=====")
+              if i>=0: print(s[max(0,i-1200):min(len(s),i+7000)])
+          PY
+
       - name: Test supplied Douyin Lite share URL
         shell: bash
         run: |
