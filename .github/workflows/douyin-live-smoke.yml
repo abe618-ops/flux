@@ -21,6 +21,13 @@ jobs:
           SHORT = "https://v.douyin.com/ozwj_lHyNjQ/"
           UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1"
 
+          class TrackRedirects(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  print("REDIRECT=", code, newurl)
+                  return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+          opener = urllib.request.build_opener(TrackRedirects())
+
           def get(url):
               req = urllib.request.Request(url, headers={
                   "User-Agent": UA,
@@ -28,7 +35,7 @@ jobs:
                   "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
                   "Referer": "https://www.douyin.com/",
               })
-              with urllib.request.urlopen(req, timeout=15) as r:
+              with opener.open(req, timeout=15) as r:
                   return r.geturl(), r.read().decode("utf-8","ignore")
 
           final, body = get(SHORT)
@@ -43,9 +50,20 @@ jobs:
               m = re.search(p, seed)
               if m:
                   aweme = m.group(1); break
+          print("FINAL_URL=", final)
           print("FINAL_HOST=", urlparse(final).netloc)
           print("AWEME_ID=", aweme or "NONE")
           if not aweme:
+              for key in ("aweme_id","awemeId","itemId","item_id","videoId","group_id","modal_id"):
+                  i = body.find(key)
+                  if i >= 0:
+                      print("KEY_SNIP=", key, body[max(0,i-120):i+260].replace("\n"," ")[:380])
+              nums = []
+              for x in re.findall(r"(?<![0-9])([0-9]{17,20})(?![0-9])", body):
+                  if x not in nums:
+                      nums.append(x)
+                  if len(nums) >= 20: break
+              print("NUM_CANDIDATES=", nums)
               raise SystemExit("SMOKE_FAIL:no_aweme_id")
 
           share = f"https://www.iesdouyin.com/share/video/{aweme}/?from_ssr=1"
