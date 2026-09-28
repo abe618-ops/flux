@@ -36,7 +36,7 @@ jobs:
           test -f "$PROJECT_DIR/app/build.gradle"
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
-      - name: Apply v0.2.2 media-library and Douyin Lite parser patch
+      - name: Apply v0.2.3 fast Douyin Lite SSR parser patch
         shell: bash
         run: |
           python3 - <<'PY'
@@ -61,7 +61,7 @@ jobs:
               'setStatus("已建立下载任务 #" + id + "\\n保存到 Movies/快存视频；完成后自动加入本地视频库", false);'
           )
 
-          # v0.2.2: Douyin / Douyin Lite parser repair.
+          # v0.2.3: fast Douyin / Douyin Lite SSR parser.
           # 1) Use an iPhone Safari UA because current iesdouyin share pages often
           #    expose usable page data only on the mobile Safari path.
           android_ua = "Mozilla/5.0 (Linux; Android 16; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36"
@@ -92,15 +92,14 @@ jobs:
                   try {
                       Page landing = fetchFollowingRedirectsWith(originalUrl, iosUa, "");
                       String landingUrl = landing != null && landing.url != null ? landing.url : originalUrl;
+                      String seed = originalUrl + " " + landingUrl;
+                      if (landing != null && landing.body != null) seed += " " + landing.body;
 
-                      String awemeId = extractToutiaoId(originalUrl + " " + landingUrl);
-                      if ((awemeId == null || awemeId.isEmpty()) && landing != null && landing.body != null) {
-                          awemeId = extractToutiaoId(landing.body);
-                      }
+                      String awemeId = extractDouyinAwemeId(seed);
                       if (awemeId == null || awemeId.isEmpty()) return null;
 
                       String[] targets = new String[] {
-                          "https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=" + awemeId,
+                          "https://www.iesdouyin.com/share/video/" + awemeId + "/?from_ssr=1",
                           "https://www.iesdouyin.com/share/video/" + awemeId + "/"
                       };
 
@@ -108,25 +107,135 @@ jobs:
                           Page page = fetchFollowingRedirectsWith(target, iosUa, "");
                           if (page == null || page.body == null || page.body.isEmpty()) continue;
 
-                          java.util.List<Candidate> candidates = collectCandidates(page.body, page.url);
-                          for (Candidate candidate : candidates) {
-                              if (candidate == null || candidate.url == null) continue;
+                          String mediaUrl = extractDouyinPlayUrl(page.body);
+                          if (mediaUrl != null && (mediaUrl.startsWith("https://") || mediaUrl.startsWith("http://"))) {
+                              String title = extractTitle(page.body);
+                              if (title == null || title.isEmpty()) title = "抖音_" + awemeId;
+                              return new ResolveResult(mediaUrl, page.url, title, "");
+                          }
+                      }
 
-                              // Prefer direct CDN URLs already present in the page/API payload.
-                              // Keep the legacy playwm->play normalization as a compatibility fallback.
-                              String mediaUrl = candidate.url
-                                      .replace("/playwm/", "/play/")
-                                      .replace("playwm", "play");
-
-                              if (verifyMediaUrl(mediaUrl, page.url)) {
-                                  String title = extractTitle(page.body);
-                                  if (title == null || title.isEmpty()) title = "抖音_" + awemeId;
-                                  return new ResolveResult(mediaUrl, page.url, title, "");
-                              }
+                      String api = "https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=" + awemeId;
+                      Page apiPage = fetchFollowingRedirectsWith(api, iosUa, "");
+                      if (apiPage != null && apiPage.body != null && !apiPage.body.isEmpty()) {
+                          String mediaUrl = extractDouyinPlayUrlFromJson(apiPage.body);
+                          if (mediaUrl != null && (mediaUrl.startsWith("https://") || mediaUrl.startsWith("http://"))) {
+                              String title = extractTitle(apiPage.body);
+                              if (title == null || title.isEmpty()) title = "抖音_" + awemeId;
+                              return new ResolveResult(mediaUrl, apiPage.url, title, "");
                           }
                       }
                   } catch (Exception ignored) {
                   }
+                  return null;
+              }
+
+              private String extractDouyinAwemeId(String text) {
+                  if (text == null) return null;
+                  String[] patterns = new String[] {
+                      "(?:/video/|/share/(?:video|slides|note)/)([0-9]{17,20})",
+                      "(?:modal_id|aweme_id)=([0-9]{17,20})",
+                      "(?<![0-9])([0-9]{18,20})(?![0-9])"
+                  };
+                  for (String p : patterns) {
+                      java.util.regex.Matcher m = java.util.regex.Pattern.compile(p).matcher(text);
+                      if (m.find()) return m.group(1);
+                  }
+                  return null;
+              }
+
+              private String extractDouyinPlayUrl(String html) {
+                  if (html == null || html.isEmpty()) return null;
+                  try {
+                      String json = extractRouterJson(html);
+                      if (json != null) {
+                          String found = findDouyinPlayUrl(new org.json.JSONObject(json));
+                          if (found != null) return found;
+                      }
+                  } catch (Exception ignored) {
+                  }
+                  return extractDouyinPlayUrlFromJson(html);
+              }
+
+              private String extractDouyinPlayUrlFromJson(String jsonText) {
+                  if (jsonText == null || jsonText.isEmpty()) return null;
+                  try {
+                      String t = jsonText.trim();
+                      if (t.startsWith("{")) return findDouyinPlayUrl(new org.json.JSONObject(t));
+                      if (t.startsWith("[")) return findDouyinPlayUrl(new org.json.JSONArray(t));
+                  } catch (Exception ignored) {
+                  }
+                  return null;
+              }
+
+              private String extractRouterJson(String html) {
+                  int marker = html.indexOf("_ROUTER_DATA");
+                  if (marker < 0) return null;
+                  int start = html.indexOf('{', marker);
+                  if (start < 0) return null;
+
+                  int depth = 0;
+                  boolean inString = false;
+                  boolean escape = false;
+                  for (int i = start; i < html.length(); i++) {
+                      char ch = html.charAt(i);
+                      if (inString) {
+                          if (escape) escape = false;
+                          else if (ch == '\\\\') escape = true;
+                          else if (ch == '"') inString = false;
+                          continue;
+                      }
+                      if (ch == '"') inString = true;
+                      else if (ch == '{') depth++;
+                      else if (ch == '}') {
+                          depth--;
+                          if (depth == 0) return html.substring(start, i + 1);
+                      }
+                  }
+                  return null;
+              }
+
+              private String findDouyinPlayUrl(Object node) {
+                  if (node == null || node == org.json.JSONObject.NULL) return null;
+                  try {
+                      if (node instanceof org.json.JSONObject) {
+                          org.json.JSONObject obj = (org.json.JSONObject) node;
+                          String direct = urlFromPlayAddr(obj.opt("play_addr"));
+                          if (direct != null) return direct;
+                          direct = urlFromPlayAddr(obj.opt("play_addr_h264"));
+                          if (direct != null) return direct;
+
+                          java.util.Iterator<String> keys = obj.keys();
+                          while (keys.hasNext()) {
+                              String found = findDouyinPlayUrl(obj.opt(keys.next()));
+                              if (found != null) return found;
+                          }
+                      } else if (node instanceof org.json.JSONArray) {
+                          org.json.JSONArray arr = (org.json.JSONArray) node;
+                          for (int i = 0; i < arr.length(); i++) {
+                              String found = findDouyinPlayUrl(arr.opt(i));
+                              if (found != null) return found;
+                          }
+                      }
+                  } catch (Exception ignored) {
+                  }
+                  return null;
+              }
+
+              private String urlFromPlayAddr(Object node) {
+                  if (!(node instanceof org.json.JSONObject)) return null;
+                  org.json.JSONObject addr = (org.json.JSONObject) node;
+
+                  org.json.JSONArray urls = addr.optJSONArray("url_list");
+                  if (urls != null) {
+                      for (int i = 0; i < urls.length(); i++) {
+                          String u = urls.optString(i, "");
+                          if (u.startsWith("https://") || u.startsWith("http://")) return u.replace("&amp;", "&");
+                      }
+                  }
+
+                  String u = addr.optString("url", "");
+                  if (u.startsWith("https://") || u.startsWith("http://")) return u.replace("&amp;", "&");
                   return null;
               }
           '''
@@ -134,6 +243,12 @@ jobs:
           if class_end < 0:
               raise RuntimeError("MainActivity class closing brace not found")
           s = s[:class_end] + helpers + s[class_end:]
+
+          k = s.find("普通解析未命中")
+          if k >= 0:
+              print("=== fallback-context ===")
+              print(s[max(0, k-500):min(len(s), k+700)])
+              print("=== end-fallback-context ===")
 
           main.write_text(s)
 
@@ -204,28 +319,28 @@ jobs:
 
           gradle = root / "app/build.gradle"
           g = gradle.read_text()
-          g = g.replace("applicationId 'com.abe.quickvideo.v1'", "applicationId 'com.abe.quickvideo.v022'")
-          g = g.replace("versionCode 2", "versionCode 4")
-          g = g.replace("versionName '0.2.0'", "versionName '0.2.2'")
+          g = g.replace("applicationId 'com.abe.quickvideo.v1'", "applicationId 'com.abe.quickvideo.v023'")
+          g = g.replace("versionCode 2", "versionCode 5")
+          g = g.replace("versionName '0.2.0'", "versionName '0.2.3'")
           gradle.write_text(g)
 
           readme = root / "README.md"
-          r = readme.read_text().replace("v0.2.0", "v0.2.2")
+          r = readme.read_text().replace("v0.2.0", "v0.2.3")
           r += """
           
-          ## v0.2.2 媒体库修复
-          - 默认保存到 Movies/快存视频/。
+          ## v0.2.3 抖音极速版解析修复
+          - 抖音/抖音极速版优先解析 iesdouyin 移动端 SSR 的 window._ROUTER_DATA。\n          - 解析阶段取消 CDN 预探测，减少等待和误判。\n          - 旧 iteminfo 接口仅作为兜底。\n          - 默认保存到 Movies/快存视频/。
           - 下载完成后自动触发 MediaScannerConnection 媒体扫描。
           - 文件管理器的视频分类、本地视频和图库可更快发现下载文件。
           - 保留 DownloadManager 下载记录、通知和下载后自动关闭。
-          - 使用独立 applicationId com.abe.quickvideo.v022，避免与旧版调试签名冲突。
+          - 使用独立 applicationId com.abe.quickvideo.v023，避免与旧版调试签名冲突。
           """
           readme.write_text(r)
           PY
 
-          rm -f /tmp/quick-video-downloader-v0.2.2-source.zip
-          (cd /tmp/quick-video-src && zip -qr /tmp/quick-video-downloader-v0.2.2-source.zip quick-video-downloader)
-          unzip -t /tmp/quick-video-downloader-v0.2.2-source.zip
+          rm -f /tmp/quick-video-downloader-v0.2.3-source.zip
+          (cd /tmp/quick-video-src && zip -qr /tmp/quick-video-downloader-v0.2.3-source.zip quick-video-downloader)
+          unzip -t /tmp/quick-video-downloader-v0.2.3-source.zip
 
       - name: Install Android SDK 35
         shell: bash
@@ -252,17 +367,17 @@ jobs:
           APK="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
           test -s "$APK"
           unzip -t "$APK"
-          cp "$APK" /tmp/QuickSaveVideo-v0.2.2-android.apk
-          sha256sum /tmp/QuickSaveVideo-v0.2.2-android.apk | tee /tmp/QuickSaveVideo-v0.2.2-SHA256.txt
+          cp "$APK" /tmp/QuickSaveVideo-v0.2.3-android.apk
+          sha256sum /tmp/QuickSaveVideo-v0.2.3-android.apk | tee /tmp/QuickSaveVideo-v0.2.3-SHA256.txt
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: QuickSaveVideo-v0.2.2
+          name: QuickSaveVideo-v0.2.3
           path: |
-            /tmp/QuickSaveVideo-v0.2.2-android.apk
-            /tmp/QuickSaveVideo-v0.2.2-SHA256.txt
-            /tmp/quick-video-downloader-v0.2.2-source.zip
+            /tmp/QuickSaveVideo-v0.2.3-android.apk
+            /tmp/QuickSaveVideo-v0.2.3-SHA256.txt
+            /tmp/quick-video-downloader-v0.2.3-source.zip
           if-no-files-found: error
 
       - name: Publish/update GitHub Release
@@ -270,19 +385,19 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="quick-video-v0.2.2"
+          TAG="quick-video-v0.2.3"
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" \
-              /tmp/QuickSaveVideo-v0.2.2-android.apk \
-              /tmp/QuickSaveVideo-v0.2.2-SHA256.txt \
-              /tmp/quick-video-downloader-v0.2.2-source.zip \
+              /tmp/QuickSaveVideo-v0.2.3-android.apk \
+              /tmp/QuickSaveVideo-v0.2.3-SHA256.txt \
+              /tmp/quick-video-downloader-v0.2.3-source.zip \
               --clobber
           else
             gh release create "$TAG" \
-              /tmp/QuickSaveVideo-v0.2.2-android.apk \
-              /tmp/QuickSaveVideo-v0.2.2-SHA256.txt \
-              /tmp/quick-video-downloader-v0.2.2-source.zip \
+              /tmp/QuickSaveVideo-v0.2.3-android.apk \
+              /tmp/QuickSaveVideo-v0.2.3-SHA256.txt \
+              /tmp/quick-video-downloader-v0.2.3-source.zip \
               --target "$GITHUB_SHA" \
-              --title "快存视频 v0.2.2" \
-              --notes "v0.2.2：保留 Movies/快存视频 与媒体扫描修复；新增抖音/抖音极速版专用解析链：iPhone UA、短链提取 aweme_id、iesdouyin iteminfo/share 双路径、直连 CDN 优先，并保留原通用网页/WebView 兜底。使用独立包名避免旧版安装冲突。"
+              --title "快存视频 v0.2.3" \
+              --notes "v0.2.3：重点修复抖音/抖音极速版。短链取 aweme_id 后优先请求 iesdouyin 移动端 SSR 分享页（from_ssr=1），解析 window._ROUTER_DATA 中 video.play_addr.url_list；取消 CDN 预探测以提升速度，旧 iteminfo 仅兜底。保留 Movies/快存视频 与媒体扫描。"
           fi
