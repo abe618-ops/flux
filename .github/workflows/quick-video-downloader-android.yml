@@ -181,7 +181,7 @@ jobs:
                       char ch = html.charAt(i);
                       if (inString) {
                           if (escape) escape = false;
-                          else if (ch == '\\\\') escape = true;
+                          else if (ch == '\\') escape = true;
                           else if (ch == '"') inString = false;
                           continue;
                       }
@@ -243,6 +243,19 @@ jobs:
           if class_end < 0:
               raise RuntimeError("MainActivity class closing brace not found")
           s = s[:class_end] + helpers + s[class_end:]
+
+          # Douyin/Douyin Lite: do not fall back to the slow hidden WebView.
+          probe_key = "private void startWebProbe(String url) {"
+          pp = s.find(probe_key)
+          if pp >= 0:
+              pb = s.find("{", pp)
+              probe_guard = r'''
+                  if ("抖音".equals(detectPlatform(url))) {
+                      setStatus("抖音快速解析未命中；已跳过慢速网页探测，请重试一次。", false);
+                      return;
+                  }
+              '''
+              s = s[:pb + 1] + probe_guard + s[pb + 1:]
 
           k = s.find("普通解析未命中")
           if k >= 0:
