@@ -124,6 +124,61 @@ final class DouyinResolver {
         return new Result("", shareUrl, "抖音视频", awemeId);
     }
 
+    static String extractAwemeId(String text) {
+        return extractId(text);
+    }
+
+    static Result resolveById(String awemeId, String pageUrl) {
+        if (awemeId == null || awemeId.isEmpty()) return new Result("", pageUrl, "抖音视频", "");
+
+        for (String endpoint : FEED_ENDPOINTS) {
+            try {
+                String api = endpoint + "?aweme_id=" + awemeId + "&aid=1128";
+                Page p = fetchPage(api, APP_UA, "", 7_000, 8_000);
+                if (p == null || p.body.isEmpty()) continue;
+                JSONObject root = new JSONObject(p.body);
+                JSONObject detail = findAwemeDetail(root, awemeId);
+                if (detail == null) continue;
+                String title = detail.optString("desc", "抖音视频");
+                String media = chooseVerified(detail.optJSONObject("video"), pageUrl);
+                if (!media.isEmpty()) return new Result(media, pageUrl, title, awemeId);
+            } catch (Exception ignored) {
+            }
+        }
+
+        String shareUrl = "https://www.iesdouyin.com/share/video/" + awemeId;
+        try {
+            Page share = fetchPage(shareUrl, SHARE_UA,
+                    "https://www.douyin.com/?is_from_mobile_home=1&recommend=1", 8_000, 10_000);
+            if (share != null && !share.body.isEmpty()) {
+                String title = extractTitle(share.body);
+                String media = chooseFromShareHtml(share.body, share.url);
+                if (!media.isEmpty()) return new Result(media, share.url, title, awemeId);
+            }
+        } catch (Exception ignored) {
+        }
+
+        for (String aid : new String[]{"6383", "1128"}) {
+            try {
+                String api = "https://www.douyin.com/aweme/v1/web/aweme/detail/?device_platform=webapp"
+                        + "&aid=" + aid + "&channel=channel_pc_web&pc_client_type=1&version_code=190500"
+                        + "&version_name=19.5.0&aweme_id=" + awemeId;
+                Page p = fetchPage(api, SHARE_UA,
+                        "https://www.douyin.com/video/" + awemeId, 7_000, 8_000);
+                if (p == null || p.body.isEmpty()) continue;
+                JSONObject root = new JSONObject(p.body);
+                JSONObject detail = root.optJSONObject("aweme_detail");
+                if (detail == null) continue;
+                String media = chooseVerified(detail.optJSONObject("video"), pageUrl);
+                if (!media.isEmpty()) return new Result(media, pageUrl,
+                        detail.optString("desc", "抖音视频"), awemeId);
+            } catch (Exception ignored) {
+            }
+        }
+
+        return new Result("", shareUrl, "抖音视频", awemeId);
+    }
+
     private static JSONObject findAwemeDetail(JSONObject root, String awemeId) {
         JSONObject direct = root.optJSONObject("aweme_detail");
         if (direct != null) return direct;
