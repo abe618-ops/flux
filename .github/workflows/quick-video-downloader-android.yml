@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'quick-video-downloader/source.b64.*'
+      - 'quick-video-downloader/patches/**'
       - '.github/workflows/quick-video-downloader-android.yml'
 
 permissions:
@@ -23,603 +24,77 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Restore v0.2.0 source archive
+      - name: Restore base source
         shell: bash
         run: |
-          cat quick-video-downloader/source.b64.* | tr -d '[:space:]' | base64 -d > /tmp/quick-video-downloader-source.zip
-          unzip -t /tmp/quick-video-downloader-source.zip
+          cat quick-video-downloader/source.b64.* | tr -d '[:space:]' | base64 -d > /tmp/quick-video-base.zip
+          unzip -t /tmp/quick-video-base.zip
           rm -rf /tmp/quick-video-src
           mkdir -p /tmp/quick-video-src
-          unzip -q /tmp/quick-video-downloader-source.zip -d /tmp/quick-video-src
+          unzip -q /tmp/quick-video-base.zip -d /tmp/quick-video-src
           PROJECT_DIR="/tmp/quick-video-src/quick-video-downloader"
           test -f "$PROJECT_DIR/settings.gradle"
           test -f "$PROJECT_DIR/app/build.gradle"
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
-      - name: Apply v0.2.5 Douyin web-detail hybrid parser patch
+      - name: Apply v0.3.0 patch
+        shell: bash
+        run: |
+          python3 quick-video-downloader/patches/apply_v030.py
+          test -f "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DouyinResolver.java"
+          grep -q 'api5-normal-c-hl.amemv.com/aweme/v1/feed/' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DouyinResolver.java"
+          grep -q 'aweme.snssdk.com/aweme/v1/feed/' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DouyinResolver.java"
+          grep -q "applicationId 'com.abe.quickvideo.v030'" "$PROJECT_DIR/app/build.gradle"
+          rm -f /tmp/quick-video-downloader-v0.3.0-source.zip
+          (cd /tmp/quick-video-src && zip -qr /tmp/quick-video-downloader-v0.3.0-source.zip quick-video-downloader)
+          unzip -t /tmp/quick-video-downloader-v0.3.0-source.zip
+
+      - name: Best-effort probe reported Douyin share link
+        continue-on-error: true
         shell: bash
         run: |
           python3 - <<'PY'
-          from pathlib import Path
-          import os
-
-          root = Path(os.environ["PROJECT_DIR"])
-
-          main = root / "app/src/main/java/com/abe/quickvideo/MainActivity.java"
-          s = main.read_text()
-          s = s.replace(
-              "等待分享或链接…\\n保存目录：Download/快存视频",
-              "等待分享或链接…\\n保存目录：Movies/快存视频（自动加入本地视频）"
-          )
-          s = s.replace(
-              'req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "快存视频/" + fileName);',
-              '''req.allowScanningByMediaScanner();
-                req.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "快存视频/" + fileName);'''
-          )
-          s = s.replace(
-              'setStatus("已建立下载任务 #" + id + "\\n保存到 Download/快存视频", false);',
-              'setStatus("已建立下载任务 #" + id + "\\n保存到 Movies/快存视频；完成后自动加入本地视频库", false);'
-          )
-
-          # v0.2.5: fast Douyin / Douyin Lite SSR parser.
-          # 1) Use an iPhone Safari UA because current iesdouyin share pages often
-          #    expose usable page data only on the mobile Safari path.
-          android_ua = "Mozilla/5.0 (Linux; Android 16; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36"
-          ios_ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1"
-          s = s.replace(android_ua, ios_ua)
-
-          # 2) Before generic parsing, try a Douyin-specific path:
-          #    short-link redirect -> aweme_id -> iteminfo/share page -> direct CDN candidate.
-          method_key = "resolveHttp(String originalUrl)"
-          pos = s.find(method_key)
-          if pos < 0:
-              raise RuntimeError("resolveHttp(String originalUrl) not found")
-          brace = s.find("{", pos)
-          if brace < 0:
-              raise RuntimeError("resolveHttp opening brace not found")
-          inject = r'''
-              if ("抖音".equals(detectPlatform(originalUrl))) {
-                  ResolveResult douyin = resolveDouyinLite(originalUrl);
-                  if (douyin != null) return douyin;
-              }
-          '''
-          s = s[:brace + 1] + inject + s[brace + 1:]
-
-          helpers = r'''
-
-              private ResolveResult resolveDouyinLite(String originalUrl) {
-                  final String iosUa = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1";
-                  try {
-                      String awemeId = extractDouyinAwemeIdStrict(originalUrl);
-                      if (awemeId == null || awemeId.isEmpty()) {
-                          Page landing = fetchFollowingRedirectsWith(originalUrl, iosUa, "");
-                          String landingUrl = landing != null && landing.url != null ? landing.url : originalUrl;
-                          String seed = originalUrl + " " + landingUrl;
-                          if (landing != null && landing.body != null) seed += " " + landing.body;
-                          awemeId = extractDouyinAwemeId(seed);
-                      }
-                      if (awemeId == null || awemeId.isEmpty()) return null;
-
-                      String[] targets = new String[] {
-                          "https://www.iesdouyin.com/share/video/" + awemeId + "/?from_ssr=1",
-                          "https://www.iesdouyin.com/share/video/" + awemeId + "/"
-                      };
-
-                      for (String target : targets) {
-                          Page page = fetchFollowingRedirectsWith(target, iosUa, "");
-                          if (page == null || page.body == null || page.body.isEmpty()) continue;
-
-                          String mediaUrl = extractDouyinPlayUrl(page.body);
-                          if (mediaUrl != null && (mediaUrl.startsWith("https://") || mediaUrl.startsWith("http://"))) {
-                              String title = extractTitle(page.body);
-                              if (title == null || title.isEmpty()) title = "抖音_" + awemeId;
-                              return new ResolveResult(mediaUrl, page.url, title, "");
-                          }
-                      }
-
-                      String api = "https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids=" + awemeId;
-                      Page apiPage = fetchFollowingRedirectsWith(api, iosUa, "");
-                      if (apiPage != null && apiPage.body != null && !apiPage.body.isEmpty()) {
-                          String mediaUrl = extractDouyinPlayUrlFromJson(apiPage.body);
-                          if (mediaUrl != null && (mediaUrl.startsWith("https://") || mediaUrl.startsWith("http://"))) {
-                              String title = extractTitle(apiPage.body);
-                              if (title == null || title.isEmpty()) title = "抖音_" + awemeId;
-                              return new ResolveResult(mediaUrl, apiPage.url, title, "");
-                          }
-                      }
-                  } catch (Exception ignored) {
-                  }
-                  return null;
-              }
-
-              private String extractDouyinAwemeId(String text) {
-                  if (text == null) return null;
-                  String[] patterns = new String[] {
-                      "(?:/video/|/share/(?:video|slides|note)/)([0-9]{17,20})",
-                      "(?:modal_id|aweme_id)=([0-9]{17,20})",
-                      "(?<![0-9])([0-9]{18,20})(?![0-9])"
-                  };
-                  for (String p : patterns) {
-                      java.util.regex.Matcher m = java.util.regex.Pattern.compile(p).matcher(text);
-                      if (m.find()) return m.group(1);
-                  }
-                  return null;
-              }
-
-              private String extractDouyinPlayUrl(String html) {
-                  if (html == null || html.isEmpty()) return null;
-                  try {
-                      String json = extractRouterJson(html);
-                      if (json != null) {
-                          String found = findDouyinPlayUrl(new org.json.JSONObject(json));
-                          if (found != null) return found;
-                      }
-                  } catch (Exception ignored) {
-                  }
-                  return extractDouyinPlayUrlFromJson(html);
-              }
-
-              private String extractDouyinPlayUrlFromJson(String jsonText) {
-                  if (jsonText == null || jsonText.isEmpty()) return null;
-                  try {
-                      String t = jsonText.trim();
-                      if (t.startsWith("{")) return findDouyinPlayUrl(new org.json.JSONObject(t));
-                      if (t.startsWith("[")) return findDouyinPlayUrl(new org.json.JSONArray(t));
-                  } catch (Exception ignored) {
-                  }
-                  return null;
-              }
-
-              private String extractRouterJson(String html) {
-                  int marker = html.indexOf("_ROUTER_DATA");
-                  if (marker < 0) return null;
-                  int start = html.indexOf('{', marker);
-                  if (start < 0) return null;
-
-                  int depth = 0;
-                  boolean inString = false;
-                  boolean escape = false;
-                  for (int i = start; i < html.length(); i++) {
-                      char ch = html.charAt(i);
-                      if (inString) {
-                          if (escape) escape = false;
-                          else if (ch == '\\') escape = true;
-                          else if (ch == '"') inString = false;
-                          continue;
-                      }
-                      if (ch == '"') inString = true;
-                      else if (ch == '{') depth++;
-                      else if (ch == '}') {
-                          depth--;
-                          if (depth == 0) return html.substring(start, i + 1);
-                      }
-                  }
-                  return null;
-              }
-
-              private String findDouyinPlayUrl(Object node) {
-                  if (node == null || node == org.json.JSONObject.NULL) return null;
-                  try {
-                      if (node instanceof org.json.JSONObject) {
-                          org.json.JSONObject obj = (org.json.JSONObject) node;
-                          String direct = urlFromPlayAddr(obj.opt("play_addr"));
-                          if (direct != null) return direct;
-                          direct = urlFromPlayAddr(obj.opt("play_addr_h264"));
-                          if (direct != null) return direct;
-
-                          java.util.Iterator<String> keys = obj.keys();
-                          while (keys.hasNext()) {
-                              String found = findDouyinPlayUrl(obj.opt(keys.next()));
-                              if (found != null) return found;
-                          }
-                      } else if (node instanceof org.json.JSONArray) {
-                          org.json.JSONArray arr = (org.json.JSONArray) node;
-                          for (int i = 0; i < arr.length(); i++) {
-                              String found = findDouyinPlayUrl(arr.opt(i));
-                              if (found != null) return found;
-                          }
-                      }
-                  } catch (Exception ignored) {
-                  }
-                  return null;
-              }
-
-              private String urlFromPlayAddr(Object node) {
-                  if (!(node instanceof org.json.JSONObject)) return null;
-                  org.json.JSONObject addr = (org.json.JSONObject) node;
-
-                  org.json.JSONArray urls = addr.optJSONArray("url_list");
-                  if (urls != null) {
-                      for (int i = 0; i < urls.length(); i++) {
-                          String u = urls.optString(i, "");
-                          if (u.startsWith("https://") || u.startsWith("http://")) return u.replace("&amp;", "&");
-                      }
-                  }
-
-                  String u = addr.optString("url", "");
-                  if (u.startsWith("https://") || u.startsWith("http://")) return u.replace("&amp;", "&");
-                  return null;
-              }
-
-              private String extractDouyinAwemeIdStrict(String text) {
-                  if (text == null) return null;
-                  String[] patterns = new String[] {
-                      "(?:/video/|/note/|/share/(?:video|slides|note)/)([0-9]{17,20})",
-                      "(?i)(?:aweme_id|awemeId|item_id|itemId|group_id|modal_id|video_id)[^0-9]{0,40}([0-9]{17,20})"
-                  };
-                  for (String p : patterns) {
-                      java.util.regex.Matcher m = java.util.regex.Pattern.compile(p).matcher(text);
-                      if (m.find()) return m.group(1);
-                  }
-                  return null;
-              }
-
-              private void startDouyinIdProbe(String url) {
-                  if (isFinishing()) return;
-                  if (!resolved.compareAndSet(false, true)) return;
-                  setStatus("正在快速解析抖音极速版短链…", false);
-
-                  if (probeWebView != null) {
-                      root.removeView(probeWebView);
-                      probeWebView.destroy();
-                      probeWebView = null;
-                  }
-
-                  final java.util.concurrent.atomic.AtomicBoolean handled =
-                          new java.util.concurrent.atomic.AtomicBoolean(false);
-
-                  probeWebView = new WebView(this);
-                  probeWebView.setAlpha(0.01f);
-                  FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(dp(2), dp(2));
-                  lp.gravity = Gravity.BOTTOM | Gravity.END;
-                  root.addView(probeWebView, lp);
-
-                  probeWebView.getSettings().setJavaScriptEnabled(true);
-                  probeWebView.getSettings().setDomStorageEnabled(true);
-                  probeWebView.getSettings().setMediaPlaybackRequiresUserGesture(true);
-                  probeWebView.getSettings().setUserAgentString(UA);
-
-                  CookieManager cm = CookieManager.getInstance();
-                  cm.setAcceptCookie(true);
-                  if (android.os.Build.VERSION.SDK_INT >= 21) {
-                      cm.setAcceptThirdPartyCookies(probeWebView, true);
-                  }
-
-                  probeWebView.addJavascriptInterface(new DouyinFastBridge(), "DouyinFastBridge");
-
-                  probeWebView.setWebViewClient(new WebViewClient() {
-                      private void inspect(WebView view, String candidate) {
-                          if (candidate == null || candidate.isEmpty() || handled.get()) return;
-                          String id = extractDouyinAwemeIdStrict(candidate);
-                          if (id != null && !id.isEmpty()) {
-                              finishDouyinIdProbe(view, id, url, handled);
-                          }
-                      }
-
-                      @Override
-                      public void onPageStarted(WebView view, String pageUrl, android.graphics.Bitmap favicon) {
-                          currentPageUrl = pageUrl;
-                          inspect(view, pageUrl);
-                          super.onPageStarted(view, pageUrl, favicon);
-                      }
-
-                      @Override
-                      public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                          inspect(view, request == null ? null : request.getUrl().toString());
-                          return false;
-                      }
-
-                      @Override
-                      public boolean shouldOverrideUrlLoading(WebView view, String u) {
-                          inspect(view, u);
-                          return false;
-                      }
-
-                      @Override
-                      public android.webkit.WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                          if (request != null) {
-                              String u = request.getUrl().toString();
-                              String low = u.toLowerCase(Locale.ROOT);
-                              if (low.contains("aweme") || low.contains("/video/") || low.contains("/note/")
-                                      || low.contains("modal_id") || low.contains("item_id") || low.contains("group_id")) {
-                                  inspect(view, u);
-                              }
-                              if ((low.contains(".mp4") || low.contains("/play/") || low.contains("mime_type=video"))
-                                      && !low.contains(".m3u8")) {
-                                  try { new DouyinFastBridge().found(u); } catch (Exception ignored) {}
-                              }
-                          }
-                          return super.shouldInterceptRequest(view, request);
-                      }
-
-                      @Override
-                      public void onPageFinished(WebView view, String pageUrl) {
-                          currentPageUrl = pageUrl;
-                          inspect(view, pageUrl);
-                          if (!handled.get()) {
-                              String js = "(function(){try{" +
-                                      "var h=location.href||'';" +
-                                      "var s=(document.documentElement&&document.documentElement.innerHTML)||'';" +
-                                      "var a=(h+' '+s).match(/(?:\\\\/video\\\\/|\\\\/note\\\\/)([0-9]{17,20})/);" +
-                                      "if(a)return a[1];" +
-                                      "var b=(h+' '+s).match(/(?:aweme_id|awemeId|modal_id|item_id|itemId|group_id)[^0-9]{0,40}([0-9]{17,20})/i);" +
-                                      "return b?b[1]:h;}catch(e){return '';}})();";
-                              view.evaluateJavascript(js, value -> {
-                                  if (handled.get() || value == null) return;
-                                  String id = extractDouyinAwemeIdStrict(value);
-                                  if (id == null) {
-                                      java.util.regex.Matcher m = java.util.regex.Pattern
-                                              .compile("([0-9]{17,20})").matcher(value);
-                                      if (m.find()) id = m.group(1);
-                                  }
-                                  if (id != null) finishDouyinIdProbe(view, id, url, handled);
-                              });
-                          }
-                          super.onPageFinished(view, pageUrl);
-                      }
-                  });
-
-                  probeWebView.loadUrl(url);
-
-                  mainHandler.postDelayed(() -> {
-                      if (!handled.compareAndSet(false, true)) return;
-                      if (probeWebView != null) {
-                          try { probeWebView.stopLoading(); } catch (Exception ignored) {}
-                          root.removeView(probeWebView);
-                          probeWebView.destroy();
-                          probeWebView = null;
-                      }
-                      resolved.set(false);
-                      setStatus("暂未识别到抖音作品编号。请重新复制该作品的分享链接后再试。", true);
-                  }, 5500);
-              }
-
-              private void finishDouyinIdProbe(
-                      WebView view,
-                      String awemeId,
-                      String originalUrl,
-                      java.util.concurrent.atomic.AtomicBoolean handled) {
-                  if (awemeId == null || awemeId.isEmpty()) return;
-                  if (!handled.compareAndSet(false, true)) return;
-
-                  currentTitle = "抖音_" + awemeId;
-                  currentPageUrl = "https://www.douyin.com/video/" + awemeId;
-
-                  runOnUiThread(() -> {
-                      setStatus("已识别作品 " + awemeId + "，正在读取播放地址…", false);
-
-                      // Fast path 1: same-origin WebView detail API. This reuses the browser
-                      // session/cookies that were able to resolve the Lite short link.
-                      if (view != null) {
-                          String js = "(function(){try{" +
-                                  "var id='" + awemeId + "';" +
-                                  "var api='https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id='+id+'&aid=6383&device_platform=webapp&channel=channel_pc_web';" +
-                                  "fetch(api,{credentials:'include',headers:{'Accept':'application/json, text/plain, */*'}})" +
-                                  ".then(function(r){return r.json();})" +
-                                  ".then(function(d){try{" +
-                                  "var x=d&&d.aweme_detail?d.aweme_detail:(d&&d.aweme_details&&d.aweme_details[0]);" +
-                                  "var v=x&&x.video;" +
-                                  "var lists=[v&&v.play_addr_h264&&v.play_addr_h264.url_list,v&&v.play_addr&&v.play_addr.url_list,v&&v.play_addr_265&&v.play_addr_265.url_list,v&&v.download_addr&&v.download_addr.url_list];" +
-                                  "var u='';for(var i=0;i<lists.length&&!u;i++){var a=lists[i];if(a&&a.length)u=a[0]||'';}" +
-                                  "if(u&&u.indexOf('http')===0)DouyinFastBridge.found(u);" +
-                                  "}catch(e){}}).catch(function(e){});" +
-                                  "}catch(e){}})();";
-                          try { view.evaluateJavascript(js, null); } catch (Exception ignored) {}
-                      }
-                  });
-
-                  // Give the browser-native detail request a short head start. If it has not
-                  // succeeded, try the same API natively with WebView cookies, then SSR.
-                  mainHandler.postDelayed(() -> {
-                      if (!resolved.get() || isFinishing()) return;
-                      executor.execute(() -> {
-                          String cookie = CookieManager.getInstance().getCookie("https://www.douyin.com/");
-                          ResolveResult result = resolveDouyinWebDetail(awemeId, cookie == null ? "" : cookie);
-
-                          if (result == null) {
-                              result = resolveDouyinLite("https://www.douyin.com/video/" + awemeId);
-                          }
-
-                          if (result != null && result.mediaUrl != null && !result.mediaUrl.isEmpty()) {
-                              currentPageUrl = result.pageUrl;
-                              currentTitle = result.title;
-                              enqueueDownload(
-                                      result.mediaUrl,
-                                      result.pageUrl,
-                                      result.title,
-                                      cookie == null ? "" : cookie);
-                              return;
-                          }
-
-                          // Final fast fallback: keep the browser alive briefly and inspect DOM.
-                          runOnUiThread(() -> {
-                              if (!resolved.get() || probeWebView == null) return;
-                              setStatus("作品已识别，正在从浏览器播放器获取直连…", false);
-                              String js = "(function(){try{" +
-                                      "var v=document.querySelector('video');" +
-                                      "var u=v&&(v.currentSrc||v.src);" +
-                                      "if(!u){var m=document.querySelector('meta[property=\\\"og:video\\\"],meta[property=\\\"og:video:url\\\"]');u=m&&m.content;}" +
-                                      "if(u&&u.indexOf('http')===0)DouyinFastBridge.found(u);" +
-                                      "}catch(e){}})();";
-                              try { probeWebView.evaluateJavascript(js, null); } catch (Exception ignored) {}
-                          });
-                      });
-                  }, 1200);
-
-                  mainHandler.postDelayed(() -> {
-                      if (!resolved.get()) return;
-                      if (probeWebView != null) {
-                          try { probeWebView.stopLoading(); } catch (Exception ignored) {}
-                          root.removeView(probeWebView);
-                          probeWebView.destroy();
-                          probeWebView = null;
-                      }
-                      resolved.set(false);
-                      setStatus("作品编号已识别，但当前播放接口未返回直连。请重试一次。", true);
-                  }, 6500);
-              }
-
-              private ResolveResult resolveDouyinWebDetail(String awemeId, String cookie) {
-                  try {
-                      String api = "https://www.douyin.com/aweme/v1/web/aweme/detail/"
-                              + "?aweme_id=" + awemeId
-                              + "&aid=6383&device_platform=webapp&channel=channel_pc_web";
-                      Page page = fetchFollowingRedirectsWith(api, UA, cookie == null ? "" : cookie);
-                      if (page == null || page.body == null || page.body.isEmpty()) return null;
-
-                      String mediaUrl = extractDouyinPlayUrlFromJson(page.body);
-                      if (mediaUrl == null || mediaUrl.isEmpty()) return null;
-
-                      String title = extractTitle(page.body);
-                      if (title == null || title.isEmpty()) title = "抖音_" + awemeId;
-                      return new ResolveResult(mediaUrl, "https://www.douyin.com/video/" + awemeId, title, cookie == null ? "" : cookie);
-                  } catch (Exception ignored) {
-                      return null;
-                  }
-              }
-
-              private class DouyinFastBridge {
-                  @JavascriptInterface
-                  public void found(String url) {
-                      if (url == null || !url.startsWith("http")) return;
-                      if (!resolved.get()) return;
-
-                      String low = url.toLowerCase(Locale.ROOT);
-                      if (!(low.contains("douyin")
-                              || low.contains("byte")
-                              || low.contains("snssdk")
-                              || low.contains("amemv")
-                              || low.contains("ixigua")
-                              || low.contains("video"))) {
-                          return;
-                      }
-
-                      String cookie = CookieManager.getInstance().getCookie(url);
-                      enqueueDownload(
-                              url.replace("&amp;", "&"),
-                              currentPageUrl,
-                              currentTitle,
-                              cookie == null ? "" : cookie);
-                  }
-              }
-
-
-          '''
-          class_end = s.rfind("\n}")
-          if class_end < 0:
-              raise RuntimeError("MainActivity class closing brace not found")
-          s = s[:class_end] + helpers + s[class_end:]
-
-          # Douyin/Douyin Lite: do not fall back to the slow hidden WebView.
-          probe_key = "private void startWebProbe(String url) {"
-          pp = s.find(probe_key)
-          if pp >= 0:
-              pb = s.find("{", pp)
-              probe_guard = r'''
-                  if ("抖音".equals(detectPlatform(url))) {
-                      startDouyinIdProbe(url);
-                      return;
-                  }
-              '''
-              s = s[:pb + 1] + probe_guard + s[pb + 1:]
-
-          k = s.find("普通解析未命中")
-          if k >= 0:
-              print("=== fallback-context ===")
-              print(s[max(0, k-500):min(len(s), k+700)])
-              print("=== end-fallback-context ===")
-
-          main.write_text(s)
-
-          receiver = root / "app/src/main/java/com/abe/quickvideo/DownloadCompleteReceiver.java"
-          receiver.write_text(r'''package com.abe.quickvideo;
-
-          import android.app.DownloadManager;
-          import android.content.BroadcastReceiver;
-          import android.content.Context;
-          import android.content.Intent;
-          import android.database.Cursor;
-          import android.media.MediaScannerConnection;
-          import android.net.Uri;
-
-          import java.io.File;
-
-          public class DownloadCompleteReceiver extends BroadcastReceiver {
-              @Override
-              public void onReceive(Context context, Intent intent) {
-                  if (intent == null || !DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) return;
-                  long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L);
-                  if (id < 0) return;
-
-                  DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                  if (dm == null) return;
-
-                  try (Cursor cursor = dm.query(new DownloadManager.Query().setFilterById(id))) {
-                      if (cursor == null || !cursor.moveToFirst()) return;
-                      int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                      if (statusIndex < 0 || cursor.getInt(statusIndex) != DownloadManager.STATUS_SUCCESSFUL) return;
-
-                      int uriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-                      if (uriIndex < 0) return;
-                      String localUri = cursor.getString(uriIndex);
-                      if (localUri == null || localUri.isEmpty()) return;
-
-                      Uri uri = Uri.parse(localUri);
-                      if ("file".equalsIgnoreCase(uri.getScheme())) {
-                          String path = uri.getPath();
-                          if (path != null && new File(path).exists()) {
-                              MediaScannerConnection.scanFile(
-                                  context.getApplicationContext(),
-                                  new String[]{path},
-                                  new String[]{"video/mp4"},
-                                  null
-                              );
-                          }
-                      }
-                  } catch (Exception ignored) {
-                  }
-              }
-          }
-          ''')
-
-          manifest = root / "app/src/main/AndroidManifest.xml"
-          m = manifest.read_text()
-          receiver_xml = '''
-                  <receiver
-                      android:name=".DownloadCompleteReceiver"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
-                      </intent-filter>
-                  </receiver>
-          '''
-          m = m.replace("    </application>", receiver_xml + "    </application>")
-          manifest.write_text(m)
-
-          gradle = root / "app/build.gradle"
-          g = gradle.read_text()
-          g = g.replace("applicationId 'com.abe.quickvideo.v1'", "applicationId 'com.abe.quickvideo.v025'")
-          g = g.replace("versionCode 2", "versionCode 7")
-          g = g.replace("versionName '0.2.0'", "versionName '0.2.5'")
-          gradle.write_text(g)
-
-          readme = root / "README.md"
-          r = readme.read_text().replace("v0.2.0", "v0.2.5")
-          r += """
-          
-          ## v0.2.5 抖音极速版播放地址混合解析
-          - 抖音/抖音极速版先用轻量 WebView 识别短链作品 ID，并保留浏览器会话用于播放地址获取。\n          - 拿到作品 ID 后优先调用 WebView 同源 /aweme/v1/web/aweme/detail/；失败再用 WebView Cookie 原生请求；最后才走 iesdouyin SSR。\n          - 同时直接截获 WebView 中出现的 MP4/play 视频请求，不再做旧版 Range/HEAD 预验证。\n          - 解析阶段取消 CDN 预探测，减少等待和误判。\n          - 旧 iteminfo 接口仅作为兜底。\n          - 默认保存到 Movies/快存视频/。
-          - 下载完成后自动触发 MediaScannerConnection 媒体扫描。
-          - 文件管理器的视频分类、本地视频和图库可更快发现下载文件。
-          - 保留 DownloadManager 下载记录、通知和下载后自动关闭。
-          - 使用独立 applicationId com.abe.quickvideo.v025，避免与旧版调试签名冲突。
-          """
-          readme.write_text(r)
+          import json, re, urllib.request
+          share = "https://v.douyin.com/gxKvuxhaSR8/"
+          webua = "Mozilla/5.0 (Linux; Android 10; Pixel 4) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36"
+          appua = "com.ss.android.ugc.aweme/290101 (Linux; U; Android 10; zh_CN; Pixel 4; Build/QQ3A.200805.001)"
+          req = urllib.request.Request(share, headers={"User-Agent": webua})
+          with urllib.request.urlopen(req, timeout=12) as r:
+              final = r.geturl()
+              body = r.read(2000000).decode("utf-8", "ignore")
+          seed = final + "\n" + body
+          m = re.search(r"/(?:video|note|share/video)/(\d{10,})", seed)
+          if not m:
+              m = re.search(r"(?:aweme_id|modal_id)=([0-9]{10,})", seed)
+          print("final_url=", final)
+          print("aweme_id=", m.group(1) if m else "NOT_FOUND")
+          if not m:
+              raise SystemExit(2)
+          aweme_id = m.group(1)
+          hit = False
+          for host in (
+              "https://api5-normal-c-hl.amemv.com/aweme/v1/feed/",
+              "https://aweme.snssdk.com/aweme/v1/feed/",
+          ):
+              try:
+                  u = host + "?aweme_id=" + aweme_id + "&aid=1128"
+                  q = urllib.request.Request(u, headers={"User-Agent": appua, "Accept": "application/json,*/*"})
+                  with urllib.request.urlopen(q, timeout=10) as r:
+                      data = json.loads(r.read().decode("utf-8", "ignore"))
+                  arr = data.get("aweme_list") or []
+                  item = next((x for x in arr if str(x.get("aweme_id") or x.get("id") or "") == aweme_id), None)
+                  if item is None and len(arr) == 1:
+                      item = arr[0]
+                  if item:
+                      v = item.get("video") or {}
+                      print("feed_hit=", host, "bit_rate=", len(v.get("bit_rate") or []), "play_addr=", bool(v.get("play_addr")))
+                      hit = True
+                      break
+              except Exception as e:
+                  print("feed_miss=", host, type(e).__name__, str(e)[:160])
+          if not hit:
+              raise SystemExit(3)
           PY
-
-          rm -f /tmp/quick-video-downloader-v0.2.5-source.zip
-          (cd /tmp/quick-video-src && zip -qr /tmp/quick-video-downloader-v0.2.5-source.zip quick-video-downloader)
-          unzip -t /tmp/quick-video-downloader-v0.2.5-source.zip
 
       - name: Install Android SDK 35
         shell: bash
@@ -646,17 +121,19 @@ jobs:
           APK="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
           test -s "$APK"
           unzip -t "$APK"
-          cp "$APK" /tmp/QuickSaveVideo-v0.2.5-android.apk
-          sha256sum /tmp/QuickSaveVideo-v0.2.5-android.apk | tee /tmp/QuickSaveVideo-v0.2.5-SHA256.txt
+          SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          "$SDK_ROOT/build-tools/35.0.0/aapt" dump badging "$APK" | head -5
+          cp "$APK" /tmp/QuickSaveVideo-v0.3.0-android.apk
+          sha256sum /tmp/QuickSaveVideo-v0.3.0-android.apk | tee /tmp/QuickSaveVideo-v0.3.0-SHA256.txt
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: QuickSaveVideo-v0.2.5
+          name: QuickSaveVideo-v0.3.0
           path: |
-            /tmp/QuickSaveVideo-v0.2.5-android.apk
-            /tmp/QuickSaveVideo-v0.2.5-SHA256.txt
-            /tmp/quick-video-downloader-v0.2.5-source.zip
+            /tmp/QuickSaveVideo-v0.3.0-android.apk
+            /tmp/QuickSaveVideo-v0.3.0-SHA256.txt
+            /tmp/quick-video-downloader-v0.3.0-source.zip
           if-no-files-found: error
 
       - name: Publish/update GitHub Release
@@ -664,19 +141,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="quick-video-v0.2.5"
+          TAG="quick-video-v0.3.0"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" \
-              /tmp/QuickSaveVideo-v0.2.5-android.apk \
-              /tmp/QuickSaveVideo-v0.2.5-SHA256.txt \
-              /tmp/quick-video-downloader-v0.2.5-source.zip \
-              --clobber
+            gh release upload "$TAG"               /tmp/QuickSaveVideo-v0.3.0-android.apk               /tmp/QuickSaveVideo-v0.3.0-SHA256.txt               /tmp/quick-video-downloader-v0.3.0-source.zip               --clobber
           else
-            gh release create "$TAG" \
-              /tmp/QuickSaveVideo-v0.2.5-android.apk \
-              /tmp/QuickSaveVideo-v0.2.5-SHA256.txt \
-              /tmp/quick-video-downloader-v0.2.5-source.zip \
-              --target "$GITHUB_SHA" \
-              --title "快存视频 v0.2.5" \
-              --notes "v0.2.5：修复“已识别作品编号但播放地址未返回”。作品 ID 成功后优先在 WebView 同源会话请求 /aweme/v1/web/aweme/detail/ 并读取 play_addr_h264/play_addr/download_addr；随后尝试带 WebView Cookie 的原生 detail API；再兜底 iesdouyin SSR，同时直接截获浏览器实际 MP4/play 请求。任一路先成功即进入 DownloadManager。"
+            gh release create "$TAG"               /tmp/QuickSaveVideo-v0.3.0-android.apk               /tmp/QuickSaveVideo-v0.3.0-SHA256.txt               /tmp/quick-video-downloader-v0.3.0-source.zip               --target "$GITHUB_SHA"               --title "快存视频 v0.3.0"               --notes "抖音/抖音极速版修复：匿名移动 Feed 双节点主路径，解析 bit_rate/play_addr/download_addr/uri；原生短链识别失败时由 WebView 从真实跳转链取得 aweme_id 后再次回灌 Feed；随后再用分享页 SSR 与浏览器实际媒体请求兜底。下载保留 App UA/Referer，保存到 Movies/快存视频 并登记本地媒体库。"
           fi
