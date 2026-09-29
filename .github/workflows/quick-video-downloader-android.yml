@@ -54,7 +54,7 @@ jobs:
         shell: bash
         run: |
           python3 - <<'PY'
-          import json, re, urllib.request
+          import json, re, urllib.request, urllib.parse
           share = "https://v.douyin.com/gxKvuxhaSR8/"
           webua = "Mozilla/5.0 (Linux; Android 10; Pixel 4) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36"
           appua = "com.ss.android.ugc.aweme/290101 (Linux; U; Android 10; zh_CN; Pixel 4; Build/QQ3A.200805.001)"
@@ -88,8 +88,46 @@ jobs:
                   if item:
                       v = item.get("video") or {}
                       print("feed_hit=", host, "bit_rate=", len(v.get("bit_rate") or []), "play_addr=", bool(v.get("play_addr")))
-                      hit = True
-                      break
+                      candidates = []
+                      for br in v.get("bit_rate") or []:
+                          addr = (br or {}).get("play_addr") or {}
+                          candidates.extend(addr.get("url_list") or [])
+                      for key in ("play_addr_h264", "play_addr", "download_addr", "play_addr_265"):
+                          addr = v.get(key) or {}
+                          candidates.extend(addr.get("url_list") or [])
+                          uri = addr.get("uri")
+                          if uri and not str(uri).startswith("http"):
+                              candidates.append(
+                                  "https://www.iesdouyin.com/aweme/v1/play/?video_id="
+                                  + urllib.parse.quote(str(uri))
+                                  + "&ratio=1080p&line=0&is_play_url=1&watermark=0&source=PackSourceEnum_PUBLISH"
+                              )
+                      seen = set()
+                      for media in candidates:
+                          if not isinstance(media, str) or not media.startswith("http") or media in seen:
+                              continue
+                          seen.add(media)
+                          try:
+                              mr = urllib.request.Request(
+                                  media,
+                                  headers={
+                                      "User-Agent": appua,
+                                      "Referer": "https://www.douyin.com/",
+                                      "Accept": "video/*,*/*;q=0.8",
+                                      "Range": "bytes=0-1",
+                                  },
+                              )
+                              with urllib.request.urlopen(mr, timeout=12) as rr:
+                                  ctype = rr.headers.get("Content-Type", "")
+                                  final_media = rr.geturl()
+                                  rr.read(2)
+                              print("media_ok=", final_media, "content_type=", ctype)
+                              hit = True
+                              break
+                          except Exception as e:
+                              print("media_miss=", type(e).__name__, str(e)[:160])
+                      if hit:
+                          break
               except Exception as e:
                   print("feed_miss=", host, type(e).__name__, str(e)[:160])
           if not hit:
