@@ -104,7 +104,13 @@ jobs:
                           candidates.extend(addr.get("url_list") or [])
                       for key in ("play_addr_h264", "play_addr", "download_addr", "play_addr_265"):
                           addr = v.get(key) or {}
-                          candidates.extend(addr.get("url_list") or [])
+                          urls = addr.get("url_list") or []
+                          print("addr_meta=", key,
+                                "present=", bool(addr),
+                                "uri=", addr.get("uri"),
+                                "url_count=", len(urls),
+                                "first_url=", urls[0] if urls else "")
+                          candidates.extend(urls)
                           uri = addr.get("uri")
                           if uri and not str(uri).startswith("http"):
                               candidates.append(
@@ -165,6 +171,45 @@ jobs:
           file /tmp/dy-*.bin 2>/dev/null || true
           echo '--- first bytes ---'
           for x in /tmp/dy-*.bin; do [ -e "$x" ] || continue; echo "$x"; xxd -l 32 "$x"; done
+          echo '--- candidate codec probes ---'
+          python3 - <<'PY3'
+          import json, re, urllib.request, urllib.parse, subprocess, pathlib, os
+          share = "https://v.douyin.com/gxKvuxhaSR8/"
+          webua = "Mozilla/5.0 (Linux; Android 10; Pixel 4) AppleWebKit/537.36 Chrome/140.0 Mobile Safari/537.36"
+          appua = "com.ss.android.ugc.aweme/290101 (Linux; U; Android 10; zh_CN; Pixel 4; Build/QQ3A.200805.001)"
+          req=urllib.request.Request(share,headers={"User-Agent":webua})
+          with urllib.request.urlopen(req,timeout=12) as r:
+              final=r.geturl(); body=r.read(2000000).decode("utf-8","ignore")
+          m=re.search(r"/(?:video|note|share/video)/(\d{10,})", final+"\n"+body)
+          if not m: raise SystemExit(0)
+          aid=m.group(1)
+          q=urllib.request.Request("https://aweme.snssdk.com/aweme/v1/feed/?aweme_id="+aid+"&aid=1128",headers={"User-Agent":appua,"Accept":"application/json,*/*"})
+          with urllib.request.urlopen(q,timeout=12) as r: data=json.loads(r.read().decode())
+          item=(data.get("aweme_list") or [None])[0] or {}
+          v=item.get("video") or {}
+          groups=[]
+          for key in ("play_addr_h264","play_addr","download_addr","play_addr_265"):
+              addr=v.get(key) or {}
+              for u in addr.get("url_list") or []:
+                  groups.append((key,u))
+              uri=addr.get("uri")
+              if uri and not str(uri).startswith("http"):
+                  groups.append((key+"_uri","https://www.iesdouyin.com/aweme/v1/play/?video_id="+urllib.parse.quote(str(uri))+"&ratio=1080p&line=0&is_play_url=1&watermark=0&source=PackSourceEnum_PUBLISH"))
+          seen=set()
+          for i,(key,u) in enumerate(groups):
+              if u in seen: continue
+              seen.add(u)
+              try:
+                  rq=urllib.request.Request(u,headers={"User-Agent":appua,"Referer":"https://www.douyin.com/","Accept":"video/*,*/*;q=0.8"})
+                  with urllib.request.urlopen(rq,timeout=15) as rr:
+                      b=rr.read(4_000_000)
+                      finalu=rr.geturl()
+                  hits=[x.decode() for x in (b"avc1",b"avc3",b"hvc1",b"hev1",b"av01",b"mp4a") if x in b]
+                  print("candidate_codec=",key,"fourcc=",hits,"bytes=",len(b),"url=",finalu[:180])
+              except Exception as e:
+                  print("candidate_error=",key,type(e).__name__,str(e)[:120])
+          PY3
+
           echo '--- codec markers ---'
           for x in /tmp/dy-*.bin; do
             [ -e "$x" ] || continue
