@@ -88,6 +88,16 @@ jobs:
                   if item:
                       v = item.get("video") or {}
                       print("feed_hit=", host, "bit_rate=", len(v.get("bit_rate") or []), "play_addr=", bool(v.get("play_addr")))
+                      for idx, br_item in enumerate(v.get("bit_rate") or []):
+                          pa = (br_item or {}).get("play_addr") or {}
+                          print("stream_meta=", idx,
+                                "is_h265=", (br_item or {}).get("is_h265"),
+                                "codec_type=", (br_item or {}).get("codec_type"),
+                                "gear_name=", (br_item or {}).get("gear_name"),
+                                "quality_type=", (br_item or {}).get("quality_type"),
+                                "width=", pa.get("width") or (br_item or {}).get("width"),
+                                "height=", pa.get("height") or (br_item or {}).get("height"),
+                                "bit_rate=", (br_item or {}).get("bit_rate"))
                       candidates = []
                       for br in v.get("bit_rate") or []:
                           addr = (br or {}).get("play_addr") or {}
@@ -155,11 +165,23 @@ jobs:
           file /tmp/dy-*.bin 2>/dev/null || true
           echo '--- first bytes ---'
           for x in /tmp/dy-*.bin; do [ -e "$x" ] || continue; echo "$x"; xxd -l 32 "$x"; done
-          echo '--- ffprobe ---'
+          echo '--- codec markers ---'
           for x in /tmp/dy-*.bin; do
             [ -e "$x" ] || continue
-            ffprobe -v error -show_entries format=format_name,duration,size -show_entries stream=codec_name,codec_type,width,height -of json "$x" || true
+            echo "$x"
+            strings "$x" | grep -E -m 20 'avc1|avc3|hvc1|hev1|av01|mp4a|Opus|vp09' || true
           done
+          echo '--- mp4 fourcc scan ---'
+          python3 - <<'PY2'
+          from pathlib import Path
+          for p in (Path('/tmp/dy-appua.bin'), Path('/tmp/dy-browserua.bin')):
+              if not p.exists(): continue
+              b=p.read_bytes()
+              hits=[]
+              for sig in [b'avc1',b'avc3',b'hvc1',b'hev1',b'av01',b'vp09',b'mp4a',b'Opus']:
+                  if sig in b: hits.append(sig.decode())
+              print(p.name, 'fourcc=', hits, 'size=', len(b))
+          PY2
 
       - name: Install Android SDK 35
         shell: bash
