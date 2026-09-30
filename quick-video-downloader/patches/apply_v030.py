@@ -11,8 +11,7 @@ s = s.replace(
 )
 s = s.replace(
     'req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "快存视频/" + fileName);',
-    '''req.allowScanningByMediaScanner();
-                req.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES, "快存视频/" + fileName);'''
+    '''req.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_DOWNLOADS, "QuickSaveTemp/" + fileName);'''
 )
 s = s.replace(
     'setStatus("已建立下载任务 #" + id + "\\n保存到 Download/快存视频", false);',
@@ -229,18 +228,13 @@ if 'private void startDouyinProbe(String url)' not in s:
         raise RuntimeError('extractFirstUrl anchor missing')
     s = s[:insert] + methods + '\n' + s[insert:]
 
-# v0.3.2: persist the exact public Movies path for every DownloadManager id.
-# On Android 10-16 the completion broadcast often exposes content://downloads/...,
-# so relying on COLUMN_LOCAL_URI being file:// skips MediaStore indexing.
+# v0.3.3: DownloadManager writes only to app-specific temporary storage.
+# After completion the receiver creates a real MediaStore.Video item and copies bytes into it.
 enqueue_anchor = '''                long id = dm.enqueue(req);
                 getPreferences(MODE_PRIVATE).edit().putString("last_source", currentSourceText).apply();'''
 enqueue_replacement = '''                long id = dm.enqueue(req);
 
-                java.io.File moviesRoot = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-                java.io.File targetDir = new java.io.File(moviesRoot, "快存视频");
-                java.io.File targetFile = new java.io.File(targetDir, fileName);
                 getSharedPreferences("download_index", MODE_PRIVATE).edit()
-                        .putString("path_" + id, targetFile.getAbsolutePath())
                         .putString("name_" + id, fileName)
                         .putString("mime_" + id, "video/mp4")
                         .apply();
@@ -261,18 +255,27 @@ receiver.write_text(r'''package com.abe.quickvideo;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class DownloadCompleteReceiver extends BroadcastReceiver {
     private static final String PREFS = "download_index";
+    private static final String ALBUM = "快存视频";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -280,85 +283,102 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
         final long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L);
         if (id < 0) return;
 
+        final PendingResult pending = goAsync();
+        new Thread(() -> {
+            try {
+                importToMediaStore(context.getApplicationContext(), id);
+            } finally {
+                pending.finish();
+            }
+        }, "QuickSave-MediaStore").start();
+    }
+
+    private static void importToMediaStore(Context context, long id) {
         DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         if (dm == null) return;
 
         boolean success = false;
-        String localUri = "";
         try (Cursor cursor = dm.query(new DownloadManager.Query().setFilterById(id))) {
             if (cursor == null || !cursor.moveToFirst()) return;
             int si = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-            if (si >= 0) success = cursor.getInt(si) == DownloadManager.STATUS_SUCCESSFUL;
-            int ui = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-            if (ui >= 0) localUri = cursor.getString(ui);
+            success = si >= 0 && cursor.getInt(si) == DownloadManager.STATUS_SUCCESSFUL;
         } catch (Exception ignored) {
             return;
         }
         if (!success) return;
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String path = prefs.getString("path_" + id, "");
         String name = prefs.getString("name_" + id, "");
         String mime = prefs.getString("mime_" + id, "video/mp4");
+        if (name == null || name.trim().isEmpty()) name = "快存视频_" + System.currentTimeMillis() + ".mp4";
+        if (!name.toLowerCase().endsWith(".mp4")) name += ".mp4";
+        if (mime == null || mime.isEmpty()) mime = "video/mp4";
 
-        File target = path == null || path.isEmpty() ? null : new File(path);
-
-        if ((target == null || !target.exists()) && localUri != null && !localUri.isEmpty()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Uri inserted = null;
             try {
-                Uri uri = Uri.parse(localUri);
-                if ("file".equalsIgnoreCase(uri.getScheme()) && uri.getPath() != null) {
-                    target = new File(uri.getPath());
+                ContentResolver resolver = context.getContentResolver();
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Video.Media.DISPLAY_NAME, name);
+                values.put(MediaStore.Video.Media.MIME_TYPE, mime);
+                values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/" + ALBUM);
+                values.put(MediaStore.Video.Media.IS_PENDING, 1);
+                long now = System.currentTimeMillis();
+                values.put(MediaStore.Video.Media.DATE_ADDED, now / 1000L);
+                values.put(MediaStore.Video.Media.DATE_MODIFIED, now / 1000L);
+                values.put(MediaStore.Video.Media.DATE_TAKEN, now);
+
+                Uri collection = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+                inserted = resolver.insert(collection, values);
+                if (inserted == null) return;
+
+                try (ParcelFileDescriptor pfd = dm.openDownloadedFile(id);
+                     InputStream in = new FileInputStream(pfd.getFileDescriptor());
+                     OutputStream out = resolver.openOutputStream(inserted, "w")) {
+                    if (out == null) throw new IllegalStateException("MediaStore output stream unavailable");
+                    byte[] buf = new byte[256 * 1024];
+                    int n;
+                    long total = 0L;
+                    while ((n = in.read(buf)) != -1) {
+                        out.write(buf, 0, n);
+                        total += n;
+                    }
+                    out.flush();
+                    if (total <= 0L) throw new IllegalStateException("Empty downloaded media");
                 }
-            } catch (Exception ignored) {}
+
+                ContentValues publish = new ContentValues();
+                publish.put(MediaStore.Video.Media.IS_PENDING, 0);
+                publish.put(MediaStore.Video.Media.DATE_MODIFIED, System.currentTimeMillis() / 1000L);
+                resolver.update(inserted, publish, null, null);
+                resolver.notifyChange(inserted, null);
+                resolver.notifyChange(collection, null);
+
+                dm.remove(id);
+                prefs.edit()
+                        .remove("name_" + id)
+                        .remove("mime_" + id)
+                        .apply();
+                return;
+            } catch (Exception e) {
+                if (inserted != null) {
+                    try { context.getContentResolver().delete(inserted, null, null); } catch (Exception ignored) {}
+                }
+                return;
+            }
         }
 
-        if ((target == null || !target.exists()) && name != null && !name.isEmpty()) {
-            File movies = android.os.Environment.getExternalStoragePublicDirectory(
-                    android.os.Environment.DIRECTORY_MOVIES);
-            target = new File(new File(movies, "快存视频"), name);
-        }
-
-        if (target == null) return;
-        final File scanTarget = target;
-
+        // Legacy Android fallback: keep the DownloadManager file and ask the media scanner to index it.
         try {
-            File parent = scanTarget.getParentFile();
-            if (parent != null) {
-                File noMedia = new File(parent, ".nomedia");
-                if (noMedia.exists()) noMedia.delete();
+            Uri local = dm.getUriForDownloadedFile(id);
+            if (local != null) {
+                android.media.MediaScannerConnection.scanFile(
+                        context,
+                        new String[]{local.toString()},
+                        new String[]{mime},
+                        null);
             }
         } catch (Exception ignored) {}
-
-        final PendingResult pending = goAsync();
-        try {
-            MediaScannerConnection.scanFile(
-                    context.getApplicationContext(),
-                    new String[]{scanTarget.getAbsolutePath()},
-                    new String[]{mime == null || mime.isEmpty() ? "video/mp4" : mime},
-                    (scannedPath, scannedUri) -> {
-                        try {
-                            if (scannedUri != null) {
-                                context.getContentResolver().notifyChange(scannedUri, null);
-                            }
-                            context.getContentResolver().notifyChange(
-                                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null);
-                        } catch (Exception ignored) {
-                        } finally {
-                            prefs.edit()
-                                    .remove("path_" + id)
-                                    .remove("name_" + id)
-                                    .remove("mime_" + id)
-                                    .apply();
-                            pending.finish();
-                        }
-                    });
-        } catch (Exception e) {
-            try {
-                context.getContentResolver().notifyChange(
-                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null);
-            } catch (Exception ignored) {}
-            pending.finish();
-        }
     }
 }
 ''')
@@ -380,21 +400,21 @@ manifest.write_text(m)
 
 gradle = root / "app/build.gradle"
 g = gradle.read_text()
-g = re.sub(r"applicationId '[^']+'", "applicationId 'com.abe.quickvideo.v032'", g)
-g = re.sub(r"versionCode\s+\d+", "versionCode 10", g)
-g = re.sub(r"versionName '[^']+'", "versionName '0.3.2'", g)
+g = re.sub(r"applicationId '[^']+'", "applicationId 'com.abe.quickvideo.v033'", g)
+g = re.sub(r"versionCode\s+\d+", "versionCode 11", g)
+g = re.sub(r"versionName '[^']+'", "versionName '0.3.3'", g)
 gradle.write_text(g)
 
 readme = root / "README.md"
 r = readme.read_text() if readme.exists() else "# 快存视频\n"
 r += """
 
-## v0.3.2 Android 相册/MediaStore 入库修复
-- 保留 v0.3.1 的抖音 H.264/AVC 优先下载逻辑。\n- 建立 DownloadManager 任务时按下载 ID 保存 Movies/快存视频 的真实绝对路径。
+## v0.3.3 MediaStore 原生入库
+- 保留 v0.3.1 的抖音 H.264/AVC 优先下载逻辑。\n- DownloadManager 仅保存到应用临时目录；完成后通过 MediaStore.Video 创建正式相册视频条目。
 - 无需登录、无需用户 Cookie、无需 a_bogus。
 - 优先 play_addr_h264 / H.264(AVC)；只有不存在 H.264 时才回退 HEVC/H.265。\n- 对实际样本已验证：H.264 文件 fourcc 为 avc1 + mp4a，可直接用于 Android 本地播放。
 - 原生短链无法取得作品号时，WebView 从真实跳转链识别 aweme_id，再回灌移动 Feed。
 - 同时监听浏览器实际 MP4/douyinvod/play 请求作为末级兜底。
-- DownloadManager 完成后不再要求 localUri 必须是 file://；即使返回 content://downloads/... 也能按真实路径扫描。\n- 扫描完成后主动 notifyChange(MediaStore.Video)，提高 Android 16 与 realme/OPPO 相册刷新可靠性。\n- 若目标目录存在 .nomedia 会主动删除，避免图库隐藏该目录。
+- Android 10–16 使用 MediaStore.Video + RELATIVE_PATH=Movies/快存视频 + IS_PENDING 原生写入。\n- 完整复制 MP4 字节后再将 IS_PENDING 置 0，并主动 notifyChange。\n- 成功发布到媒体库后删除临时 DownloadManager 文件，避免重复文件。
 """
 readme.write_text(r)
