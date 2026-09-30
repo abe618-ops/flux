@@ -197,7 +197,18 @@ final class DouyinResolver {
 
     private static String chooseVerified(JSONObject video, String referer) {
         if (video == null) return "";
-        List<StreamCandidate> ranked = new ArrayList<>();
+
+        // 1. Compatibility first: Douyin often exposes an explicit AVC/H.264 address
+        // even when every adaptive bit_rate entry is HEVC/H.265.
+        for (String u : urlsFromAddress(video.optJSONObject("play_addr_h264"), "1080p")) {
+            String ok = validateAndResolve(u, referer);
+            if (!ok.isEmpty()) return ok;
+        }
+
+        // 2. Use only adaptive H.264 entries here. Never let an HEVC adaptive stream
+        // pre-empt the explicit H.264 fallback.
+        List<StreamCandidate> h264Ranked = new ArrayList<>();
+        List<StreamCandidate> h265Ranked = new ArrayList<>();
         JSONArray bitRates = video.optJSONArray("bit_rate");
         if (bitRates != null) {
             for (int i = 0; i < bitRates.length(); i++) {
@@ -209,25 +220,42 @@ final class DouyinResolver {
                 int width = addr == null ? item.optInt("width", 0) : addr.optInt("width", item.optInt("width", 0));
                 int height = addr == null ? item.optInt("height", 0) : addr.optInt("height", item.optInt("height", 0));
                 for (String u : urlsFromAddress(addr, "1080p")) {
-                    ranked.add(new StreamCandidate(u, h265, (long) width * height, bitrate));
+                    StreamCandidate sc = new StreamCandidate(u, h265, (long) width * height, bitrate);
+                    if (h265 == 0) h264Ranked.add(sc);
+                    else h265Ranked.add(sc);
                 }
             }
         }
-        Collections.sort(ranked, Comparator
-                .comparingInt((StreamCandidate c) -> c.h265)
-                .thenComparingLong(c -> -c.pixels)
-                .thenComparingLong(c -> -c.bitrate));
-        for (StreamCandidate c : ranked) {
-            String ok = validateAndResolve(c.url, referer);
+
+        Comparator<StreamCandidate> quality = Comparator
+                .comparingLong((StreamCandidate x) -> -x.pixels)
+                .thenComparingLong(x -> -x.bitrate);
+        Collections.sort(h264Ranked, quality);
+        for (StreamCandidate sc : h264Ranked) {
+            String ok = validateAndResolve(sc.url, referer);
             if (!ok.isEmpty()) return ok;
         }
 
-        for (String key : new String[]{"download_addr", "play_addr_h264", "play_addr", "play_addr_265"}) {
+        // 3. On current Douyin feeds these generic/original addresses are normally AVC.
+        // Prefer them before any confirmed HEVC stream.
+        for (String key : new String[]{"play_addr", "download_addr"}) {
             JSONObject addr = video.optJSONObject(key);
             for (String u : urlsFromAddress(addr, key.equals("download_addr") ? "default" : "1080p")) {
                 String ok = validateAndResolve(u, referer);
                 if (!ok.isEmpty()) return ok;
             }
+        }
+
+        // 4. HEVC is a last-resort fallback only. Some Android gallery/local-video
+        // players still cannot decode hvc1 reliably.
+        Collections.sort(h265Ranked, quality);
+        for (StreamCandidate sc : h265Ranked) {
+            String ok = validateAndResolve(sc.url, referer);
+            if (!ok.isEmpty()) return ok;
+        }
+        for (String u : urlsFromAddress(video.optJSONObject("play_addr_265"), "1080p")) {
+            String ok = validateAndResolve(u, referer);
+            if (!ok.isEmpty()) return ok;
         }
         return "";
     }
