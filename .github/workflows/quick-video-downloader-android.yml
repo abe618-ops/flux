@@ -122,6 +122,7 @@ jobs:
                                   final_media = rr.geturl()
                                   rr.read(2)
                               print("media_ok=", final_media, "content_type=", ctype)
+                              open("/tmp/douyin-media-url.txt", "w").write(final_media)
                               hit = True
                               break
                           except Exception as e:
@@ -133,6 +134,32 @@ jobs:
           if not hit:
               raise SystemExit(3)
           PY
+
+      - name: Diagnose reported Douyin media bytes
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          if [ ! -s /tmp/douyin-media-url.txt ]; then
+            echo "No media URL captured"
+            exit 0
+          fi
+          MEDIA="$(cat /tmp/douyin-media-url.txt)"
+          APPUA='com.ss.android.ugc.aweme/290101 (Linux; U; Android 10; zh_CN; Pixel 4; Build/QQ3A.200805.001; Cronet/TTNetVersion:5f9037be 2023-01-13 QuicVersion:4668bb42 2022-11-21)'
+          BROWSERUA='Mozilla/5.0 (Linux; Android 16; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Mobile Safari/537.36'
+          curl -L --fail --retry 1 --max-time 40 -A "$APPUA" -e 'https://www.douyin.com/' "$MEDIA" -o /tmp/dy-appua.bin || true
+          curl -L --fail --retry 1 --max-time 40 -A "$BROWSERUA" -e 'https://www.iesdouyin.com/' "$MEDIA" -o /tmp/dy-browserua.bin || true
+          echo '--- sizes ---'
+          ls -l /tmp/dy-*.bin 2>/dev/null || true
+          echo '--- file types ---'
+          file /tmp/dy-*.bin 2>/dev/null || true
+          echo '--- first bytes ---'
+          for x in /tmp/dy-*.bin; do [ -e "$x" ] || continue; echo "$x"; xxd -l 32 "$x"; done
+          echo '--- ffprobe ---'
+          for x in /tmp/dy-*.bin; do
+            [ -e "$x" ] || continue
+            ffprobe -v error -show_entries format=format_name,duration,size -show_entries stream=codec_name,codec_type,width,height -of json "$x" || true
+          done
 
       - name: Install Android SDK 35
         shell: bash
