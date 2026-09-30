@@ -49,9 +49,13 @@ s = s.replace(
 old_header = 'req.addRequestHeader("User-Agent", UA);\n                if (referer != null && !referer.isEmpty()) req.addRequestHeader("Referer", referer);'
 if old_header in s:
     s = s.replace(old_header, '''String mediaLower = mediaUrl.toLowerCase(Locale.ROOT);
-                boolean douyinMedia = mediaLower.contains("douyin") || mediaLower.contains("douyinvod")
+                String refLower = referer == null ? "" : referer.toLowerCase(Locale.ROOT);
+                boolean douyinMedia = "抖音".equals(detectPlatform(currentSourceText))
+                        || refLower.contains("douyin") || refLower.contains("iesdouyin")
+                        || mediaLower.contains("douyin") || mediaLower.contains("douyinvod")
                         || mediaLower.contains("amemv") || mediaLower.contains("snssdk")
-                        || mediaLower.contains("bytecdn");
+                        || mediaLower.contains("bytecdn") || mediaLower.contains("zjcdn.com")
+                        || mediaLower.contains("bytedance") || mediaLower.contains("ibytedtos");
                 req.addRequestHeader("User-Agent", douyinMedia ? DouyinResolver.APP_UA : UA);
                 if (douyinMedia) {
                     req.addRequestHeader("Referer", "https://www.douyin.com/");
@@ -293,21 +297,21 @@ manifest.write_text(m)
 
 gradle = root / "app/build.gradle"
 g = gradle.read_text()
-g = re.sub(r"applicationId '[^']+'", "applicationId 'com.abe.quickvideo.v030'", g)
-g = re.sub(r"versionCode\s+\d+", "versionCode 8", g)
-g = re.sub(r"versionName '[^']+'", "versionName '0.3.0'", g)
+g = re.sub(r"applicationId '[^']+'", "applicationId 'com.abe.quickvideo.v031'", g)
+g = re.sub(r"versionCode\s+\d+", "versionCode 9", g)
+g = re.sub(r"versionName '[^']+'", "versionName '0.3.1'", g)
 gradle.write_text(g)
 
 readme = root / "README.md"
 r = readme.read_text() if readme.exists() else "# 快存视频\n"
 r += """
 
-## v0.3.0 抖音极速版下载修复
+## v0.3.1 抖音本地播放兼容修复
 - 主路径改为匿名移动 Feed 双节点：api5-normal-c-hl.amemv.com 与 aweme.snssdk.com。
 - 无需登录、无需用户 Cookie、无需 a_bogus。
-- 解析 bit_rate、play_addr_h264、play_addr、download_addr 与 uri 播放端点。
+- 优先 play_addr_h264 / H.264(AVC)；只有不存在 H.264 时才回退 HEVC/H.265。\n- 对实际样本已验证：H.264 文件 fourcc 为 avc1 + mp4a，可直接用于 Android 本地播放。
 - 原生短链无法取得作品号时，WebView 从真实跳转链识别 aweme_id，再回灌移动 Feed。
 - 同时监听浏览器实际 MP4/douyinvod/play 请求作为末级兜底。
-- 下载请求使用抖音移动 App UA 与 Referer，并继续保存到 Movies/快存视频 后登记媒体库。
+- 下载请求对 zjcdn/douyinvod 等抖音 CDN 强制使用移动 App UA 与 Douyin Referer，并继续保存到 Movies/快存视频 后登记媒体库。
 """
 readme.write_text(r)
