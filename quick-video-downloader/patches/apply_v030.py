@@ -7,7 +7,7 @@ s = main.read_text()
 
 s = s.replace(
     "等待分享或链接…\\n保存目录：Download/快存视频",
-    "等待分享或链接…\\n保存目录：Movies/快存视频（自动加入本地视频）"
+    "等待分享或链接…\\n保存目录：DCIM/快存视频（自动加入本地视频）"
 )
 s = s.replace(
     'req.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "快存视频/" + fileName);',
@@ -15,7 +15,7 @@ s = s.replace(
 )
 s = s.replace(
     'setStatus("已建立下载任务 #" + id + "\\n保存到 Download/快存视频", false);',
-    'setStatus("已建立下载任务 #" + id + "\\n保存到 Movies/快存视频；完成后自动加入本地视频库", false);'
+    'setStatus("已建立下载任务 #" + id + "\\n保存到 DCIM/快存视频；完成后自动加入本地视频库", false);'
 )
 
 if 'DouyinResolver.Result fast = DouyinResolver.resolve(originalUrl);' not in s:
@@ -228,7 +228,7 @@ if 'private void startDouyinProbe(String url)' not in s:
         raise RuntimeError('extractFirstUrl anchor missing')
     s = s[:insert] + methods + '\n' + s[insert:]
 
-# v0.3.3: DownloadManager writes only to app-specific temporary storage.
+# v0.3.4: DownloadManager writes only to app-specific temporary storage.
 # After completion the receiver creates a real MediaStore.Video item and copies bytes into it.
 enqueue_anchor = '''                long id = dm.enqueue(req);
                 getPreferences(MODE_PRIVATE).edit().putString("last_source", currentSourceText).apply();'''
@@ -321,7 +321,7 @@ public class DownloadCompleteReceiver extends BroadcastReceiver {
                 ContentValues values = new ContentValues();
                 values.put(MediaStore.Video.Media.DISPLAY_NAME, name);
                 values.put(MediaStore.Video.Media.MIME_TYPE, mime);
-                values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/" + ALBUM);
+                values.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/" + ALBUM);
                 values.put(MediaStore.Video.Media.IS_PENDING, 1);
                 long now = System.currentTimeMillis();
                 values.put(MediaStore.Video.Media.DATE_ADDED, now / 1000L);
@@ -400,21 +400,23 @@ manifest.write_text(m)
 
 gradle = root / "app/build.gradle"
 g = gradle.read_text()
-g = re.sub(r"applicationId '[^']+'", "applicationId 'com.abe.quickvideo.v033'", g)
-g = re.sub(r"versionCode\s+\d+", "versionCode 11", g)
-g = re.sub(r"versionName '[^']+'", "versionName '0.3.3'", g)
+g = re.sub(r"applicationId '[^']+'", "applicationId 'com.abe.quickvideo.v034'", g)
+g = re.sub(r"versionCode\s+\d+", "versionCode 12", g)
+g = re.sub(r"versionName '[^']+'", "versionName '0.3.4'", g)
 gradle.write_text(g)
 
 readme = root / "README.md"
 r = readme.read_text() if readme.exists() else "# 快存视频\n"
 r += """
 
-## v0.3.3 MediaStore 原生入库
+## v0.3.4 MediaStore + DCIM 相册直入
 - 保留 v0.3.1 的抖音 H.264/AVC 优先下载逻辑。\n- DownloadManager 仅保存到应用临时目录；完成后通过 MediaStore.Video 创建正式相册视频条目。
 - 无需登录、无需用户 Cookie、无需 a_bogus。
 - 优先 play_addr_h264 / H.264(AVC)；只有不存在 H.264 时才回退 HEVC/H.265。\n- 对实际样本已验证：H.264 文件 fourcc 为 avc1 + mp4a，可直接用于 Android 本地播放。
 - 原生短链无法取得作品号时，WebView 从真实跳转链识别 aweme_id，再回灌移动 Feed。
 - 同时监听浏览器实际 MP4/douyinvod/play 请求作为末级兜底。
-- Android 10–16 使用 MediaStore.Video + RELATIVE_PATH=Movies/快存视频 + IS_PENDING 原生写入。\n- 完整复制 MP4 字节后再将 IS_PENDING 置 0，并主动 notifyChange。\n- 成功发布到媒体库后删除临时 DownloadManager 文件，避免重复文件。
+- Android 10–16 使用 MediaStore.Video + RELATIVE_PATH=DCIM/快存视频 + IS_PENDING 原生写入。\n- 完整复制 MP4 字节后再将 IS_PENDING 置 0，并主动 notifyChange。\n- 成功发布到媒体库后删除临时 DownloadManager 文件，避免重复文件。
 """
 readme.write_text(r)
+
+# v0.3.4: publish to DCIM/快存视频 for stronger OEM gallery visibility.
