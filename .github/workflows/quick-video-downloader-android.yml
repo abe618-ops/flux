@@ -37,20 +37,22 @@ jobs:
           test -f "$PROJECT_DIR/app/build.gradle"
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
-      - name: Apply v0.3.2 patch
+      - name: Apply v0.3.3 patch
         shell: bash
         run: |
           python3 quick-video-downloader/patches/apply_v030.py
           test -f "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DouyinResolver.java"
           grep -q 'api5-normal-c-hl.amemv.com/aweme/v1/feed/' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DouyinResolver.java"
           grep -q 'aweme.snssdk.com/aweme/v1/feed/' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DouyinResolver.java"
-          grep -q "applicationId 'com.abe.quickvideo.v032'" "$PROJECT_DIR/app/build.gradle"
-          grep -q 'getSharedPreferences("download_index"' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/MainActivity.java"
-          grep -q 'MediaStore.Video.Media.EXTERNAL_CONTENT_URI' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DownloadCompleteReceiver.java"
-          grep -q 'scanTarget.getAbsolutePath()' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DownloadCompleteReceiver.java"
-          rm -f /tmp/quick-video-downloader-v0.3.2-source.zip
-          (cd /tmp/quick-video-src && zip -qr /tmp/quick-video-downloader-v0.3.2-source.zip quick-video-downloader)
-          unzip -t /tmp/quick-video-downloader-v0.3.2-source.zip
+          grep -q "applicationId 'com.abe.quickvideo.v033'" "$PROJECT_DIR/app/build.gradle"
+          grep -q 'setDestinationInExternalFilesDir' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/MainActivity.java"
+          grep -q 'MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DownloadCompleteReceiver.java"
+          grep -q 'RELATIVE_PATH' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DownloadCompleteReceiver.java"
+          grep -q 'IS_PENDING' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DownloadCompleteReceiver.java"
+          grep -q 'openDownloadedFile' "$PROJECT_DIR/app/src/main/java/com/abe/quickvideo/DownloadCompleteReceiver.java"
+          rm -f /tmp/quick-video-downloader-v0.3.3-source.zip
+          (cd /tmp/quick-video-src && zip -qr /tmp/quick-video-downloader-v0.3.3-source.zip quick-video-downloader)
+          unzip -t /tmp/quick-video-downloader-v0.3.3-source.zip
 
       - name: Best-effort probe reported Douyin share link
         continue-on-error: true
@@ -258,17 +260,17 @@ jobs:
           unzip -t "$APK"
           SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
           "$SDK_ROOT/build-tools/35.0.0/aapt" dump badging "$APK" | head -5
-          cp "$APK" /tmp/QuickSaveVideo-v0.3.2-android.apk
-          sha256sum /tmp/QuickSaveVideo-v0.3.2-android.apk | tee /tmp/QuickSaveVideo-v0.3.2-SHA256.txt
+          cp "$APK" /tmp/QuickSaveVideo-v0.3.3-android.apk
+          sha256sum /tmp/QuickSaveVideo-v0.3.3-android.apk | tee /tmp/QuickSaveVideo-v0.3.3-SHA256.txt
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: QuickSaveVideo-v0.3.2
+          name: QuickSaveVideo-v0.3.3
           path: |
-            /tmp/QuickSaveVideo-v0.3.2-android.apk
-            /tmp/QuickSaveVideo-v0.3.2-SHA256.txt
-            /tmp/quick-video-downloader-v0.3.2-source.zip
+            /tmp/QuickSaveVideo-v0.3.3-android.apk
+            /tmp/QuickSaveVideo-v0.3.3-SHA256.txt
+            /tmp/quick-video-downloader-v0.3.3-source.zip
           if-no-files-found: error
 
       - name: Publish/update GitHub Release
@@ -276,9 +278,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="quick-video-v0.3.2"
+          TAG="quick-video-v0.3.3"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG"               /tmp/QuickSaveVideo-v0.3.2-android.apk               /tmp/QuickSaveVideo-v0.3.2-SHA256.txt               /tmp/quick-video-downloader-v0.3.2-source.zip               --clobber
+            gh release upload "$TAG"               /tmp/QuickSaveVideo-v0.3.3-android.apk               /tmp/QuickSaveVideo-v0.3.3-SHA256.txt               /tmp/quick-video-downloader-v0.3.3-source.zip               --clobber
           else
-            gh release create "$TAG"               /tmp/QuickSaveVideo-v0.3.2-android.apk               /tmp/QuickSaveVideo-v0.3.2-SHA256.txt               /tmp/quick-video-downloader-v0.3.2-source.zip               --target "$GITHUB_SHA"               --title "快存视频 v0.3.2"               --notes "v0.3.2 相册入库修复：保留 H.264/AVC 优先下载；建立下载任务时记录 Movies/快存视频 的真实绝对路径，下载完成后即使 DownloadManager 返回 content://downloads/... 也能用真实路径执行 MediaScannerConnection.scanFile，并 notifyChange(MediaStore.Video) 强制刷新媒体库；同时移除可能存在的 .nomedia。针对 Android 16、realme/OPPO 相册不显示问题。"
+            gh release create "$TAG"               /tmp/QuickSaveVideo-v0.3.3-android.apk               /tmp/QuickSaveVideo-v0.3.3-SHA256.txt               /tmp/quick-video-downloader-v0.3.3-source.zip               --target "$GITHUB_SHA"               --title "快存视频 v0.3.3"               --notes "v0.3.3 相册原生入库：DownloadManager 只负责下载到应用临时目录，完成后通过 MediaStore.Video 在 Movies/快存视频 创建正式视频记录，以 IS_PENDING=1 写入完整 MP4，再置 0 发布，并删除临时文件。保留抖音 H.264/AVC 优先解析与 Android 16 兼容。"
           fi
