@@ -100,25 +100,42 @@ public final class DayanEngine {
 
     public static Cast cast(long seed, MappingMode mode) {
         Random r=new Random(seed);
-        int[] lines=new int[6];
-        int[][] remains=new int[6][3];
-        for(int i=0;i<6;i++){
-            int total=49;
-            for(int t=0;t<3;t++){
-                int left=1+r.nextInt(total-1);
-                int right=total-left;
-                right-=1;
-                int remL=remainderFour(left), remR=remainderFour(right);
-                total-=(1+remL+remR);
-                remains[i][t]=total;
+        int[] lines;
+        int[][] remains;
+
+        // 单双专用筛选：中间两位（3、4爻）必须一阴一阳且均为静爻。
+        // 若相同，或任一中间位为动爻（6/9），就在同一本场随机流中继续重起，
+        // 直到得到 7|8 或 8|7，再进入原有分析逻辑。
+        do {
+            lines=new int[6];
+            remains=new int[6][3];
+            for(int i=0;i<6;i++){
+                int total=49;
+                for(int t=0;t<3;t++){
+                    int left=1+r.nextInt(total-1);
+                    int right=total-left;
+                    right-=1;
+                    int remL=remainderFour(left), remR=remainderFour(right);
+                    total-=(1+remL+remR);
+                    remains[i][t]=total;
+                }
+                lines[i]=total/4;
             }
-            lines[i]=total/4;
-        }
+        } while(!parityReady(lines));
+
         Cast c=analyzeLines(lines);
         c.seed=seed;
         c.remains=remains;
         c.selected=mode==MappingMode.MIRROR?c.mirror:c.standard;
         return c;
+    }
+
+    private static boolean parityReady(int[] lines) {
+        if(lines==null || lines.length!=6) return false;
+        int leftCenter=lines[2], rightCenter=lines[3];
+        boolean leftStatic=(leftCenter==7 || leftCenter==8);
+        boolean rightStatic=(rightCenter==7 || rightCenter==8);
+        return leftStatic && rightStatic && leftCenter!=rightCenter;
     }
 
     public static Cast analyzeLines(int[] input) {
@@ -219,9 +236,8 @@ public final class DayanEngine {
             else p.overUnder="小2.5微优";
         }
 
-        String parity=(p.goalsMain%2==0)?"双":"单";
-        if(p.goalsMain==4 || (moving==2&&!flip&&p.goalsMain==3)) p.oddEven=parity;
-        else p.oddEven=parity+"微优";
+        // 进球单双改为“大衍中位太极”独立推演，不再由原总进球主值机械取奇偶。
+        p.oddEven=goalParity(c);
 
         if(p.goalsMain>=4) p.btts="是微优";
         else if(p.goalsMain==3) p.btts=(moving==0)?"否微优":"是微优";
@@ -253,6 +269,58 @@ public final class DayanEngine {
         }
 
         return p;
+    }
+
+    private static String goalParity(Cast c) {
+        // 经过 parityReady() 筛选，中间必为 7|8 或 8|7。
+        // 中间较大数所在半边为优势/太极点，较小数所在半边为对应弱势方。
+        boolean leftStrong=c.lines[2] > c.lines[3];
+
+        int[] strongOuter=leftStrong ? new int[]{0,1} : new int[]{4,5};
+        int[] weakOuter=leftStrong ? new int[]{4,5} : new int[]{0,1};
+
+        int strongMoving=countMovingOuter(c,strongOuter);
+        int weakMoving=countMovingOuter(c,weakOuter);
+
+        int strongSum=stableOuterSum(c,strongOuter);
+        int weakSum=stableOuterSum(c,weakOuter);
+
+        // 极端情况下某一侧两个外位全动：保留原两位和作为兜底，
+        // 避免“空集合=0”人为制造双数信号。
+        if(strongSum<0) strongSum=c.lines[strongOuter[0]]+c.lines[strongOuter[1]];
+        if(weakSum<0) weakSum=c.lines[weakOuter[0]]+c.lines[weakOuter[1]];
+
+        // 优势侧按本身奇偶直接取象；弱势侧按反向映射取象。
+        // 弱势侧：剩余和为单 -> 总进球双；剩余和为双 -> 总进球单。
+        String strongSignal=(strongSum%2==0) ? "双" : "单";
+        String weakSignal=(weakSum%2==0) ? "单" : "双";
+
+        // 动爻只落在一侧时，以该侧规则为主。
+        // 例如 677888：弱势左侧去掉中位7和动爻6后剩7（单），反推总进球为双。
+        if(weakMoving>0 && strongMoving==0) return weakSignal;
+        if(strongMoving>0 && weakMoving==0) return strongSignal;
+
+        // 两侧信号共振时直接采用；若冲突，以较大中位数所在太极点为最终裁决。
+        if(strongSignal.equals(weakSignal)) return strongSignal;
+        return strongSignal;
+    }
+
+    private static int countMovingOuter(Cast c,int[] positions){
+        int n=0;
+        for(int pos:positions) if(c.lines[pos]==6 || c.lines[pos]==9) n++;
+        return n;
+    }
+
+    private static int stableOuterSum(Cast c,int[] positions){
+        int sum=0, count=0;
+        for(int pos:positions){
+            int v=c.lines[pos];
+            if(v!=6 && v!=9){
+                sum+=v;
+                count++;
+            }
+        }
+        return count==0 ? -1 : sum;
     }
 
     private static String halfFull(Cast c,Prediction p,int moving,boolean flip){
