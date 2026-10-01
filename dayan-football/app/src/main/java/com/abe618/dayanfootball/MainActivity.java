@@ -23,7 +23,7 @@ public class MainActivity extends Activity {
     };
 
     private ScrollView scroll;
-    private TextView top, headlineTitle, outcome, ranking, quick;
+    private TextView top, headlineTitle, outcome, ranking, goalParityValue, quick;
     private TextView chartTitle, gua, trigram, yaoNote;
     private final TextView[] yaoViews = new TextView[6];
     private TextView detailsTitle, winLoseValue, halfFullValue, goalsValue, ouValue, oddEvenValue, bttsValue, scoresValue, netGoalValue, logic;
@@ -67,6 +67,10 @@ public class MainActivity extends Activity {
 
         ranking = text("", 16, true);
         headline.addView(ranking);
+
+        goalParityValue = text("", 23, true);
+        goalParityValue.setPadding(0, dp(9), 0, dp(2));
+        headline.addView(goalParityValue);
 
         quick = text("", 16, false);
         quick.setPadding(0, dp(8), 0, 0);
@@ -165,6 +169,8 @@ public class MainActivity extends Activity {
         headlineTitle.setTextColor(accent);
         outcome.setText(p.outcome);
         ranking.setText(p.ranking);
+        goalParityValue.setText("进球单双：" + ("双".equals(p.oddEven) ? "双数" : "单数"));
+        goalParityValue.setTextColor(accent);
         quick.setText(
             "半全场  " + p.halfFull + "（次 " + p.halfFullAlt + "）" +
             "\n进球  " + p.goalsMain + "球（次 " + p.goalsAlt + "球｜" + p.goalsRange + "）" +
