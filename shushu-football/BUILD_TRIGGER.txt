@@ -1,0 +1,1 @@
+PR build diagnostic trigger for ShuShu Football v0.1
