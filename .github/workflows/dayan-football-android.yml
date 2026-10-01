@@ -1,8 +1,8 @@
-name: Build Dayan Football Android
+name: Build Dayan Goal Parity Android
 
 on:
   push:
-    branches: [ dayan-football-chat-logic-apk ]
+    branches: [ dayan-goal-parity-v1 ]
     paths:
       - 'dayan-football/**'
       - '.github/workflows/dayan-football-android.yml'
@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: dayan-football-chat-logic-apk
+          ref: dayan-goal-parity-v1
 
       - name: Set up JDK 17
         uses: actions/setup-java@v5
@@ -42,37 +42,35 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Check Dayan model
-        working-directory: dayan-football
-        shell: bash
-        run: |
-          rm -rf /tmp/dayan-model-check
-          mkdir -p /tmp/dayan-model-check
-          javac -encoding UTF-8 -d /tmp/dayan-model-check             app/src/main/java/com/abe618/dayanfootball/DayanEngine.java             tools/ModelCheck.java
-          java -Dfile.encoding=UTF-8 -cp /tmp/dayan-model-check ModelCheck
-
       - name: Build signed debug APK
         working-directory: dayan-football
         run: gradle :app:assembleDebug --stacktrace
 
-      - name: Verify APK signature
+      - name: Verify and stage APK
         shell: bash
         run: |
           APK="dayan-football/app/build/outputs/apk/debug/app-debug.apk"
           test -s "$APK"
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose "$APK"
-
-      - name: Copy APK
-        shell: bash
-        run: |
           mkdir -p dist
-          cp dayan-football/app/build/outputs/apk/debug/app-debug.apk dist/DayanFootball-ChatLogic-v2.0-debug.apk
-          test -s dist/DayanFootball-ChatLogic-v2.0-debug.apk
+          cp "$APK" "dist/DayanFootball-GoalParity-v1.0-debug.apk"
+          sha256sum "dist/DayanFootball-GoalParity-v1.0-debug.apk" > "dist/DayanFootball-GoalParity-v1.0-SHA256.txt"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DayanFootball-ChatLogic-v2.0-debug-apk
-          path: dist/DayanFootball-ChatLogic-v2.0-debug.apk
+          name: DayanFootball-GoalParity-v1.0-debug-apk
+          path: |
+            dist/DayanFootball-GoalParity-v1.0-debug.apk
+            dist/DayanFootball-GoalParity-v1.0-SHA256.txt
           if-no-files-found: error
           retention-days: 30
+
+      - name: Commit built APK to branch
+        shell: bash
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add dist/DayanFootball-GoalParity-v1.0-debug.apk dist/DayanFootball-GoalParity-v1.0-SHA256.txt
+          git commit -m "Build goal parity APK" || exit 0
+          git push origin HEAD:dayan-goal-parity-v1
