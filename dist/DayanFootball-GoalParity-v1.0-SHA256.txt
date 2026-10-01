@@ -1,0 +1,1 @@
+2382233fcca10969b4fd31f55572e00ee4932c5d081e4485fedea03646788854  dist/DayanFootball-GoalParity-v1.0-debug.apk
