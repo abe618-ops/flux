@@ -44,3 +44,5 @@ gradle :app:assembleDebug
 预期产物：
 
 app/build/outputs/apk/debug/app-debug.apk
+
+Build workflow enabled for APK generation.
