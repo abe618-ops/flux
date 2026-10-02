@@ -1,4 +1,4 @@
-name: Build Four Shushu Random Chart Android
+name: Build Four Shushu Football Android
 
 on:
   push:
@@ -52,13 +52,13 @@ jobs:
       - name: Copy APK to repository dist
         run: |
           mkdir -p ../dist
-          cp app/build/outputs/apk/debug/app-debug.apk ../dist/FourShushuRandomChart-v0.1-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk ../dist/FourShushuFootball-v0.2-debug.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FourShushuRandomChart-v0.1-debug-apk
-          path: dist/FourShushuRandomChart-v0.1-debug.apk
+          name: FourShushuFootball-v0.2-debug-apk
+          path: dist/FourShushuFootball-v0.2-debug.apk
           if-no-files-found: error
           retention-days: 30
 
@@ -68,10 +68,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/FourShushuRandomChart-v0.1-debug.apk
+          git add dist/FourShushuFootball-v0.2-debug.apk
           if git diff --cached --quiet; then
             echo "APK unchanged"
           else
-            git commit -m "Build FourShushuRandomChart v0.1 APK [skip ci]"
+            git commit -m "Build FourShushuFootball v0.2 APK [skip ci]"
             git push origin HEAD:main
           fi
