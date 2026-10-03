@@ -1,0 +1,19 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.quicklottery.blindbacktest'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.quicklottery.blindbacktest.verified'
+        minSdk 26
+        targetSdk 35
+        versionCode 2
+        versionName '1.1.0'
+    }
+}
+
+dependencies {
+}

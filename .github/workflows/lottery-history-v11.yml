@@ -1,0 +1,54 @@
+name: Lottery History v1.1 Verified Snapshot
+on:
+  push:
+    branches: ['lottery-history-v11-verified']
+    paths: ['lottery-history-v1_1/**', '.github/workflows/lottery-history-v11.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Try national official sports history; preserve verified notices on failure
+        working-directory: lottery-history-v1_1
+        run: python3 tools/try_sports_sync.py
+      - name: Validate all included results and execute settlement regressions
+        working-directory: lottery-history-v1_1
+        run: |
+          python3 tools/verify_snapshot.py app/src/main/assets
+          python3 tools/test_settlement.py
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build Android APK
+        working-directory: lottery-history-v1_1
+        run: gradle --no-daemon --stacktrace assembleDebug
+      - name: Verify package, signature and embedded result files
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=lottery-history-v1_1/app/build/outputs/apk/debug/app-debug.apk
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME}}"
+          BUILD_TOOLS="$(find "$SDK_ROOT/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          "$BUILD_TOOLS/apksigner" verify --verbose "$APK"
+          "$BUILD_TOOLS/aapt" dump badging "$APK" | tee /tmp/lottery-badging.txt
+          grep -q "package: name='com.quicklottery.blindbacktest.verified'" /tmp/lottery-badging.txt
+          unzip -t "$APK"
+          mkdir -p lottery-output
+          cp "$APK" lottery-output/FourLottery-History-v1.1.0-verified.apk
+          cp lottery-history-v1_1/app/src/main/assets/data_manifest.txt lottery-output/data-manifest.txt
+          cp lottery-history-v1_1/app/src/main/assets/verified_sources.json lottery-output/verified-sources.json
+          sha256sum lottery-output/FourLottery-History-v1.1.0-verified.apk > lottery-output/SHA256.txt
+          zip -qr lottery-output/FourLottery-History-v1.1.0-source.zip lottery-history-v1_1 -x '*/build/*' '*/.gradle/*'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FourLottery-History-v1.1.0-verified
+          path: lottery-output/*
+          if-no-files-found: error

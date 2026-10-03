@@ -1,0 +1,14 @@
+    private void continuePending(){
+        for(int i=ledger.length()-1;i>=0;i--){
+            JSONObject x=ledger.optJSONObject(i);if(x==null||!x.optString("status").equals("已锁定，尚未揭晓"))continue;
+            int g=Arrays.asList(GAMES).indexOf(x.optString("game"));if(g<0)continue;
+            gameSpinner.setSelection(g);loadGame(g);
+            for(int j=0;j<draws.size();j++)if(draws.get(j).issue.equals(x.optString("issue"))){
+                currentIndex=j;setDraw();Ticket t=new Ticket();t.game=g;t.mode=x.optInt("mode");t.multiple=x.optInt("multiple");t.cost=x.optDouble("cost");
+                try{t.nums=g==0?parseHappy(x.optString("nums"),t.mode):parseDigits(x.optString("nums"),g==3?5:3);}catch(Exception e){continue;}
+                lockedTicket=t;activeRecord=i;revealed=false;revealBtn.setEnabled(true);lockBtn.setEnabled(false);
+                numbersEt.setText(x.optString("nums"));multipleEt.setText(String.valueOf(t.multiple));statusTv.setText("已恢复锁定投注，点击查看是否中奖即可结算。");return;
+            }
+        }
+        Toast.makeText(this,"没有可继续的未揭晓投注",Toast.LENGTH_SHORT).show();
+    }

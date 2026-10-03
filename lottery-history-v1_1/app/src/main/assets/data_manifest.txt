@@ -1,0 +1,11 @@
+data_source_policy=OFFICIAL_ANNOUNCEMENTS_PARTIAL
+generated_utc=2026-10-03T15:51:58.120130+00:00
+kl8_desc.txt count=50 first_date=2026-08-12 last_date=2026-09-30 sha256=3b2414b189daa1e369cec05788c9b327fda9746494294ddc726cee7de18aed2b
+3d_desc.txt count=30 first_date=2026-09-01 last_date=2026-09-30 sha256=d2384d6363c29f755b136dbe9019ce0a01dfa1d4f5af8446230369362762c18c
+pl3_desc.txt count=2 first_date=2026-06-29 last_date=2026-09-27 sha256=6914badb20c6d75c49261fe285019d0ca350c757c350b66bc0bf2912981b3a25
+pl5_desc.txt count=2 first_date=2026-06-29 last_date=2026-09-27 sha256=3c4715d00afe6d219ac0ef5528868e94fae4caeadb721c6ad3bc7602be6c3d1c
+pl3_relation=official_P5_first3_all_included_periods
+kl8_fixed_awards=official_rules_effective_2025-12-30
+kl8_floating_awards=UNRESOLVED_NO_INVENTED_AMOUNT
+coverage=ONLY_INCLUDED_ISSUES_NOT_COMPLETE_HISTORY
+validation=date_calendar+no_future+issue_year+unique_issues+unique_dates+numbers+official_provenance+P3_P5_relation+fixed_awards
