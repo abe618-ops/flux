@@ -14,7 +14,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
 
@@ -34,30 +34,167 @@ jobs:
           test -f "$PROJECT_DIR/app/build.gradle"
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
-      - name: Sync full historical draw snapshots
+      - name: Sync official historical draw data
         shell: bash
         run: |
           set -e
           ASSETS="$PROJECT_DIR/app/src/main/assets"
           mkdir -p "$ASSETS"
-          fetch_one() {
-            file="$1"
-            tmp="/tmp/$file"
-            rm -f "$tmp"
-            curl -fL --retry 4 --retry-delay 2 --connect-timeout 10 --max-time 120 "https://data.17500.cn/$file" -o "$tmp"               || curl -fL --retry 3 --connect-timeout 10 --max-time 120 "http://data.17500.cn/$file" -o "$tmp"
-            test -s "$tmp"
-            cp "$tmp" "$ASSETS/$file"
-          }
-          fetch_one 3d_desc.txt
-          fetch_one pl3_desc.txt
-          fetch_one pl5_desc.txt
-          fetch_one kl8_desc.txt
+          python3 - "$ASSETS" <<'PY'
+          import json, re, subprocess, sys, time
+          from pathlib import Path
+          from urllib.parse import urlencode
+
+          outdir = Path(sys.argv[1])
+          UA_DESKTOP = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36"
+          UA_MOBILE = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/126 Mobile Safari/537.36"
+
+          def curl(url, headers=None, cookie_in=None, cookie_out=None, attempts=4):
+              cmd = ["curl","-fsSL","--retry","3","--retry-delay","2","--connect-timeout","15","--max-time","90"]
+              if cookie_in: cmd += ["-b", cookie_in]
+              if cookie_out: cmd += ["-c", cookie_out]
+              for h in headers or []: cmd += ["-H", h]
+              cmd.append(url)
+              last = None
+              for i in range(attempts):
+                  try:
+                      return subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode("utf-8","ignore")
+                  except subprocess.CalledProcessError as e:
+                      last = e
+                      time.sleep(2 + i * 2)
+              raise RuntimeError(f"curl failed: {url}: {getattr(last,'output',b'')[-300:]}")
+
+          def cwl(game, index_path, filename):
+              cookie = f"/tmp/cwl-{game}.cookie"
+              index = f"https://www.cwl.gov.cn/ygkj/wqkjgg/{index_path}/"
+              curl(index, [f"User-Agent: {UA_DESKTOP}"], cookie_out=cookie)
+              records = {}
+              for page in range(1, 140):
+                  qs = urlencode({
+                      "name": game, "issueCount": "", "issueStart": "", "issueEnd": "",
+                      "dayStart": "", "dayEnd": "", "pageNo": page, "pageSize": 100, "systemType": "PC"
+                  })
+                  url = "https://www.cwl.gov.cn/cwl_admin/front/cwlkj/search/kjxx/findDrawNotice?" + qs
+                  raw = curl(url, [
+                      f"User-Agent: {UA_DESKTOP}",
+                      "Accept: application/json",
+                      f"Referer: {index}"
+                  ], cookie_in=cookie)
+                  obj = json.loads(raw)
+                  rows = obj.get("result")
+                  if rows is None and isinstance(obj.get("data"), dict):
+                      rows = obj["data"].get("result")
+                  rows = rows or []
+                  if not rows:
+                      break
+                  new_count = 0
+                  for row in rows:
+                      issue = str(row.get("code","")).strip()
+                      date = str(row.get("date","")).split("(")[0].strip()
+                      red = str(row.get("red","")).strip()
+                      nums = [x for x in re.split(r"[,，\s]+", red) if x]
+                      need = 20 if game == "kl8" else 3
+                      if not issue or not re.fullmatch(r"20\d\d-\d\d-\d\d", date) or len(nums) != need:
+                          continue
+                      if game == "kl8":
+                          try:
+                              iv = [int(x) for x in nums]
+                          except ValueError:
+                              continue
+                          if len(set(iv)) != 20 or any(x < 1 or x > 80 for x in iv):
+                              continue
+                          nums = [f"{x:02d}" for x in iv]
+                      else:
+                          if any(not re.fullmatch(r"\d", x) for x in nums):
+                              continue
+                      if issue not in records:
+                          records[issue] = (date, nums)
+                          new_count += 1
+                  print(f"CWL {game} page {page}: {len(rows)} rows, {new_count} new")
+                  if len(rows) < 100:
+                      break
+                  time.sleep(1.2)
+              if len(records) < 100:
+                  raise RuntimeError(f"CWL {game}: only {len(records)} records")
+              ordered = sorted(records.items(), key=lambda kv: (kv[1][0], kv[0]), reverse=True)
+              with (outdir/filename).open("w", encoding="utf-8") as f:
+                  for issue,(date,nums) in ordered:
+                      f.write(issue+" "+date+" "+" ".join(nums)+"\n")
+              return records
+
+          def sport(game_no, filename, expected_digits):
+              records = {}
+              page = 1
+              page_size = 100
+              while page <= 140:
+                  qs = urlencode({
+                      "gameNo": game_no, "provinceId": 0, "pageSize": page_size,
+                      "isVerify": 1, "pageNo": page
+                  })
+                  url = "https://webapi.sporttery.cn/gateway/lottery/getHistoryPageListV1.qry?" + qs
+                  raw = curl(url, [
+                      f"User-Agent: {UA_MOBILE}",
+                      "Accept: application/json, text/plain, */*",
+                      "Referer: https://m.lottery.gov.cn/"
+                  ])
+                  obj = json.loads(raw)
+                  value = obj.get("value") or {}
+                  rows = value.get("list") or []
+                  if not rows:
+                      break
+                  new_count = 0
+                  for row in rows:
+                      issue = str(row.get("lotteryDrawNum","")).strip()
+                      date = str(row.get("lotteryDrawTime","")).strip()[:10]
+                      rawnum = str(row.get("lotteryDrawResult","")).strip()
+                      parts = [x for x in re.split(r"[,，\s]+", rawnum) if x]
+                      if len(parts) == 1 and re.fullmatch(r"\d{%d}" % expected_digits, parts[0]):
+                          parts = list(parts[0])
+                      if len(parts) != expected_digits or any(not re.fullmatch(r"\d", x) for x in parts):
+                          continue
+                      if not issue or not re.fullmatch(r"20\d\d-\d\d-\d\d", date):
+                          continue
+                      if issue not in records:
+                          records[issue] = (date, parts)
+                          new_count += 1
+                  print(f"Sport {game_no} page {page}: {len(rows)} rows, {new_count} new")
+                  if len(rows) < page_size:
+                      break
+                  page += 1
+                  time.sleep(0.35)
+              if len(records) < 100:
+                  raise RuntimeError(f"Sport {game_no}: only {len(records)} records")
+              ordered = sorted(records.items(), key=lambda kv: (kv[1][0], kv[0]), reverse=True)
+              with (outdir/filename).open("w", encoding="utf-8") as f:
+                  for issue,(date,nums) in ordered:
+                      f.write(issue+" "+date+" "+" ".join(nums)+"\n")
+              return records
+
+          fc3d = cwl("3d", "fc3d", "3d_desc.txt")
+          kl8 = cwl("kl8", "kl8", "kl8_desc.txt")
+          pl3 = sport("35", "pl3_desc.txt", 3)
+          pl5 = sport("350133", "pl5_desc.txt", 5)
+
+          common = sorted(set(pl3) & set(pl5), reverse=True)[:300]
+          mismatches = []
+          for issue in common:
+              if pl3[issue][0] != pl5[issue][0] or pl3[issue][1] != pl5[issue][1][:3]:
+                  mismatches.append(issue)
+          if len(common) < 50 or mismatches:
+              raise RuntimeError(f"P3/P5 cross-check failed: common={len(common)}, mismatches={mismatches[:10]}")
+
+          meta = [
+              "source=official",
+              f"fc3d_records={len(fc3d)}",
+              f"kl8_records={len(kl8)}",
+              f"pl3_records={len(pl3)}",
+              f"pl5_records={len(pl5)}",
+              f"pl3_pl5_recent_crosscheck={len(common)}",
+          ]
+          (outdir/"snapshot_meta.txt").write_text("\n".join(meta)+"\n", encoding="utf-8")
+          print("\n".join(meta))
+          PY
           python3 "$PROJECT_DIR/tools/check_data.py" "$ASSETS"
-          {
-            echo "build_utc=$(date -u +%FT%TZ)"
-            wc -l "$ASSETS/"*_desc.txt
-          } > "$ASSETS/snapshot_meta.txt"
-          cat "$ASSETS/snapshot_meta.txt"
 
       - name: Install Android SDK 35
         shell: bash
