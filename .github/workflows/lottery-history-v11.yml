@@ -16,9 +16,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Try national official sports history; preserve verified notices on failure
-        working-directory: lottery-history-v1_1
-        run: python3 tools/try_sports_sync.py
       - name: Validate all included results and execute settlement regressions
         working-directory: lottery-history-v1_1
         run: |
@@ -42,13 +39,13 @@ jobs:
           grep -q "package: name='com.quicklottery.blindbacktest.verified'" /tmp/lottery-badging.txt
           unzip -t "$APK"
           mkdir -p lottery-output
-          cp "$APK" lottery-output/FourLottery-History-v1.1.0-verified.apk
+          cp "$APK" lottery-output/FourLottery-History-v1.1.1-verified.apk
           cp lottery-history-v1_1/app/src/main/assets/data_manifest.txt lottery-output/data-manifest.txt
           cp lottery-history-v1_1/app/src/main/assets/verified_sources.json lottery-output/verified-sources.json
-          sha256sum lottery-output/FourLottery-History-v1.1.0-verified.apk > lottery-output/SHA256.txt
-          zip -qr lottery-output/FourLottery-History-v1.1.0-source.zip lottery-history-v1_1 -x '*/build/*' '*/.gradle/*'
+          sha256sum lottery-output/FourLottery-History-v1.1.1-verified.apk > lottery-output/SHA256.txt
+          zip -qr lottery-output/FourLottery-History-v1.1.1-source.zip lottery-history-v1_1 -x '*/build/*' '*/.gradle/*'
       - uses: actions/upload-artifact@v4
         with:
-          name: FourLottery-History-v1.1.0-verified
+          name: FourLottery-History-v1.1.1-verified
           path: lottery-output/*
           if-no-files-found: error

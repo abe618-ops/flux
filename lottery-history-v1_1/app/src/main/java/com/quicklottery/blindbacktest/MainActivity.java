@@ -322,7 +322,7 @@ public class MainActivity extends Activity {
         issueTv.setText(GAMES[gameIndex]+" · 第"+d.issue+"期 · "+d.date);
         hiddenTv.setText("开奖号码：已隐藏");
         statusTv.setText("请先选择玩法和号码，然后锁定模拟投注。");
-        if(numbersEt!=null) numbersEt.setText("");
+        if(numbersEt!=null){numbersEt.setText("");numbersEt.setEnabled(true);}if(multipleEt!=null)multipleEt.setEnabled(true);if(modeSpinner!=null)modeSpinner.setEnabled(true);randomBetBtn.setEnabled(true);
     }
 
     private void searchDraw(){
@@ -380,6 +380,7 @@ public class MainActivity extends Activity {
                 if(gameIndex!=3 && t.mode==1 && pattern(t.nums)!=2) throw new IllegalArgumentException("组选3必须恰有两个相同数字");
                 if(gameIndex!=3 && t.mode==2 && pattern(t.nums)!=3) throw new IllegalArgumentException("组选6必须三个数字各不相同");
             }
+            numbersEt.setEnabled(false);multipleEt.setEnabled(false);modeSpinner.setEnabled(false);randomBetBtn.setEnabled(false);
             lockedTicket=t; revealed=false; revealBtn.setEnabled(true); lockBtn.setEnabled(false);
             sessionCount++; totalCost+=t.cost;
             Draw selected=draws.get(currentIndex); JSONObject item=new JSONObject();
@@ -488,7 +489,7 @@ public class MainActivity extends Activity {
                 currentIndex=j;setDraw();Ticket t=new Ticket();t.game=g;t.mode=x.optInt("mode");t.multiple=x.optInt("multiple");t.cost=x.optDouble("cost");
                 try{t.nums=g==0?parseHappy(x.optString("nums"),t.mode):parseDigits(x.optString("nums"),g==3?5:3);}catch(Exception e){continue;}
                 lockedTicket=t;activeRecord=i;revealed=false;revealBtn.setEnabled(true);lockBtn.setEnabled(false);
-                numbersEt.setText(x.optString("nums"));multipleEt.setText(String.valueOf(t.multiple));statusTv.setText("已恢复锁定投注，点击查看是否中奖即可结算。");return;
+                modeSpinner.setSelection(g==0?t.mode-1:t.mode);numbersEt.setText(x.optString("nums"));multipleEt.setText(String.valueOf(t.multiple));numbersEt.setEnabled(false);multipleEt.setEnabled(false);modeSpinner.setEnabled(false);randomBetBtn.setEnabled(false);statusTv.setText("已恢复锁定投注，点击查看是否中奖即可结算。");return;
             }
         }
         Toast.makeText(this,"没有可继续的未揭晓投注",Toast.LENGTH_SHORT).show();

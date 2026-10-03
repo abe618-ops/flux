@@ -1,0 +1,4 @@
+{
+  "pls": "https://www.fjtc.com.cn/data_api/lottery?type=pls&page=1&limit=1000&so_start=0&so_end=0&gameNo=35&provinceId=0&pageSize=1000&isVerify=1&pageNo=1",
+  "plw": "https://www.fjtc.com.cn/data_api/lottery?type=plw&page=1&limit=1000&so_start=0&so_end=0&gameNo=350133&provinceId=0&pageSize=1000&isVerify=1&pageNo=1"
+}
