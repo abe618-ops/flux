@@ -1,0 +1,119 @@
+name: Lottery Blind Backtest Android
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'lottery-blind-backtest/source.b64.part01'
+      - 'lottery-blind-backtest/source.b64.part02'
+      - 'lottery-blind-backtest/source.b64.part03a'
+      - 'lottery-blind-backtest/source.b64.part03b'
+      - 'lottery-blind-backtest/source.b64.part04'
+      - '.github/workflows/lottery-blind-backtest-android.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct and verify source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat             lottery-blind-backtest/source.b64.part01             lottery-blind-backtest/source.b64.part02             lottery-blind-backtest/source.b64.part03a             lottery-blind-backtest/source.b64.part03b             lottery-blind-backtest/source.b64.part04             | tr -d '\r\n' | base64 -d > /tmp/lottery-source.zip
+          echo "d2d6d6afb89b70492ced632133a9cd9c60cf070fca542e49b4b73a1e50d1eb0a  /tmp/lottery-source.zip" | sha256sum -c -
+          unzip -t /tmp/lottery-source.zip
+          rm -rf /tmp/lottery-src
+          mkdir -p /tmp/lottery-src
+          unzip -q /tmp/lottery-source.zip -d /tmp/lottery-src
+          PROJECT_DIR="/tmp/lottery-src/lottery-blind-backtest-src"
+          test -f "$PROJECT_DIR/tools/sync_and_verify.py"
+          test -f "$PROJECT_DIR/app/build.gradle"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Sync official lottery history and strictly validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$PROJECT_DIR"
+          python3 tools/sync_and_verify.py app/src/main/assets
+          python3 tools/check_data.py app/src/main/assets
+          echo "----- DATA MANIFEST -----"
+          cat app/src/main/assets/data_manifest.txt
+          grep -q '^data_source_policy=OFFICIAL_ONLY$' app/src/main/assets/data_manifest.txt
+          grep -q '^validation=' app/src/main/assets/data_manifest.txt
+
+      - name: Install Android SDK 35
+        shell: bash
+        run: |
+          set -euo pipefail
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          if [ -z "$SDK_ROOT" ]; then
+            echo "ANDROID SDK path missing" >&2
+            exit 1
+          fi
+          SDKMANAGER="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$(command -v sdkmanager)"
+          fi
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --stacktrace -p "$PROJECT_DIR" assembleDebug
+
+      - name: Verify APK and prepare release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          "$SDK_ROOT/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/apk-badging.txt
+          grep -q "package: name='com.quicklottery.blindbacktest'" /tmp/apk-badging.txt
+          mkdir -p dist
+          cp "$APK" dist/Lottery-BlindBacktest-v1.0.0-debug.apk
+          cp "$PROJECT_DIR/app/src/main/assets/data_manifest.txt" dist/Lottery-BlindBacktest-v1.0.0-data-manifest.txt
+          sha256sum dist/Lottery-BlindBacktest-v1.0.0-debug.apk > dist/Lottery-BlindBacktest-v1.0.0-SHA256.txt
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lottery-BlindBacktest-v1.0.0-debug
+          path: |
+            dist/Lottery-BlindBacktest-v1.0.0-debug.apk
+            dist/Lottery-BlindBacktest-v1.0.0-SHA256.txt
+            dist/Lottery-BlindBacktest-v1.0.0-data-manifest.txt
+          if-no-files-found: error
+
+      - name: Publish APK to repository dist
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/Lottery-BlindBacktest-v1.0.0-debug.apk                   dist/Lottery-BlindBacktest-v1.0.0-SHA256.txt                   dist/Lottery-BlindBacktest-v1.0.0-data-manifest.txt
+          if git diff --cached --quiet; then
+            echo "No dist changes"
+          else
+            git commit -m "Build Lottery BlindBacktest v1.0.0 [skip ci]"
+            git push
+          fi
