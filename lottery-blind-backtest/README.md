@@ -33,3 +33,5 @@ Android 历史开奖虚拟回测工具，覆盖：
 - minSdk 26
 - targetSdk 35
 - 原生 Java，无第三方运行时依赖
+
+Build request: v1.0.0.
