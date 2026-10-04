@@ -1,0 +1,62 @@
+name: Liuyao P3 3D Android
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'liuyao-p3-3d/**'
+      - '.github/workflows/liuyao-p3-3d-android.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Android SDK 35
+        shell: bash
+        run: |
+          SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          SDKMANAGER="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then
+            SDKMANAGER="$(command -v sdkmanager)"
+          fi
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        shell: bash
+        run: gradle --no-daemon --stacktrace -p liuyao-p3-3d assembleDebug
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          APK="liuyao-p3-3d/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          "$SDK_ROOT/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 12
+          cp "$APK" /tmp/Liuyao-P3-3D-v1.0.0-beta1-debug.apk
+          sha256sum /tmp/Liuyao-P3-3D-v1.0.0-beta1-debug.apk | tee /tmp/Liuyao-P3-3D-SHA256.txt
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Liuyao-P3-3D-v1.0.0-beta1
+          path: |
+            /tmp/Liuyao-P3-3D-v1.0.0-beta1-debug.apk
+            /tmp/Liuyao-P3-3D-SHA256.txt
+          if-no-files-found: error
