@@ -1,0 +1,11 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+await import("../assets/core.js");
+const C=globalThis.WechatCore;
+test("识别微信公众号文章链接",()=>{assert.equal(C.findUrl("打开：https://mp.weixin.qq.com/s/AbC_12-x?chksm=abc。"),"https://mp.weixin.qq.com/s/AbC_12-x?chksm=abc");});
+test("兼容旧式微信公众号查询链接",()=>{assert.equal(C.findUrl("https://mp.weixin.qq.com/s?__biz=MzA%3D&mid=1&idx=1&sn=abc"),"https://mp.weixin.qq.com/s?__biz=MzA%3D&mid=1&idx=1&sn=abc");});
+test("识别 Chrome 分享的通用 HTTPS 网页",()=>assert.equal(C.findUrl("网页标题 https://example.com/news/abc?x=1。"),"https://example.com/news/abc?x=1"));
+test("拒绝不安全的 HTTP 链接",()=>assert.equal(C.findUrl("http://example.com/news"),""));
+test("导出核心函数存在",()=>["articleDocument","markdownFrom","xhtmlFrom"].forEach(k=>assert.equal(typeof C[k],"function")));
+test("发现公开文章链接并限制数量",()=>{const html='<a href="https://mp.weixin.qq.com/s/a">一</a><a href="/s/b">二</a><a href="https://example.com/x">外部</a>';const links=C.discoverArticleLinks(html,"https://mp.weixin.qq.com/mp/profile_ext",2);assert.deepEqual(links,["https://mp.weixin.qq.com/s/a","https://mp.weixin.qq.com/s/b"]);});
+test("从文章查询参数构造历史消息页",()=>assert.match(C.accountHistoryUrl("https://mp.weixin.qq.com/s?__biz=MzA%3D&mid=1"),/profile_ext\?action=home&__biz=MzA%3D/));

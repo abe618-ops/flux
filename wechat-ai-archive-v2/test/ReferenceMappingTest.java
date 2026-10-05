@@ -1,0 +1,3 @@
+package com.local.wechataiarchive;
+import java.util.*;
+public class ReferenceMappingTest {public static void main(String[] args){Map<Integer,String> refs=new HashMap<>();refs.put(0,"__WXIMG_1__");refs.put(1,"__WXIMG_2__");String actual=ArticleExporter.replaceRefs("![A](__WXIMG_0__)\n![B](__WXIMG_1__)",refs);if(!actual.equals("![A](__WXIMG_1__)\n![B](__WXIMG_2__)"))throw new AssertionError(actual);refs.put(0,"https://example.com/i?q=$x\\foo");actual=ArticleExporter.replaceRefs("__WXIMG_0__",refs);if(!actual.equals(refs.get(0)))throw new AssertionError(actual);System.out.println("PASS: collection image references keep distinct indices; literal URL replacement.");}}

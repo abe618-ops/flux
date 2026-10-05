@@ -1,0 +1,2 @@
+81a68cf630de52a0f3e965b61e6bc0c0c27df8ee4b095ff8215edc9bc0e1cda3  Wechat-AI-Archive-v2.0.apk
+cb6d5c9eac0aafe118f25c47815891ef8837dc990ad2301873953d5739e08eea  Wechat-AI-Archive-v2.0-source-public.zip
