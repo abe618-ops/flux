@@ -1,0 +1,3 @@
+a5fefdf4be32e1429bf371dd69b4f80f7dad652045d36eeafc9e6efe4c3d1311  JShare-v0.1.0-debug.apk
+19a6c96ffcf8f96581a8e1375bab9fe78b2990e76b0f91373d3b73bc96cb448e  JShare-v0.1.0-source.zip
+ec5f1aa45d6b5bc86d364164aeb5c44df5a98179829df0370c3ef28a65aa0dfc  JShare-v0.1.0-docs.zip

@@ -1,0 +1,152 @@
+{
+  "project": "JShare / 极简分享",
+  "version": "0.1.0",
+  "package_name": "com.flux.jshare",
+  "publication_date": "2026-10-07",
+  "repository": "https://github.com/abe618-ops/flux",
+  "source_commit": "7e4c5d98322ef49d1e9d90264247d735a16d9d57",
+  "source_directory": "minimal-share",
+  "apk": {
+    "uploaded_filename": "极简分享.apk",
+    "published_filename": "JShare-v0.1.0-debug.apk",
+    "size_bytes": 894639,
+    "sha256": "a5fefdf4be32e1429bf371dd69b4f80f7dad652045d36eeafc9e6efe4c3d1311",
+    "git_blob_sha1": "9daf1a50dfdcbffb8612d72181426cdf08165929",
+    "modified": false,
+    "rebuilt": false,
+    "resigned": false
+  },
+  "source_code_changed": false,
+  "documentation_changes": [
+    "minimal-share/docs/USAGE_CN.md",
+    "minimal-share/docs/BUILD_CN.md",
+    "minimal-share/docs/PUBLICATION_20261007.md",
+    "dist/jshare/archive-20261007/README.md",
+    "minimal-share/README.md",
+    "README.md",
+    "minimal-share/docs/PROJECT_PAGE.md"
+  ],
+  "original_repository_files": [
+    {
+      "path": "minimal-share/CHANGELOG.md",
+      "sha": "1d8bcb9b9448738356dc923c22abf6b100527c28",
+      "size": 851
+    },
+    {
+      "path": "minimal-share/LICENSE",
+      "sha": "9c99e2d85ecb1825f81e32262307ab017087307d",
+      "size": 1067
+    },
+    {
+      "path": "minimal-share/README.md",
+      "sha": "f16295f5470564e829d6c06524994c1958593ae2",
+      "size": 13321
+    },
+    {
+      "path": "minimal-share/SECURITY.md",
+      "sha": "1b10e7b74970ec4906a6934d35a41fdc9fb840ad",
+      "size": 1078
+    },
+    {
+      "path": "minimal-share/THIRD_PARTY_NOTICES.md",
+      "sha": "462ad32bb3175b24e4a232ad083b9d2c869fa9e1",
+      "size": 2904
+    },
+    {
+      "path": "minimal-share/app/build.gradle.kts",
+      "sha": "fce025e8004bae37596460a92cfd7b3efe40f330",
+      "size": 697
+    },
+    {
+      "path": "minimal-share/app/proguard-rules.pro",
+      "sha": "4f07021f5100d80d238c96f3f043ae3b248661d7",
+      "size": 65
+    },
+    {
+      "path": "minimal-share/app/src/main/AndroidManifest.xml",
+      "sha": "f8e4863a31cdfef67744ec691349e676c5305cd1",
+      "size": 1993
+    },
+    {
+      "path": "minimal-share/app/src/main/java/com/flux/jshare/ApkInstaller.kt",
+      "sha": "9c3c6f8c46273bffc624aff6da7ae3ec763f4710",
+      "size": 4701
+    },
+    {
+      "path": "minimal-share/app/src/main/java/com/flux/jshare/AppExporter.kt",
+      "sha": "670a3eeffa39f476f61a70d98525b699f92539e1",
+      "size": 2209
+    },
+    {
+      "path": "minimal-share/app/src/main/java/com/flux/jshare/AppPickerActivity.kt",
+      "sha": "7e106a4dcff740f1a0f0ee23211ff636a241b876",
+      "size": 5969
+    },
+    {
+      "path": "minimal-share/app/src/main/java/com/flux/jshare/DiscoveryManager.kt",
+      "sha": "14cd61d82a63bd2ffbad395115555f012030c28d",
+      "size": 6016
+    },
+    {
+      "path": "minimal-share/app/src/main/java/com/flux/jshare/MainActivity.kt",
+      "sha": "01e4c56758df77e3342c55a72de0ae1f64bc58ae",
+      "size": 15549
+    },
+    {
+      "path": "minimal-share/app/src/main/java/com/flux/jshare/Peer.kt",
+      "sha": "39765cb3cf9c46c9fa1f40ef8b3648351dd289e4",
+      "size": 179
+    },
+    {
+      "path": "minimal-share/app/src/main/java/com/flux/jshare/TransferEngine.kt",
+      "sha": "c7f8f35085f7d7dfe5ff9a7c86d79fddd4e26ad5",
+      "size": 9943
+    },
+    {
+      "path": "minimal-share/app/src/main/java/com/flux/jshare/UriTools.kt",
+      "sha": "74a2f68c0284f95f6ca98f1ee80df548e2bb1735",
+      "size": 2892
+    },
+    {
+      "path": "minimal-share/app/src/main/res/drawable/ic_share.xml",
+      "sha": "ba11595940727e35c1dea55f1af2bfaef8885dbe",
+      "size": 671
+    },
+    {
+      "path": "minimal-share/app/src/main/res/values/colors.xml",
+      "sha": "5c2a121253f199c4728e2af4e7dd0fd55686b212",
+      "size": 216
+    },
+    {
+      "path": "minimal-share/app/src/main/res/values/strings.xml",
+      "sha": "2835df2abd11721c2cc2b2ee7c753a92db198c95",
+      "size": 75
+    },
+    {
+      "path": "minimal-share/app/src/main/res/values/styles.xml",
+      "sha": "bb97cc32abea54cda6d02f972885bef67a3af640",
+      "size": 479
+    },
+    {
+      "path": "minimal-share/build.gradle.kts",
+      "sha": "bdb83e8be383cae2bfa2d0341e162bc0ff796d7a",
+      "size": 143
+    },
+    {
+      "path": "minimal-share/docs/PROJECT_PAGE.md",
+      "sha": "80800f15979281dd12672732585f8987aebd50a9",
+      "size": 703
+    },
+    {
+      "path": "minimal-share/gradle.properties",
+      "sha": "1675ac4d53b0b205172ef04ac67cb8601953253f",
+      "size": 101
+    },
+    {
+      "path": "minimal-share/settings.gradle.kts",
+      "sha": "6f4c343324ee4c7bb5c6340d14d82cf5a6c4d25e",
+      "size": 326
+    }
+  ],
+  "verification_scope": "Archive/manifest/source-object/checksum validation; no new full Android build or physical-device test."
+}

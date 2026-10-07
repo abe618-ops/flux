@@ -4,7 +4,11 @@
 
 - [中文完整说明](../README.md#中文)
 - [Full English documentation](../README.md#english)
-- [Download APK](../../dist/jshare/JShare-v0.1.0-debug.apk)
+- [Download APK](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-debug.apk)
+- [Full source ZIP](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-source.zip)
+- [Documentation ZIP](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-docs.zip)
+- [中文安装与使用](USAGE_CN.md)
+- [源码与构建](BUILD_CN.md)
 - [Source code](../)
 - [Changelog](../CHANGELOG.md)
 - [Security](../SECURITY.md)

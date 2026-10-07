@@ -11,7 +11,10 @@
 一个面向 Android 的极简局域网文件与应用分享工具：打开即发现附近设备，支持文件、照片、视频、APK 与 Split APK 传输，不需要账号，也不经过云端服务器。
 
 - 项目主页：[minimal-share/](./minimal-share/)
-- APK 下载：[JShare-v0.1.0-debug.apk](./dist/jshare/JShare-v0.1.0-debug.apk)
+- APK 下载：[JShare-v0.1.0-debug.apk](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-debug.apk)
+- 完整源码包：[JShare-v0.1.0-source.zip](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-source.zip)
+- 说明包：[JShare-v0.1.0-docs.zip](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-docs.zip)
+- [中文安装使用说明](./minimal-share/docs/USAGE_CN.md) · [构建说明](./minimal-share/docs/BUILD_CN.md) · [归档与校验](./dist/jshare/archive-20261007/)
 - Android：8.0+（minSdk 26），面向 Android 16 / API 36
 - License：MIT
 

@@ -20,7 +20,11 @@
 
 ### 下载
 
-- **APK：** [JShare-v0.1.0-debug.apk](../dist/jshare/JShare-v0.1.0-debug.apk)
+- **APK：** [JShare-v0.1.0-debug.apk](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-debug.apk)
+- **完整源码包：** [JShare-v0.1.0-source.zip](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-source.zip)
+- **说明包：** [JShare-v0.1.0-docs.zip](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-docs.zip)
+- **校验清单：** [SHA256SUMS.txt](../dist/jshare/archive-20261007/SHA256SUMS.txt)
+- [中文安装与使用](docs/USAGE_CN.md) · [源码与构建](docs/BUILD_CN.md) · [发布核验](docs/PUBLICATION_20261007.md)
 - 包名：`com.flux.jshare`
 - 当前版本：`0.1.0`
 - 最低 Android：Android 8.0（API 26）
@@ -41,7 +45,7 @@
 - 发送过程中显示进度
 - SHA-256 完整性校验
 - 长按已选择内容，可拖到目标设备发送
-- 接收文件默认保存到 `Download/JShare/`
+- Android 10+ 接收文件保存到 `Download/JShare/`；Android 8、9 使用应用专用外部存储的 `files/Download/JShare/`
 - 无账号、无云端中转
 
 ### 使用方法
@@ -220,7 +224,10 @@ When two Android devices are on the same Wi-Fi network or mobile hotspot, openin
 
 ### Download
 
-- **APK:** [JShare-v0.1.0-debug.apk](../dist/jshare/JShare-v0.1.0-debug.apk)
+- **APK:** [JShare-v0.1.0-debug.apk](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-debug.apk)
+- **Full source ZIP:** [JShare-v0.1.0-source.zip](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-source.zip)
+- **Documentation ZIP:** [JShare-v0.1.0-docs.zip](https://github.com/abe618-ops/flux/raw/refs/heads/main/dist/jshare/archive-20261007/JShare-v0.1.0-docs.zip)
+- **Checksums:** [SHA256SUMS.txt](../dist/jshare/archive-20261007/SHA256SUMS.txt)
 - Package name: `com.flux.jshare`
 - Version: `0.1.0`
 - Minimum Android: Android 8.0 / API 26
@@ -241,7 +248,7 @@ When two Android devices are on the same Wi-Fi network or mobile hotspot, openin
 - Transfer progress display
 - SHA-256 integrity verification
 - Drag selected content onto a discovered device to send
-- Received files are saved to `Download/JShare/`
+- Android 10+ saves received files to `Download/JShare/`; Android 8–9 uses the app-specific external `files/Download/JShare/` directory
 - No account and no cloud relay
 
 ### Quick start
