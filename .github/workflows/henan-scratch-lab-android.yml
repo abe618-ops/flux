@@ -11,7 +11,7 @@ on:
       - '.github/workflows/henan-scratch-lab-android.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -52,3 +52,16 @@ jobs:
             HenanScratchLab-v1.0.0-beta1-debug.apk
             HenanScratchLab-SHA256.txt
           if-no-files-found: error
+      - name: Publish prerelease for direct APK download
+        if: github.ref_name == 'feature/henan-scratch-lab-v1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          TAG='henan-scratch-v1.0.0-beta1'
+          APK='HenanScratchLab-v1.0.0-beta1-debug.apk'
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$APK" HenanScratchLab-SHA256.txt --clobber
+          else
+            gh release create "$TAG" "$APK" HenanScratchLab-SHA256.txt --target "$GITHUB_SHA" --title '河南刮刮乐研究 v1.0.0-beta1' --notes '离线研究工具测试版；四术中部分为实验映射，不能预测实体彩票中奖；未经真机验收。' --prerelease
+          fi
