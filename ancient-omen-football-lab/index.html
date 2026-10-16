@@ -1,0 +1,32 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>古占候足球实验台</title><style>
+*{box-sizing:border-box}body{margin:0;background:#101821;color:#edf4f9;font:15px system-ui,"Noto Sans SC",sans-serif}main{max-width:1100px;margin:auto;padding:18px}h1{font-size:27px;margin:9px 0}h2{font-size:18px;margin:0 0 12px}.muted{color:#abbccf}.card{background:#1d2a39;border:1px solid #344659;padding:17px;border-radius:14px;margin:12px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:12px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}label{font-size:12px;color:#a9bacb;display:block;margin-bottom:5px}input,select{width:100%;background:#111d2a;color:#fff;border:1px solid #43576b;padding:10px;border-radius:8px}button{background:#90d0f9;color:#0d1a2a;border:0;border-radius:9px;padding:11px 15px;margin:12px 5px 2px 0;font-weight:700;cursor:pointer}button.alt{background:#395269;color:#fff}.line{border-bottom:1px solid #394d60;padding:7px 0}.pill{display:inline-block;background:#3b5268;border-radius:8px;padding:6px 9px;margin:3px 4px 3px 0}.num{font-weight:750;font-size:24px}.probs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.probs div{background:#2b4054;border-radius:9px;text-align:center;padding:10px}.error{color:#ffcd94}.tiny{font-size:12px}a{color:#9ddfff}p{line-height:1.6}code{word-break:break-all}</style></head><body><main>
+<p class="muted tiny">V1.0 · GitHub 离线研究原型</p><h1>古占候 × 足球实验台</h1><p class="muted">真实结构排盘与足球统计分开显示；古书中的兵占主客并非足球主客。所有术数预测映射均标注为待检验实验。</p>
+<div class="grid"><section class="card"><h2>起盘参数</h2><div class="fields">
+<div><label>主队 / 比赛</label><input id="match" value="演示：主队 vs 客队"></div><div><label>实测来风</label><select id="wind"><option value="">未实测（禁用风角）</option><option>北</option><option>东北</option><option>东</option><option>东南</option><option>南</option><option>西南</option><option>西</option><option>西北</option></select></div>
+<div><label>主队预期进球 λ</label><input id="lh" type="number" step=".1" value="1.4" min="0" max="7"></div><div><label>客队预期进球 λ</label><input id="la" type="number" step=".1" value="1.1" min="0" max="7"></div>
+<div style="grid-column:1 / -1"><label>固定种子（相同种子可复盘）</label><input id="seed" value="DEMO-001"></div></div>
+<button id="cast">一键排盘</button><button class="alt" id="new">下一场 · 新随机盘</button><button class="alt" id="copy">复制封盘 JSON</button><p class="error tiny" id="message"></p>
+</section><section class="card"><h2>统计模型（不含术数）</h2><div id="stats">尚未排盘</div></section></div>
+<div class="grid"><section class="card"><h2>六爻（三钱模拟）</h2><div id="liu"></div></section><section class="card"><h2>梅花（本、互、变、错、综）</h2><div id="mei"></div></section></div>
+<div class="grid"><section class="card"><h2>风角（乙巳占卷十）</h2><div id="windchart"></div></section><section class="card"><h2>各术独立判断</h2><div id="fusion"></div><p class="muted tiny">合参票数不代表统计胜率。同一个卦的本互错综不得拆成多个独立投票。</p></section></div>
+<section class="card"><h2>开盒复盘</h2><div class="fields"><div><label>主队实际进球</label><input id="sh" type="number" value="1" min="0"></div><div><label>客队实际进球</label><input id="sa" type="number" value="1" min="0"></div></div><button id="settle">录入赛果核验</button><div id="review"></div></section>
+<section class="card"><h2>文献与旧工程</h2><p>已建立包含 <b>27 项古籍/出土资料</b> 的逐项来源登记，每项记录卷篇、核验进度和模块用途。</p><p><a href="./research/source_catalog.json">打开完整古籍登记 JSON</a> ｜ <a href="./research/method_architecture.md">查看方法移植规划</a></p><p class="muted tiny">当前仅 V1 的六爻、梅花、实测风角实现运行。太乙、奇门、六壬、古灵神课、律吕、清华简筮法、风雷星象及既有安卓工程尚未全部移植。统计基线的 λ 为人工输入，未接入真实比赛与赛前赔率。</p></section>
+</main><script src="engine.js"></script><script>
+const $=id=>document.getElementById(id),core=window.AncientFootball;let last=null;
+const pct=x=>(x*100).toFixed(1)+"%",hx=x=>x.上卦+"上"+x.下卦+"下";
+function run(){
+try{last=core.predict({seed:$("seed").value,wind:$("wind").value,match:$("match").value,lambdaHome:Number($("lh").value),lambdaAway:Number($("la").value)});const p=last.盘,s=last.统计;
+$("stats").innerHTML='<div class="probs"><div>胜<div class="num">'+pct(s.胜)+'</div></div><div>平<div class="num">'+pct(s.平)+'</div></div><div>负<div class="num">'+pct(s.负)+'</div></div></div><p>大2.5：'+pct(s.大2点5)+'　单数：'+pct(s.单)+'　双方进球：'+pct(s.双方进球)+'</p><p>比分前三：'+s.比分候选.slice(0,3).map(x=>x.比分+'（'+pct(x.概率)+'）').join(" / ")+'</p><p>半全场：'+Object.entries(s.半全场).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]+' '+pct(x[1])).join(" / ")+'</p><p class="muted tiny">双泊松独立基线。默认参数仅供演示，不能视为任何真实比赛的胜率。</p>';
+$("liu").innerHTML='<p><b>本卦：'+hx(p.六爻.本卦)+'　变卦：'+hx(p.六爻.变卦)+'</b></p>'+p.六爻.六爻自下而上.slice().reverse().map((v,i)=>'<div class="line">第'+(6-i)+'爻　'+(v===7||v===9?'━━━━━':'━━　━━')+(v===6||v===9?'　动':'')+'　'+v+'</div>').join("")+'<p class="muted tiny">6老阴、7少阳、8少阴、9老阳；自下而上排盘；动爻 '+(p.六爻.动爻.join("、")||"无")+'</p>';
+$("mei").innerHTML='<p><b>本卦　'+hx(p.梅花.本卦)+'</b></p><p>互卦　'+hx(p.梅花.互卦)+'　变卦　'+hx(p.梅花.变卦)+'</p><p>错卦　'+hx(p.梅花.错卦)+'　综卦　'+hx(p.梅花.综卦)+'</p><p>随机三数：'+p.梅花.三数.join(" / ")+'；动爻：'+p.梅花.动爻+'</p><p class="muted tiny">三数起法为实验口径，不能冒称所有流派通用。</p>';
+$("windchart").innerHTML=p.风角.是否起占?'<p><b>'+p.风角.来风+'风 · '+p.风角.八卦+'方 · 古兵占'+p.风角.古籍主客+'利</b></p><p>'+p.风角.来源+'</p><p class="muted">'+p.风角.边界+'</p>':'<p class="muted">'+p.风角.说明+'</p>';
+$("fusion").innerHTML=p.实验方向.map(x=>'<div class="line"><b>'+x.法+'：'+x.方向+'</b><div class="muted tiny">'+x.依据+'</div></div>').join("")+'<p>独立规则投票：'+Object.entries(p.票数).map(x=>x[0]+x[1]+'票').join(" / ")+'</p>';
+$("message").textContent="封盘种子："+p.seed;$("review").textContent="";
+}catch(e){$("message").textContent="错误："+e.message}
+}
+$("cast").onclick=run;
+$("new").onclick=()=>{if(!window.crypto||!crypto.getRandomValues){$("message").textContent="此环境无系统安全随机源，请手工输入独立随机种子。";return;}let n=new Uint32Array(4);crypto.getRandomValues(n);$("seed").value=Array.from(n,x=>x.toString(16).padStart(8,"0")).join("");run()};
+$("copy").onclick=()=>{if(!last)return;const s=JSON.stringify(last,null,2);if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(s).then(()=>$("message").textContent="封盘已复制").catch(()=>$("message").textContent="浏览器禁止复制，请在HTTPS环境中使用");else $("message").textContent="当前环境未开放剪贴板，打开开发者工具可导出数据"};
+$("settle").onclick=()=>{try{const v=core.reveal(last,Number($("sh").value),Number($("sa").value));$("review").innerHTML='<p>赛果：'+v.最终比分+'；统计方向 '+(v.统计方向命中?'正确':'错误')+'；大小 '+(v.大小命中?'正确':'错误')+'；单双 '+(v.单双命中?'正确':'错误')+'；第一比分 '+(v.首选比分命中?'正确':'错误')+'</p><p>术数规则：'+v.术数命中.map(x=>x.法+(x.命中?'✓':'×')).join("　")+'</p>'}catch(e){$("review").textContent=e.message}};
+run();
+</script></body></html>
