@@ -1,0 +1,848 @@
+[
+  {
+    "id": "METHOD-01",
+    "name": "六爻三钱",
+    "family": "易卦",
+    "status": "v1_working",
+    "existing_code": "engine.js",
+    "validation_notes": "钱数起卦；纳甲六亲/六神未实现",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-02",
+    "name": "梅花易数本互变错综",
+    "family": "易卦",
+    "status": "v1_working",
+    "existing_code": "engine.js; meihua-football-v10",
+    "validation_notes": "三数起卦为实验口径",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-03",
+    "name": "乙巳占八方风角",
+    "family": "天候",
+    "status": "v1_working",
+    "existing_code": "engine.js",
+    "validation_notes": "只有真实来风才起占",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-04",
+    "name": "双泊松胜平负及半全场",
+    "family": "统计",
+    "status": "v1_working",
+    "existing_code": "engine.js; three-arm-football-native",
+    "validation_notes": "只作统计基线",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-05",
+    "name": "兵法奇门1080局",
+    "family": "三式",
+    "status": "old_code_pending_port",
+    "existing_code": "bingfa-qimen-football-v2",
+    "validation_notes": "复用旧版去偏，并验证全状态",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-06",
+    "name": "时家/刻家/分秒奇门",
+    "family": "三式",
+    "status": "old_code_pending_port",
+    "existing_code": "sanshi-random-football-v2",
+    "validation_notes": "时家与实验分秒需要明确区分",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-07",
+    "name": "大六壬天地盘/四课三传",
+    "family": "三式",
+    "status": "old_code_pending_port",
+    "existing_code": "four-divination-football; shushu-football",
+    "validation_notes": "干支、月将、贵人、十二天将",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-08",
+    "name": "太乙九宫主客",
+    "family": "三式",
+    "status": "old_code_pending_port",
+    "existing_code": "four-divination-football; shushu-football",
+    "validation_notes": "太乙金镜式经的计法版本需核",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-09",
+    "name": "小成图",
+    "family": "易卦",
+    "status": "old_code_pending_port",
+    "existing_code": "four-divination-football",
+    "validation_notes": "主客定位及宫位生克",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-10",
+    "name": "金口诀",
+    "family": "三式",
+    "status": "old_code_pending_port",
+    "existing_code": "four-divination-football",
+    "validation_notes": "课式与主客需复核",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-11",
+    "name": "七政四余",
+    "family": "星占",
+    "status": "old_code_pending_port",
+    "existing_code": "astro-football-lab",
+    "validation_notes": "需要出生/赛事天象、历算与时间地点",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-12",
+    "name": "西洋占星",
+    "family": "星占",
+    "status": "old_code_pending_port",
+    "existing_code": "astro-football-lab",
+    "validation_notes": "需要时间地点历表",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-13",
+    "name": "印度占星",
+    "family": "星占",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "需确定采用的历法与分盘体系",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-14",
+    "name": "灵棋经",
+    "family": "易数",
+    "status": "old_code_pending_port",
+    "existing_code": "six-fusion-football",
+    "validation_notes": "九宫/三层取数须分流派",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-15",
+    "name": "九爻易/灵棋九爻盘",
+    "family": "易数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "911棋盘和断语版本待核",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-16",
+    "name": "文王八卦/纳甲六爻",
+    "family": "易卦",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "纳甲、六亲、动爻、旺衰、世应",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-17",
+    "name": "六爻穿禽",
+    "family": "易卦",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "禽星对应与爻盘需校本",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-18",
+    "name": "律吕占卜",
+    "family": "音律",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "参照律吕新书；球数映射是实验规则",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-19",
+    "name": "皇极数",
+    "family": "象数",
+    "status": "review_pending",
+    "existing_code": "meihua-football-v10",
+    "validation_notes": "四位数、强点规则保留版本",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-20",
+    "name": "大定神数",
+    "family": "象数",
+    "status": "old_code_pending_port",
+    "existing_code": "six-fusion-football",
+    "validation_notes": "四位数取数和克制需冻结规则",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-21",
+    "name": "演周易数",
+    "family": "象数",
+    "status": "old_code_pending_port",
+    "existing_code": "six-fusion-football",
+    "validation_notes": "连单反双仅作实验",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-22",
+    "name": "策轨数",
+    "family": "象数",
+    "status": "old_code_pending_port",
+    "existing_code": "meihua-football-v10",
+    "validation_notes": "与五行合参需审计依赖",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-23",
+    "name": "神易数",
+    "family": "象数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "0与官鬼映射不应当成古书定法",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-24",
+    "name": "范围数",
+    "family": "象数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "百十位差/和取数试验",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-25",
+    "name": "太玄81首",
+    "family": "象数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "太玄首名及爻位体系需校正",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-26",
+    "name": "七星数",
+    "family": "象数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "星数映射",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-27",
+    "name": "九星/子路兽",
+    "family": "象数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "需要确认术式真实出处",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-28",
+    "name": "演禽",
+    "family": "象数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "演禽盘与十二生肖时空起法",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-29",
+    "name": "古灵神课",
+    "family": "易数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "古籍来源与课数体系需校核",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-30",
+    "name": "紫微斗数/紫占",
+    "family": "星命",
+    "status": "old_code_pending_port",
+    "existing_code": "astro-football-lab",
+    "validation_notes": "十二宫星曜、球赛转换实验",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-31",
+    "name": "风角五音",
+    "family": "天候",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "乙巳占卷10、风角书卷2；音律法核验",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-32",
+    "name": "雷霆占",
+    "family": "天候",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "开元占经卷102；不可编造天气事件",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-33",
+    "name": "军胜/军败云气占",
+    "family": "天候",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "乙巳占卷9；需真实观察",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-34",
+    "name": "鸟兽/物异占",
+    "family": "天候",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "兵要望江南与开元占经专题",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-35",
+    "name": "清华简筮法",
+    "family": "出土数术",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "清华简肆；不同于通行周易",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-36",
+    "name": "王家台归藏",
+    "family": "出土数术",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "早期筮法，按正式整理本",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-37",
+    "name": "五兆卜",
+    "family": "出土数术",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "古法来源尚需确认",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-38",
+    "name": "燕秦四象",
+    "family": "出土数术",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "名称、盘法、出土材料待确认",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-39",
+    "name": "汲冢筮占",
+    "family": "出土数术",
+    "status": "research_only",
+    "existing_code": null,
+    "validation_notes": "需确定具体文献",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-40",
+    "name": "飞宫小奇门",
+    "family": "三式",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "与时家转盘/飞盘分开",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-41",
+    "name": "小六壬",
+    "family": "三式",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "六宫六神流派",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-42",
+    "name": "太公奇门",
+    "family": "三式",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "传本与流派",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-43",
+    "name": "梅花观物/观外应",
+    "family": "外应",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "真实观察与室内随机提示词要分轨",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-44",
+    "name": "断卦天机六十四卦",
+    "family": "易卦",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "独立断语版权和出处需核",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-45",
+    "name": "五行数得球",
+    "family": "实验取数",
+    "status": "review_pending",
+    "existing_code": null,
+    "validation_notes": "水1火2木3金4土5；仅自定义映射",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-46",
+    "name": "九星地占Raml/Sikidy",
+    "family": "地占",
+    "status": "old_code_pending_port",
+    "existing_code": "geomancy-football; three-arm-football-native",
+    "validation_notes": "保留Maya/Ifa/Sikidy/Raml不同体系",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  },
+  {
+    "id": "METHOD-47",
+    "name": "阿拉伯地占",
+    "family": "地占",
+    "status": "old_code_pending_port",
+    "existing_code": "geomancy-football",
+    "validation_notes": "地占16形/落宫流派",
+    "output_contract": [
+      "direction_1x2",
+      "handicap_side",
+      "total_goals",
+      "over_under",
+      "odd_even",
+      "half_full",
+      "score_candidates"
+    ],
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+  }
+]
