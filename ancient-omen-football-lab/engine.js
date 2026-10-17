@@ -10,7 +10,7 @@ function sixYao(seed){const r=rand(seed,"liuyao"),lines=Array.from({length:6},()
 return {流派:"三钱随机模拟",六爻自下而上:lines,动爻:lines.flatMap((x,i)=>x===6||x===9?[i+1]:[]),本卦:hex(b),变卦:hex(changed)}}
 function meiHua(seed){const r=rand(seed,"meihua"),nums=[1+r(999),1+r(999),1+r(999)],upper=(nums[0]%8)||8,lower=(nums[1]%8)||8,moving=(nums.reduce((a,b)=>a+b,0)%6)||6;
 const b=(EIGHT[lower-1][1]+EIGHT[upper-1][1]).split("").map(Number),change=b.slice();change[moving-1]=1-change[moving-1];return {流派:"三数起卦实验口径",三数:nums,动爻:moving,本卦:hex(b),变卦:hex(change),互卦:hex([b[1],b[2],b[3],b[2],b[3],b[4]]),错卦:hex(b.map(x=>1-x)),综卦:hex(b.slice().reverse())}}
-function wind(direction){if(!WIND[direction])return {是否起占:false,说明:"缺少真实风向观测，不生成风角结果"};return {是否起占:true,来风:direction,八卦:WIND[direction][0],古籍主客:WIND[direction][1],来源:"《乙巳占》卷十·占风图占八风知主客胜负法",边界:"古代军队主客不等于足球主客；现代比附需独立盲测"}}
+function wind(direction){if(!WIND[direction])return {是否起占:false,说明:"缺少真实风向观测，不生成风角结果"};return {是否起占:true,来风:direction,八卦:WIND[direction][0],古籍主客:WIND[direction][1],来源:"《乙巳占》卷十末《占风图占八风知主客胜负法》；同卷《八方暴风占》存在不同主客分法，不能混同",边界:"古代军队主客不等于足球主客；现代比附需独立盲测"}}
 function factorial(n){let x=1;for(let i=2;i<=n;i++)x*=i;return x}
 function p(k,l){return Math.exp(-l)*l**k/factorial(k)}
 function result(h,a){return h>a?"胜":h<a?"负":"平"}
