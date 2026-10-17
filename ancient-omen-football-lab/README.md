@@ -55,3 +55,21 @@ research/method_registry.json 收录47项古法、历史占候、统计或实验
 2. 四位象数、球数映射、文字编码等是明确公开的现代实验映射，并非古籍原文支持的足球预测规则。
 3. 旧Java多轨从独立原项目复用；它们与网页的补充模块目前尚不共享统一前端，也未完成真实历史比赛封盘验证。
 4. 算法测试通过只保证可复现和结构约束。不能把同一原盘的本互变错综等结果当成独立票，也不能通过“多次抽取直至一致”制造虚假准确率。
+
+## 第三阶段：此前尚未接入的18项（V3）
+
+- 全部18项已在 `research_v3.js` 或原始Java桥接程序中登记**可执行或需输入证据的明确接口**。注意：**并不是18项完整传统排盘全部完成**。
+- `java/com/abe618/sanshifootball/TraditionalBridge.java` 直接复用原本的 `TraditionalEngine.java` 和 `cn.6tail:lunar:1.7.7`，运行时家、两种刻家、日家、月家、年家奇门，太乙四计七十二局，六壬天地盘四课及部分三传，值日二十八宿基础演禽。
+- `java/AstroBridge.java` 直接复用 `astro-football-lab` 的西洋和印度占星实验代码；该引擎使用近似天文和随机日期，不能冒称赛事实际星盘。
+- 网页 `index.html` 第三阶段面板提供金口诀部分四位计算、八卦纳甲纳支、紫微十二宫基础、清华简数字卦资料录入、七政四余黄经展示（全部11项位置必须真实输入）、《洪范》五兆五行分类等。
+- 古灵神课、燕秦四象、汲冢文献、王家台《归藏》等的原文记录入口会在缺可靠来源时拒绝生成占辞或足球判断。
+- 全部18项的完成程度和待校文献依据在 `research/remaining_18_v3.md`。各个 ID 在 `research/method_registry.json` 有实际运行路径及准确性边界。
+
+运行方式：
+```bash
+node ancient-omen-football-lab/tests/test_v3.cjs
+bash ancient-omen-football-lab/tools/run-traditional.sh 2026-10-17T13:00
+bash ancient-omen-football-lab/tools/run-astro.sh DEMO-001
+```
+
+GitHub Actions 中的 `ancient-omen-football-v2-offline` Artifacts 会自动打包此 V3 代码和实际计算出的 JSON 示例。**ZIP不代表APK，测试通过不代表准确率已经验证。** 真实赛前比赛数据与竞彩/北单连接仍待完成。
