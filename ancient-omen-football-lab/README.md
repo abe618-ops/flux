@@ -72,4 +72,4 @@ bash ancient-omen-football-lab/tools/run-traditional.sh 2026-10-17T13:00
 bash ancient-omen-football-lab/tools/run-astro.sh DEMO-001
 ```
 
-GitHub Actions 中的 `ancient-omen-football-v2-offline` Artifacts 会自动打包此 V3 代码和实际计算出的 JSON 示例。**ZIP不代表APK，测试通过不代表准确率已经验证。** 真实赛前比赛数据与竞彩/北单连接仍待完成。
+GitHub Actions 中的 `ancient-omen-football-v3-offline` Artifacts 会自动打包此 V3 代码和实际计算出的 JSON 示例。**ZIP不代表APK，测试通过不代表准确率已经验证。** 真实赛前比赛数据与竞彩/北单连接仍待完成。
