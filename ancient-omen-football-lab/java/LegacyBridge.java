@@ -19,6 +19,20 @@ public final class LegacyBridge {
         return "{"+f("name",s.name)+","+f("plate",s.raw)+","+f("direction",s.direction)+","+f("goals",s.goals)+","+f("over_under",s.overUnder)+","+f("parity",s.oddEven)+","+f("margin",s.margin)+"}";
     }
     public static void main(String[] args){
+        if(args.length>0 && "--audit-qimen".equals(args[0])){
+            int home=0,draw=0,away=0;
+            for(int i=1;i<=1080;i++){
+                QimenEngine.Board b=QimenEngine.generateBySerial(i);
+                if(b.serial!=i || b.prediction==null || b.prediction.result==null)
+                    throw new IllegalStateException("盘号或结果缺失: "+i);
+                if("主胜".equals(b.prediction.result))home++;
+                else if("平".equals(b.prediction.result))draw++;
+                else if("客胜".equals(b.prediction.result))away++;
+                else throw new IllegalStateException("非法方向: "+b.prediction.result);
+            }
+            System.out.println("{"+f("states",1080)+","+f("home",home)+","+f("draw",draw)+","+f("away",away)+"}");
+            return;
+        }
         String seed=args.length>0?args[0]:"DEMO-001";
         long n=FourDivinationEngine.seedFromText(seed);
         int serial=seed.startsWith("serial:")?Integer.parseInt(seed.substring(7)):Math.floorMod(n,1080L)==0?1:(int)Math.floorMod(n,1080L)+1;
