@@ -31,6 +31,8 @@
 <div><label>金口诀·地分（地支）</label><select id="jEarth"><option value="">未提供</option><option>子</option><option>丑</option><option>寅</option><option>卯</option><option>辰</option><option>巳</option><option>午</option><option>未</option><option>申</option><option>酉</option><option>戌</option><option>亥</option></select></div>
 <div><label>金口诀·月将（地支）</label><select id="jGeneral"><option value="">未提供</option><option>子</option><option>丑</option><option>寅</option><option>卯</option><option>辰</option><option>巳</option><option>午</option><option>未</option><option>申</option><option>酉</option><option>戌</option><option>亥</option></select></div>
 <div><label>实测值日二十八宿·单字</label><input id="mansionInput" placeholder="例如：角"></div>
+<div><label>五兆类型（有可靠卜兆记录才选择）</label><select id="fiveOmen"><option value="">未知，跳过</option><option>雨</option><option>霁</option><option>蒙</option><option>驿</option><option>克</option></select></div>
+<div><label>五兆出处</label><input id="fiveSource" value="《尚书·洪范》；《卜法详考》卷一" disabled></div>
 <div style="grid-column:1/-1"><label>清华简数字卦研究输入 · 12个数字（1、4、5、6、8、9）</label><input id="qinghuaLines" placeholder="示例：1,4,5,6,8,9,9,8,6,5,4,1"></div>
 <div style="grid-column:1/-1"><label>七政四余实际星历黄经 JSON · 11项全部提供才计算</label><textarea id="celestial" rows="2" style="width:100%;background:#111d2a;color:#fff;border:1px solid #43576b;border-radius:8px" placeholder='{"太阳":120,"月亮":...,"罗睺":...}'></textarea></div>
 <div><label>待校文献方法</label><select id="evidenceId"><option value="METHOD-36">王家台《归藏》</option><option value="METHOD-29">古灵神课</option><option value="METHOD-37">五兆卜</option><option value="METHOD-38">燕秦四象</option><option value="METHOD-39">汲冢筮占</option></select></div>
@@ -85,7 +87,7 @@ const get=id=>document.getElementById(id);
 function execute(){
  const doc={},id=get("evidenceId").value;
  if(get("sourceCitation").value.trim()&&get("sourceText").value.trim())doc[id]={citation:get("sourceCitation").value,text:get("sourceText").value};
- const opts={seed:get("seed").value,lunarMonth:Number(get("lunarMonth").value),hourBranch:get("hourBranch").value||null,mansion:get("mansionInput").value.trim(),documentEvidence:doc,
+ const opts={seed:get("seed").value,lunarMonth:Number(get("lunarMonth").value),hourBranch:get("hourBranch").value||null,mansion:get("mansionInput").value.trim(),fiveOmen:get("fiveOmen").value,documentEvidence:doc,
  jinkou:{dayStem:get("jDay").value,earthBranch:get("jEarth").value,hourBranch:get("hourBranch").value,monthGeneral:get("jGeneral").value}};
  const q=get("qinghuaLines").value.trim();
  if(q)opts.qinghua={lines:q.split(/[,，、\s]+/).filter(Boolean).map(Number)};
