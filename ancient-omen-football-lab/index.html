@@ -10,7 +10,7 @@
 <div class="grid"><section class="card"><h2>六爻（三钱模拟）</h2><div id="liu"></div></section><section class="card"><h2>梅花（本、互、变、错、综）</h2><div id="mei"></div></section></div>
 <div class="grid"><section class="card"><h2>风角（乙巳占卷十）</h2><div id="windchart"></div></section><section class="card"><h2>各术独立判断</h2><div id="fusion"></div><p class="muted tiny">合参票数不代表统计胜率。同一个卦的本互错综不得拆成多个独立投票。</p></section></div>
 <section class="card"><h2>开盒复盘</h2><div class="fields"><div><label>主队实际进球</label><input id="sh" type="number" value="1" min="0"></div><div><label>客队实际进球</label><input id="sa" type="number" value="1" min="0"></div></div><button id="settle">录入赛果核验</button><div id="review"></div></section>
-<section class="card"><h2>文献与旧工程</h2><p>已建立包含 <b>27 项古籍/出土资料</b> 的逐项来源登记，每项记录卷篇、核验进度和模块用途。</p><p><a href="./research/source_catalog.json">打开完整古籍登记 JSON</a> ｜ <a href="./research/method_architecture.md">查看方法移植规划</a></p><p class="muted tiny">当前仅 V1 的六爻、梅花、实测风角实现运行。太乙、奇门、六壬、古灵神课、律吕、清华简筮法、风雷星象及既有安卓工程尚未全部移植。统计基线的 λ 为人工输入，未接入真实比赛与赛前赔率。</p></section>
+<section class="card"><h2>文献与旧工程</h2><p>已建立包含 <b>27 项古籍/出土资料</b> 的逐项来源登记，每项记录卷篇、核验进度和模块用途。</p><p><a href="./research/source_catalog.json">打开完整古籍登记 JSON</a> ｜ <a href="./research/method_architecture.md">查看方法移植规划</a> ｜ <a href="./research/method_registry.json">查看47项术数注册表</a></p><p class="muted tiny">当前仅 V1 的六爻、梅花、实测风角实现运行。太乙、奇门、六壬、古灵神课、律吕、清华简筮法、风雷星象及既有安卓工程尚未全部移植。统计基线的 λ 为人工输入，未接入真实比赛与赛前赔率。</p></section>
 </main><script src="engine.js"></script><script>
 const $=id=>document.getElementById(id),core=window.AncientFootball;let last=null;
 const pct=x=>(x*100).toFixed(1)+"%",hx=x=>x.上卦+"上"+x.下卦+"下";
