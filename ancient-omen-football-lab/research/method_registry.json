@@ -715,9 +715,9 @@
     "id": "METHOD-37",
     "name": "五兆卜",
     "family": "出土数术",
-    "status": "v3_wuzhao_source_only",
+    "status": "v3_wuzhao_five_classification",
     "existing_code": null,
-    "validation_notes": "五兆文献需证据，缺可靠定式不给完整盘",
+    "validation_notes": "《尚书·洪范》五兆名雨霁蒙驿克；《卜法详考》卷一五行对应，须用户真实输入卜兆；不生成足球吉凶",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -729,7 +729,11 @@
     ],
     "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
     "runner": "ancient-omen-football-lab/research_v3.js",
-    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性",
+    "evidence": [
+      "https://zh.wikisource.org/zh-hans/尚書/洪範",
+      "https://ctext.org/wiki.pl?chapter=658963&if=gb"
+    ]
   },
   {
     "id": "METHOD-38",
