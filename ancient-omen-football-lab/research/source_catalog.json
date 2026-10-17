@@ -147,8 +147,8 @@
     "id": "DOC-17",
     "title": "汉书·天文志",
     "scope": "五星、星象",
-    "audit_status": "文献题名已确认，待原文",
-    "url": "",
+    "audit_status": "已核卷26原文",
+    "url": "https://zh.wikisource.org/wiki/漢書/卷026",
     "module": "星占",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -156,8 +156,8 @@
     "id": "DOC-18",
     "title": "汉书·五行志",
     "scope": "灾异五行",
-    "audit_status": "文献题名已确认，待原文",
-    "url": "",
+    "audit_status": "已核卷27原文",
+    "url": "https://zh.wikisource.org/wiki/漢書/卷027",
     "module": "灾异",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -192,8 +192,8 @@
     "id": "DOC-22",
     "title": "银雀山汉简·占书",
     "scope": "出土早期占候",
-    "audit_status": "待规范整理本与图版",
-    "url": "",
+    "audit_status": "已核社科院简帛研究综述；需与银雀山汉墓竹简整理本校勘",
+    "url": "https://lishisuo.cass.cn/xsyj/qhs/yjcg/201906/t20190625_4923669.shtml",
     "module": "早期兵占",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
