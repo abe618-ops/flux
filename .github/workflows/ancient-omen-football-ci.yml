@@ -48,7 +48,7 @@ jobs:
       - name: Package standalone offline research suite
         uses: actions/upload-artifact@v4
         with:
-          name: ancient-omen-football-v2-offline
+          name: ancient-omen-football-v3-offline
           path: ancient-omen-football-lab/
           if-no-files-found: error
           retention-days: 30
