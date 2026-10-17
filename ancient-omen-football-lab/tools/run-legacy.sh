@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "\${BASH_SOURCE[0]}")/../.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 javac -encoding UTF-8 -d "$OUT" \
@@ -8,4 +8,4 @@ javac -encoding UTF-8 -d "$OUT" \
   "$ROOT/four-divination-football/app/src/main/java/com/abe618/fourdivfootball/FourDivinationEngine.java" \
   "$ROOT/six-fusion-football/app/src/main/java/com/abe618/sixfusionfootball/FusionEngine.java" \
   "$ROOT/ancient-omen-football-lab/java/LegacyBridge.java"
-java -cp "$OUT" LegacyBridge "\${1:-DEMO-001}"
+java -cp "$OUT" LegacyBridge "${1:-DEMO-001}"
