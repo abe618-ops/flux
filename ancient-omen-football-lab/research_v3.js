@@ -108,7 +108,14 @@ function execute(id,input){
    if(!v.mansion||!MANSIONS.includes(v.mansion))return need(id,["可靠来源的值日二十八宿名称（单个宿字）"],"六爻穿禽须确认具体流派与爻位映射规则");
    return done(id,"combined_annotation",{mansion:v.mansion,context:v.plate?{hex:(v.plate.六爻||{}).本卦||null}:null,notes:"禽宿登记与六爻关联，不凭宿名捏造六爻穿禽完整禽星安位"},["二十八宿禽星基础资料"]);
  }
- case "METHOD-29":case "METHOD-36":case "METHOD-37":case "METHOD-38":case "METHOD-39":return manuscript(id,v.documentEvidence&&v.documentEvidence[id]);
+ case "METHOD-37":{
+   const names={雨:"水",霁:"火",蒙:"木",驿:"金",克:"土"};
+   const variant={雺:"蒙",圛:"驿",霽:"霁",繹:"驿"};
+   let term=variant[v.fiveOmen]||v.fiveOmen;
+   if(!names[term])return need(id,["已辨认的五兆类型：雨/霁/蒙/驿/克"],"《尚书·洪范》五兆；《卜法详考》五行解释。无确实龟兆时不随机生成。");
+   return done(id,"classical_five_omens_classification",{原输入:v.fiveOmen,归一兆名:term,五行:names[term],原典:"尚书洪范·稽疑",解释所本:"卜法详考卷一五兆",说明:"仅保存观测兆类型及后世五行解释，不生成足球赛果，也不假装机器识别龟甲裂痕"},["https://zh.wikisource.org/zh-hans/尚書/洪範","https://ctext.org/wiki.pl?chapter=658963&if=gb"]);
+ }
+ case "METHOD-29":case "METHOD-36":case "METHOD-38":case "METHOD-39":return manuscript(id,v.documentEvidence&&v.documentEvidence[id]);
  case "METHOD-30":return mingShen(v.lunarMonth,v.hourBranch);
  case "METHOD-35":return numberManuscript(v.qinghua);
  case "METHOD-42":return v.originalQimen?done(id,"comparison_only",{qimen:v.originalQimen,notes:"这是既有奇门基盘的比较容器，不是文献不明的太公奇门独立起局，不能额外投票"},["旧奇门原始盘"]):need(id,["既有奇门完整盘面 JSON","太公奇门可考流派规则"],"流派未核实前不能伪造第二套奇门局");
