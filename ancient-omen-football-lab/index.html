@@ -24,6 +24,22 @@
 <div style="grid-column:1 / -1"><label>人工实际观察的外应文字</label><input id="omenObs" placeholder="不自动编造真实外应"></div></div>
 <div><label><input id="thunderRain" type="checkbox" style="width:auto"> 雷声伴随下雨（仅在真实听雷时使用）</label></div>
 <button id="runV2">执行扩展研究模块</button><p class="muted tiny" id="v2summary"></p><div id="v2result"></div></section>
+<section class="card" id="third-stage"><h2>第三阶段 · 剩余18项方法工程</h2>
+<p class="muted tiny">其中奇门、太乙、六壬、演禽、西洋与印度占星使用仓库中原有的 Java 核心，在 CI 或本地 Java 环境运行；浏览器不假装执行 Java。纳甲、金口诀、紫微宫位和出土数字卦等可以在此录入或计算可核实的基础结构。</p>
+<div class="fields">
+<div><label>金口诀·日干</label><select id="jDay"><option value="">未提供</option><option>甲</option><option>乙</option><option>丙</option><option>丁</option><option>戊</option><option>己</option><option>庚</option><option>辛</option><option>壬</option><option>癸</option></select></div>
+<div><label>金口诀·地分（地支）</label><select id="jEarth"><option value="">未提供</option><option>子</option><option>丑</option><option>寅</option><option>卯</option><option>辰</option><option>巳</option><option>午</option><option>未</option><option>申</option><option>酉</option><option>戌</option><option>亥</option></select></div>
+<div><label>金口诀·月将（地支）</label><select id="jGeneral"><option value="">未提供</option><option>子</option><option>丑</option><option>寅</option><option>卯</option><option>辰</option><option>巳</option><option>午</option><option>未</option><option>申</option><option>酉</option><option>戌</option><option>亥</option></select></div>
+<div><label>实测值日二十八宿·单字</label><input id="mansionInput" placeholder="例如：角"></div>
+<div style="grid-column:1/-1"><label>清华简数字卦研究输入 · 12个数字（1、4、5、6、8、9）</label><input id="qinghuaLines" placeholder="示例：1,4,5,6,8,9,9,8,6,5,4,1"></div>
+<div style="grid-column:1/-1"><label>七政四余实际星历黄经 JSON · 11项全部提供才计算</label><textarea id="celestial" rows="2" style="width:100%;background:#111d2a;color:#fff;border:1px solid #43576b;border-radius:8px" placeholder='{"太阳":120,"月亮":...,"罗睺":...}'></textarea></div>
+<div><label>待校文献方法</label><select id="evidenceId"><option value="METHOD-36">王家台《归藏》</option><option value="METHOD-29">古灵神课</option><option value="METHOD-37">五兆卜</option><option value="METHOD-38">燕秦四象</option><option value="METHOD-39">汲冢筮占</option></select></div>
+<div><label>可核查的文献版本与卷篇</label><input id="sourceCitation" placeholder="无可靠来源可留空"></div>
+<div style="grid-column:1/-1"><label>原文或出土释文（仅保存人工输入）</label><textarea id="sourceText" rows="2" style="width:100%;background:#111d2a;color:#fff;border:1px solid #43576b;border-radius:8px"></textarea></div>
+<div style="grid-column:1/-1"><label>旧版奇门输出 JSON（可选，用于太公奇门流派对照）</label><textarea id="qimenPaste" rows="2" style="width:100%;background:#111d2a;color:#fff;border:1px solid #43576b;border-radius:8px"></textarea></div>
+</div>
+<button id="runV3">运行剩余18项研究接口</button><p class="muted tiny" id="v3summary"></p><div id="v3result"></div>
+</section>
 </main><script src="engine.js"></script><script src="research_v2.js"></script><script>
 const $=id=>document.getElementById(id),core=window.AncientFootball;let last=null;
 const pct=x=>(x*100).toFixed(1)+"%",hx=x=>x.上卦+"上"+x.下卦+"下";
@@ -62,5 +78,31 @@ function launch(){
  const pre=document.createElement("pre");pre.className="muted tiny";pre.style.whiteSpace="pre-wrap";pre.style.wordBreak="break-all";pre.textContent=JSON.stringify(m.result||{required:m.required},null,2);d.appendChild(pre);panel.appendChild(d)});
 }
 get("runV2").addEventListener("click",launch);launch();
+})();
+</script><script src="research_v3.js"></script><script>
+(function(){
+const get=id=>document.getElementById(id);
+function execute(){
+ const doc={},id=get("evidenceId").value;
+ if(get("sourceCitation").value.trim()&&get("sourceText").value.trim())doc[id]={citation:get("sourceCitation").value,text:get("sourceText").value};
+ const opts={seed:get("seed").value,lunarMonth:Number(get("lunarMonth").value),hourBranch:get("hourBranch").value||null,mansion:get("mansionInput").value.trim(),documentEvidence:doc,
+ jinkou:{dayStem:get("jDay").value,earthBranch:get("jEarth").value,hourBranch:get("hourBranch").value,monthGeneral:get("jGeneral").value}};
+ const q=get("qinghuaLines").value.trim();
+ if(q)opts.qinghua={lines:q.split(/[,，、\s]+/).filter(Boolean).map(Number)};
+ const coords=get("celestial").value.trim();
+ try{
+ if(coords)opts.longitudes=JSON.parse(coords);
+ const old=get("qimenPaste").value.trim();if(old){const j=JSON.parse(old);opts.originalQimen=j.qimen||j;}
+ const v=window.AncientResearchV3.all(opts),panel=get("v3result");panel.replaceChildren();
+ get("v3summary").textContent=v.methodCount+"项已建立明确接口；Java类需运行独立命令；证据不足的古法不输出虚构盘面。";
+ v.methods.forEach(m=>{
+ const d=document.createElement("details");d.className="line";
+ const title=document.createElement("summary");title.textContent=m.name+" · "+m.phase;d.appendChild(title);
+ const pre=document.createElement("pre");pre.className="muted tiny";pre.style.whiteSpace="pre-wrap";pre.style.wordBreak="break-word";
+ pre.textContent=JSON.stringify({result:m.result||m.results||null,required:m.required||null,runner:m.runner||null,notes:m.notes||null},null,2);d.appendChild(pre);panel.appendChild(d);
+ });
+ }catch(err){get("v3summary").textContent="输入解析失败："+err.message;}
+}
+get("runV3").addEventListener("click",execute);execute();
 })();
 </script></body></html>
