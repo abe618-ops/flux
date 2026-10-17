@@ -18,6 +18,8 @@ jobs:
         run: node ancient-omen-football-lab/tests/test_core.cjs
       - name: V2 research modules and source dossiers
         run: node ancient-omen-football-lab/tests/test_v2.cjs
+      - name: V3 remaining 18 method adapters and evidence gates
+        run: node ancient-omen-football-lab/tests/test_v3.cjs
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
