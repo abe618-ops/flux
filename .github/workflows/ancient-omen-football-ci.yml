@@ -38,6 +38,13 @@ jobs:
         run: |
           bash ancient-omen-football-lab/tools/run-astro.sh fixed-astro-test > /tmp/astro.json
           node -e "const x=require('/tmp/astro.json');for(const k of ['western','indian','geomancy']){if(!x[k]||!x[k].detail)throw Error('Missing '+k)}console.log('PASS: legacy western/Indian methods',x.m1_pattern)"
+      - name: Include sample calculated plates in archive
+        run: |
+          mkdir -p ancient-omen-football-lab/examples
+          cp /tmp/traditional.json ancient-omen-football-lab/examples/sample_traditional_2026-10-17.json
+          cp /tmp/astro.json ancient-omen-football-lab/examples/sample_astro_random_experiment.json
+          cp /tmp/legacy.json ancient-omen-football-lab/examples/sample_original_qimen_1080.json
+          cp /tmp/qimen-audit.json ancient-omen-football-lab/examples/qimen_full_1080_audit.json
       - name: Package standalone offline research suite
         uses: actions/upload-artifact@v4
         with:
