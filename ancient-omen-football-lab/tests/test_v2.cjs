@@ -1,0 +1,33 @@
+const assert=require("node:assert/strict");
+const v2=require("../research_v2.js"),v1=require("../engine.js");
+const x=v2.runAll({seed:"fixed-2026"});
+assert.equal(x.count,24);
+assert.equal(x.executed,18);
+assert.equal(x.needsObservation,6);
+assert.deepEqual(x,v2.runAll({seed:"fixed-2026"}));
+assert.notDeepEqual(x,v2.runAll({seed:"another-seed"}));
+assert.equal(v1.wind("西南").古籍主客,"主");
+const index=JSON.parse(require("node:fs").readFileSync(require("node:path").join(__dirname,"..","research","source_catalog.json"),"utf8"));
+const registry=JSON.parse(require("node:fs").readFileSync(require("node:path").join(__dirname,"..","research","method_registry.json"),"utf8"));
+const volumes=JSON.parse(require("node:fs").readFileSync(require("node:path").join(__dirname,"..","research","chapter_dossiers_v2.json"),"utf8"));
+assert.equal(index.length,27);
+assert.equal(registry.length,47);
+assert.equal(volumes.entries.length,15);
+assert.equal(volumes.entries.find(z=>z.source==="乙巳占"&&z.volume==="卷十").rules.length,2);
+const liuren=v2.dayHourSixRen(1,1,"子");
+assert.equal(liuren.palace,"大安");
+assert.equal(v2.dayHourSixRen(1,1,"丑").palace,"留连");
+assert.equal(v2.dayHourSixRen(2,1,"子").palace,"留连");
+const g=v2.geomancy("fixed-2026");
+assert.equal(g.mothers.length,4);
+assert.equal(g.daughters.length,4);
+assert.equal(g.nieces.length,4);
+assert.equal(g.witnesses.length,2);
+assert.equal(g.judge.length,4);
+for(const figure of [...g.mothers,...g.daughters,...g.nieces,...g.witnesses,g.judge]){
+ assert.equal(figure.length,4);figure.forEach(n=>assert.ok(n===1||n===2));
+}
+const wet=v2.runAll({seed:"fixed-2026",lunarMonth:2,lunarDay:6,hourBranch:"卯",windSound:"商",thunder:{season:"秋",direction:"东",rain:true},cloud:{color:"青",direction:"东",form:"带状"},animal:{species:"鸟",behavior:"飞过"},omenText:"鸣笛"});
+assert.equal(wet.executed,24);assert.equal(wet.needsObservation,0);
+assert.equal(wet.methods.find(z=>z.id==="METHOD-32").result.历史检索章节,"开元占经卷102雷霆占");
+console.log("PASS: 24 supplementary methods, weather gates, geomancy shape, six-ren stages, source and volume registries.");
