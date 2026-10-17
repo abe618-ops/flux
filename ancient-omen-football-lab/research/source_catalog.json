@@ -48,8 +48,8 @@
     "id": "DOC-06",
     "title": "风角书",
     "scope": "八方风、五音风",
-    "audit_status": "已核他书引用，待原本",
-    "url": "",
+    "audit_status": "已核数字版目录，OCR需比勘影印",
+    "url": "https://ctext.org/wiki.pl?if=gb&remap=gb&res=888517",
     "module": "风角",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -138,8 +138,8 @@
     "id": "DOC-16",
     "title": "史记·天官书",
     "scope": "五星、星占",
-    "audit_status": "文献题名已确认，待原文",
-    "url": "",
+    "audit_status": "已核《史记》卷27目录，待分段校勘",
+    "url": "https://zh.wikisource.org/zh-hans/史記",
     "module": "星占",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -165,8 +165,8 @@
     "id": "DOC-19",
     "title": "马王堆帛书·五星占",
     "scope": "出土五星占",
-    "audit_status": "待规范整理本与图版",
-    "url": "",
+    "audit_status": "已核出土文献校补论文，须以正式集成逐页校勘",
+    "url": "https://www.fdgwz.org.cn/Web/Show/2483",
     "module": "早期星占",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -174,8 +174,8 @@
     "id": "DOC-20",
     "title": "马王堆帛书·天文气象杂占",
     "scope": "出土天文气象占",
-    "audit_status": "待规范整理本与图版",
-    "url": "",
+    "audit_status": "已核校补论文，残文及图像尚需逐页校核",
+    "url": "https://www.fdgwz.org.cn/Web/Show/2483",
     "module": "早期占候",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -183,8 +183,8 @@
     "id": "DOC-21",
     "title": "马王堆帛书·日月风雨云气占",
     "scope": "出土风云气占",
-    "audit_status": "待规范整理本与图版",
-    "url": "",
+    "audit_status": "已确认马王堆整理资料入口，具体篇名/同物异称待核",
+    "url": "https://lib.phil.pku.edu.cn/node/56910",
     "module": "早期占候",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -210,8 +210,8 @@
     "id": "DOC-24",
     "title": "王家台秦简·归藏",
     "scope": "出土筮法",
-    "audit_status": "待规范整理本与图版",
-    "url": "",
+    "audit_status": "已核研究综述，仍需考古图版校勘",
+    "url": "https://mohuawenpress.com/show.asp?id=421",
     "module": "易占",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -219,8 +219,8 @@
     "id": "DOC-25",
     "title": "清华简·筮法",
     "scope": "战国筮数",
-    "audit_status": "待规范整理本与图版",
-    "url": "",
+    "audit_status": "已核清华大学公布的第四辑介绍，待逐简",
+    "url": "https://www.ctwx.tsinghua.edu.cn/info/1072/1729.htm",
     "module": "数字卦",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
@@ -237,8 +237,8 @@
     "id": "DOC-27",
     "title": "礼记·月令",
     "scope": "雷始收声",
-    "audit_status": "已定位条目，待校本",
-    "url": "",
+    "audit_status": "已核仲秋雷始收声原文",
+    "url": "https://zh.wikisource.org/zh-hans/禮記/月令",
     "module": "物候",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   }
