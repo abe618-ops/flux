@@ -14,5 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run invariant tests (Node 22)
+      - name: Core probability and chart invariants
         run: node ancient-omen-football-lab/tests/test_core.cjs
+      - name: V2 research modules and source dossiers
+        run: node ancient-omen-football-lab/tests/test_v2.cjs
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile and execute original Java engines
+        run: |
+          bash ancient-omen-football-lab/tools/run-legacy.sh serial:1080 > /tmp/legacy.json
+          node -e "const r=require('/tmp/legacy.json');if(r.qimen.serial!==1080||!r.four_tracks.maya||!r.four_tracks.ifa||!r.fusion_bingzhan.raw)throw Error('legacy bridge incomplete');console.log('PASS: legacy Java engine JSON and 1080 serial')"
