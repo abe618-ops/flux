@@ -1,0 +1,18 @@
+name: Ancient Omen Football Lab Checks
+on:
+  pull_request:
+    paths:
+      - 'ancient-omen-football-lab/**'
+      - '.github/workflows/ancient-omen-football-ci.yml'
+  push:
+    branches:
+      - 'research/ancient-omens-football-v1-20261017'
+    paths:
+      - 'ancient-omen-football-lab/**'
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run invariant tests (Node 22)
+        run: node ancient-omen-football-lab/tests/test_core.cjs
