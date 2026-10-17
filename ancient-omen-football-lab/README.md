@@ -34,3 +34,24 @@ research/method_architecture.md 列出旧版术数的移植顺序、排盘规格
 
 ## 旧术数注册表
 research/method_registry.json 收录47项古法、历史占候、统计或实验方法；每项区分当前可运行、旧工程待移植、待核规则或只作文献研究，并保留原始项目路径。
+
+## 第二阶段实际扩展（2026-10-17）
+
+- 5部核心文献的15卷篇/专题初校见 `research/chapter_dossiers_v2.json`；原文与异说交叉记录见 `research/volume_crosscheck_v2.md`。这是目录和重点段落核对，**未完成双版本逐字校勘**。
+- 新增 `research_v2.js`：24项有执行接口的补充研究方法；默认输入时18项可算、6项因需要实际风雷、云气、禽兽、外应或农历日期而跳过。已与 `index.html` 联动。
+- `research/method_registry.json` 47项登记现已标注 V2可运行、观测门槛、结构原型与旧Java接口等实际状态；原有4基础模块不重复计算。
+- `java/LegacyBridge.java` 直接编译既有工程的三份原始 Java 源码：`bingfa-qimen-football-v2`、`four-divination-football` 和 `six-fusion-football`。包含奇门1080局及Maya/Ifá/Sikidy/Raml和兵占等既有实验算法，不是重新造一套“同名术数”。
+- CI同时跑基础测试、24项V2模块测试和上述Java编译运行，并将离线研究台文件上传为 GitHub Actions 构建产物（不是APK）。
+
+### 操作
+
+- 浏览器：打开 `index.html`，输入固定种子后运行基础排盘和V2扩展模块。需要真实观察的风、雷、云、鸟兽外应可留空，相关方法将自动跳过。
+- Java CLI：在仓库根目录执行 `bash ancient-omen-football-lab/tools/run-legacy.sh serial:123` 或以任意字符串替换 `serial:123`，得到 JSON 格式旧奇门与多轨实验结果；需 Java 17。
+- 开发测试：`node ancient-omen-football-lab/tests/test_core.cjs` 和 `node ancient-omen-football-lab/tests/test_v2.cjs`。
+
+### 准确性与证据分层
+
+1. **结构可运行**不等于传统排盘所有门派已经实现。部分模块只生成必要状态，不能据此解释卦辞和星占。
+2. 四位象数、球数映射、文字编码等是明确公开的现代实验映射，并非古籍原文支持的足球预测规则。
+3. 旧Java多轨从独立原项目复用；它们与网页的补充模块目前尚不共享统一前端，也未完成真实历史比赛封盘验证。
+4. 算法测试通过只保证可复现和结构约束。不能把同一原盘的本互变错综等结果当成独立票，也不能通过“多次抽取直至一致”制造虚假准确率。
