@@ -27,6 +27,8 @@ assert.ok(ast.runner.includes("run-astro"));
 const ev=v.execute("METHOD-36",{documentEvidence:{"METHOD-36":{citation:"2026 Wang HuaPing",text:"Example paraphrase, not a reconstructed verdict"}}});
 assert.equal(ev.phase,"manual_source_annotation");
 assert.equal(v.execute("METHOD-37",{seed:"x"}).phase,"needs_input_or_source");
+assert.equal(v.execute("METHOD-37",{fiveOmen:"圛"}).result.五行,"金");
+assert.equal(v.execute("METHOD-37",{fiveOmen:"雨"}).result.归一兆名,"雨");
 assert.equal(v.execute("METHOD-42",{seed:"x"}).phase,"needs_input_or_source");
 assert.equal(v.all({seed:"test"}).methodCount,18);
 const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,"..","research","method_registry.json"),"utf8"));
