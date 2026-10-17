@@ -28,6 +28,14 @@ jobs:
           node -e "const r=require('/tmp/legacy.json');if(r.qimen.serial!==1080||!r.four_tracks.maya||!r.four_tracks.ifa||!r.fusion_bingzhan.raw)throw Error('legacy bridge incomplete');console.log('PASS: legacy Java engine JSON and 1080 serial')"
           bash ancient-omen-football-lab/tools/run-legacy.sh --audit-qimen > /tmp/qimen-audit.json
           node -e "const r=require('/tmp/qimen-audit.json');if(r.states!==1080||r.home+r.draw+r.away!==1080)throw Error('incomplete Qimen enumeration');console.log('PASS: all 1080 states',r)"
+      - name: Compile and run historical calendar engines
+        run: |
+          bash ancient-omen-football-lab/tools/run-traditional.sh 2026-10-17T13:00 > /tmp/traditional.json
+          node -e "const x=require('/tmp/traditional.json');if(Object.keys(x.qimen).length!==6||Object.keys(x.taiyi).length!==4||x.liuren.lessons.length!==4||x.yanqin.animal_mansion.length<2)throw Error('TraditionalBridge invalid');console.log('PASS: six Qimen, four Taiyi, four LiuRen lessons, Yanqin',x.four_pillars)"
+      - name: Compile and run existing Western / Indian astrology
+        run: |
+          bash ancient-omen-football-lab/tools/run-astro.sh fixed-astro-test > /tmp/astro.json
+          node -e "const x=require('/tmp/astro.json');for(const k of ['western','indian','geomancy']){if(!x[k]||!x[k].detail)throw Error('Missing '+k)}console.log('PASS: legacy western/Indian methods',x.m1_pattern)"
       - name: Package standalone offline research suite
         uses: actions/upload-artifact@v4
         with:
