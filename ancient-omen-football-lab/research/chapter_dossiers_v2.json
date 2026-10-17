@@ -1,0 +1,218 @@
+{
+  "project": "古占候足球研究",
+  "version": "2.0-dossier-20261017",
+  "scope": "所选6部文献的十五个卷篇/专题逐项初校记录；不是通行意义的全文异本逐字校勘",
+  "entries": [
+    {
+      "source": "乙巳占",
+      "volume": "卷八",
+      "sections": [
+        "彗孛占第四十七",
+        "气候占第五十一",
+        "云占第五十二"
+      ],
+      "url": "https://zh.wikisource.org/wiki/乙巳占/8",
+      "verify": "已查阅卷内正文和章节；尚未比对异本",
+      "principle": "彗孛与气候云象分列；事件须真实观测；古书言军国灾异，不可直接映射进球数"
+    },
+    {
+      "source": "乙巳占",
+      "volume": "卷九",
+      "sections": [
+        "军胜气象占第五十五",
+        "军败气象占第五十六",
+        "战阵气象占第六十一"
+      ],
+      "url": "https://zh.wikisource.org/wiki/乙巳占/9",
+      "verify": "已核目录与正文出处；细分占辞尚需复校",
+      "principle": "军胜/军败气象依天气形色与敌我方位；缺实际天象时无判断"
+    },
+    {
+      "source": "乙巳占",
+      "volume": "卷十",
+      "sections": [
+        "候风法第六十八",
+        "推风声五音法第七十",
+        "五音所主占第七十一",
+        "八方暴风占第八十一",
+        "五音客主法第八十七",
+        "卷末占风图占八风知主客胜负法"
+      ],
+      "url": "https://zh.wikisource.org/wiki/乙巳占/10",
+      "verify": "已直接核卷内首尾原文，对照两种八方主客不同口径；未完成全文异本字句校勘",
+      "principle": "卷末图说：震巽离坤主、乾坎艮兑客；卷中八方暴风另一说为震巽离主、乾坎艮兑坤客；须显式选规则版本",
+      "rules": [
+        {
+          "id": "YISI-WIND-LATE",
+          "directions": {
+            "东": "主",
+            "东南": "主",
+            "南": "主",
+            "西南": "主",
+            "西北": "客",
+            "北": "客",
+            "东北": "客",
+            "西": "客"
+          },
+          "source_location": "卷末《占风图占八风知主客胜负法》"
+        },
+        {
+          "id": "YISI-WIND-EARLY",
+          "directions": {
+            "东": "主",
+            "东南": "主",
+            "南": "主",
+            "西南": "客",
+            "西北": "客",
+            "北": "客",
+            "东北": "客",
+            "西": "客"
+          },
+          "source_location": "《八方暴风占》第八十一篇末段"
+        }
+      ]
+    },
+    {
+      "source": "开元占经",
+      "volume": "卷九十一",
+      "sections": [
+        "风占",
+        "候风法",
+        "风名状",
+        "纳音主客"
+      ],
+      "url": "https://ctext.org/wiki.pl?chapter=433731&if=gb",
+      "verify": "已核四库系电子正文",
+      "principle": "以日辰纳音与风来方分主客，同时记载雨能解风占；与乙巳卷十有相似文句，须记录文本依赖"
+    },
+    {
+      "source": "开元占经",
+      "volume": "卷九十二",
+      "sections": [
+        "雨占",
+        "杂占",
+        "正月",
+        "二月"
+      ],
+      "url": "https://ctext.org/wiki.pl?chapter=323226&if=gb",
+      "verify": "已核雨占开首及部分逐月条目",
+      "principle": "无云而雨与降雨日期等是不同判断条件；不能只凭‘下雨’触发全部规则"
+    },
+    {
+      "source": "开元占经",
+      "volume": "卷九十四",
+      "sections": [
+        "杂云气占"
+      ],
+      "url": "https://ctext.org/wiki.pl?chapter=525308&if=gb",
+      "verify": "目录已核；具体占辞尚待逐条复校",
+      "principle": "云气分类与位置、形色及观测时点关联"
+    },
+    {
+      "source": "开元占经",
+      "volume": "卷九十七",
+      "sections": [
+        "猛将军阵胜负云气占"
+      ],
+      "url": "https://ctext.org/wiki.pl?chapter=525308&if=gb",
+      "verify": "目录已核；具体占辞尚待复校",
+      "principle": "兵占云气须具主客定位和真实观察条件"
+    },
+    {
+      "source": "开元占经",
+      "volume": "卷一百二",
+      "sections": [
+        "雷霆占",
+        "京房占雷",
+        "春夏秋冬雷候",
+        "八卦雷起方向"
+      ],
+      "url": "https://ctext.org/wiki.pl?chapter=827944&if=gb",
+      "verify": "已核雷霆占全文条目和季候段；不同京房占辞存在异说",
+      "principle": "区分雷响方位、时令、风雨、雷声特征；原文以灾异政治占断为主，不能作实际胜率"
+    },
+    {
+      "source": "灵台秘苑",
+      "volume": "卷五",
+      "sections": [
+        "风·序略",
+        "风名状",
+        "风角"
+      ],
+      "url": "https://ctext.org/wiki.pl?chapter=144937&if=en",
+      "verify": "已核四库正文、原撰/重修署名",
+      "principle": "风候前提包括日辰、八卦、四维、来向、时刻、风势；与乙巳类似观测器具条目不应当作独立预测源"
+    },
+    {
+      "source": "灵台秘苑",
+      "volume": "卷六",
+      "sections": [
+        "天占",
+        "雷声异候"
+      ],
+      "url": "https://zh.wikisource.org/wiki/靈臺秘苑",
+      "verify": "已核天占正文中异常天象与风雨条目",
+      "principle": "灾异占辞属于政治观念史；缺自然现象就不能独立成盘"
+    },
+    {
+      "source": "兵要望江南",
+      "volume": "风角·第二",
+      "sections": [
+        "风角三十三首",
+        "纳音主客",
+        "旋风"
+      ],
+      "url": "https://zh.wikisource.org/wiki/兵要望江南",
+      "verify": "已核校勘文本章节及纳音风段",
+      "principle": "歌诀以天气声音与纳音推测兵事；来源与版本须保存，不能简化成只看东风西风"
+    },
+    {
+      "source": "兵要望江南",
+      "volume": "占雷·第九",
+      "sections": [
+        "占雷三十一首",
+        "冬月非时雷",
+        "军营雷声"
+      ],
+      "url": "https://zh.wikisource.org/wiki/兵要望江南",
+      "verify": "已核校勘本占雷内容",
+      "principle": "冬三月雷与军中雷有不同适用场景；不是足球预测常设输入"
+    },
+    {
+      "source": "兵要望江南",
+      "volume": "太乙式·第二十七",
+      "sections": [
+        "太乙式三十一首"
+      ],
+      "url": "https://zh.wikisource.org/wiki/兵要望江南",
+      "verify": "已核目录，不等于已复原全盘",
+      "principle": "应用需关联太乙本盘；仅凭诗句不可完整起局"
+    },
+    {
+      "source": "兵要望江南",
+      "volume": "占六壬·第二十八",
+      "sections": [
+        "占六壬四十五首"
+      ],
+      "url": "https://zh.wikisource.org/wiki/兵要望江南",
+      "verify": "已核目录，不等于已复原四课三传",
+      "principle": "需先运行六壬盘，再按歌诀的条件检索"
+    },
+    {
+      "source": "武经总要",
+      "volume": "后集卷十七",
+      "sections": [
+        "占候二",
+        "日辰占",
+        "五星",
+        "二十八宿次舍",
+        "诸星占",
+        "星变",
+        "风角"
+      ],
+      "url": "https://zh.wikisource.org/zh-hans/武經總要_(四庫全書本)/後集卷17",
+      "verify": "已核正文标题和日辰地域条目",
+      "principle": "干支分野与风角是兵书的战争场景；不能把古代国别直接替换现代球队"
+    }
+  ]
+}
