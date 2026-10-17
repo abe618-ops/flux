@@ -30,8 +30,8 @@
     "id": "DOC-04",
     "title": "观象玩占",
     "scope": "卷42雷总叙",
-    "audit_status": "已定位篇目，待异本校核",
-    "url": "",
+    "audit_status": "已核北大馆藏影像入口及卷42雷占部分，传本、署名仍待考证",
+    "url": "https://ctext.org/library.pl?if=gb&remap=gb&res=3231",
     "module": "雷占",
     "usage": "登记为来源；只有明确规则并可获得赛前输入时才启用占候；其余作为文献知识库，不直接给足球方向"
   },
