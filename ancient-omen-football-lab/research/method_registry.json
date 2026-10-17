@@ -95,9 +95,9 @@
     "id": "METHOD-06",
     "name": "时家/刻家/分秒奇门",
     "family": "三式",
-    "status": "old_code_pending_port",
+    "status": "v3_jvm_qimen_calendar",
     "existing_code": "sanshi-random-football-v2",
-    "validation_notes": "时家与实验分秒需要明确区分",
+    "validation_notes": "六种家别盘；刻10/刻12两口径分开，分秒不宣称完整",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -107,15 +107,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/java/com/abe618/sanshifootball/TraditionalBridge.java",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-07",
     "name": "大六壬天地盘/四课三传",
     "family": "三式",
-    "status": "old_code_pending_port",
+    "status": "v3_jvm_liuren_partial",
     "existing_code": "four-divination-football; shushu-football",
-    "validation_notes": "干支、月将、贵人、十二天将",
+    "validation_notes": "月将天地盘四课；简单唯一贼克的三传，复杂九宗门未实现",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -125,15 +127,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/java/com/abe618/sanshifootball/TraditionalBridge.java",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-08",
     "name": "太乙九宫主客",
     "family": "三式",
-    "status": "old_code_pending_port",
+    "status": "v3_jvm_taiyi_base",
     "existing_code": "four-divination-football; shushu-football",
-    "validation_notes": "太乙金镜式经的计法版本需核",
+    "validation_notes": "年、月、日、时四计与72局基础",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -143,7 +147,9 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/java/com/abe618/sanshifootball/TraditionalBridge.java",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-09",
@@ -169,9 +175,9 @@
     "id": "METHOD-10",
     "name": "金口诀",
     "family": "三式",
-    "status": "old_code_pending_port",
+    "status": "v3_partial_jinkou",
     "existing_code": "four-divination-football",
-    "validation_notes": "课式与主客需复核",
+    "validation_notes": "金口诀月将加时、五鼠遁人元；贵神缺乏输入时留空",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -181,15 +187,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-11",
     "name": "七政四余",
     "family": "星占",
-    "status": "old_code_pending_port",
+    "status": "v3_input_gated_seven_politics",
     "existing_code": "astro-football-lab",
-    "validation_notes": "需要出生/赛事天象、历算与时间地点",
+    "validation_notes": "11项黄经必须由独立星历提供，本工具不伪造星历",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -199,15 +207,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-12",
     "name": "西洋占星",
     "family": "星占",
-    "status": "old_code_pending_port",
+    "status": "v3_jvm_astro_experimental",
     "existing_code": "astro-football-lab",
-    "validation_notes": "需要时间地点历表",
+    "validation_notes": "旧西占近似随机时点实验，不是比赛时刻星盘",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -217,15 +227,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/java/AstroBridge.java",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-13",
     "name": "印度占星",
     "family": "星占",
-    "status": "research_only",
+    "status": "v3_jvm_astro_experimental",
     "existing_code": null,
-    "validation_notes": "需确定采用的历法与分盘体系",
+    "validation_notes": "旧印度占星近似岁差实验，不是精密历表",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -235,7 +247,9 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/java/AstroBridge.java",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-14",
@@ -281,9 +295,9 @@
     "id": "METHOD-16",
     "name": "文王八卦/纳甲六爻",
     "family": "易卦",
-    "status": "review_pending",
+    "status": "v3_najia_branches_partial",
     "existing_code": null,
-    "validation_notes": "纳甲、六亲、动爻、旺衰、世应",
+    "validation_notes": "8经卦纳甲纳支和六爻动变；世应、六亲等未补齐",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -293,15 +307,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-17",
     "name": "六爻穿禽",
     "family": "易卦",
-    "status": "review_pending",
+    "status": "v3_input_gated_niao_xing",
     "existing_code": null,
-    "validation_notes": "禽星对应与爻盘需校本",
+    "validation_notes": "值日二十八宿人工输入，不据此捏造禽爻定式",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -311,7 +327,9 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-18",
@@ -517,9 +535,9 @@
     "id": "METHOD-28",
     "name": "演禽",
     "family": "象数",
-    "status": "review_pending",
+    "status": "v3_jvm_yanqin_partial",
     "existing_code": null,
-    "validation_notes": "演禽盘与十二生肖时空起法",
+    "validation_notes": "二十八宿基础禽星、前后宿、七曜；翻禽倒将未实现",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -529,15 +547,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/java/com/abe618/sanshifootball/TraditionalBridge.java",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-29",
     "name": "古灵神课",
     "family": "易数",
-    "status": "review_pending",
+    "status": "v3_source_evidence_only",
     "existing_code": null,
-    "validation_notes": "古籍来源与课数体系需校核",
+    "validation_notes": "古灵神课需要可追溯版本及原文，不伪造签数",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -547,15 +567,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-30",
     "name": "紫微斗数/紫占",
     "family": "星命",
-    "status": "old_code_pending_port",
+    "status": "v3_ziwei_palaces_partial",
     "existing_code": "astro-football-lab",
-    "validation_notes": "十二宫星曜、球赛转换实验",
+    "validation_notes": "命身宫和十二宫骨架；没有紫微诸星安宫",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -565,7 +587,9 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-31",
@@ -651,9 +675,9 @@
     "id": "METHOD-35",
     "name": "清华简筮法",
     "family": "出土数术",
-    "status": "research_only",
+    "status": "v3_qinghua_numeric_structure",
     "existing_code": null,
-    "validation_notes": "清华简肆；不同于通行周易",
+    "validation_notes": "两组六位数字卦及不等同于周易六爻的说明",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -663,15 +687,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-36",
     "name": "王家台归藏",
     "family": "出土数术",
-    "status": "research_only",
+    "status": "v3_guicang_source_record",
     "existing_code": null,
-    "validation_notes": "早期筮法，按正式整理本",
+    "validation_notes": "出土秦简《易占》与传世辑本区分，录入引用",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -681,15 +707,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-37",
     "name": "五兆卜",
     "family": "出土数术",
-    "status": "research_only",
+    "status": "v3_wuzhao_source_only",
     "existing_code": null,
-    "validation_notes": "古法来源尚需确认",
+    "validation_notes": "五兆文献需证据，缺可靠定式不给完整盘",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -699,15 +727,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-38",
     "name": "燕秦四象",
     "family": "出土数术",
-    "status": "research_only",
+    "status": "v3_yanqin_source_only",
     "existing_code": null,
-    "validation_notes": "名称、盘法、出土材料待确认",
+    "validation_notes": "燕秦四象名称/出处需证明；只做证据登记",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -717,15 +747,17 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-39",
     "name": "汲冢筮占",
     "family": "出土数术",
-    "status": "research_only",
+    "status": "v3_jizhong_source_record",
     "existing_code": null,
-    "validation_notes": "需确定具体文献",
+    "validation_notes": "汲冢《易繇阴阳卦》与《归藏》关系存争议",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -735,7 +767,9 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-40",
@@ -781,9 +815,9 @@
     "id": "METHOD-42",
     "name": "太公奇门",
     "family": "三式",
-    "status": "review_pending",
+    "status": "v3_taigong_comparison_gated",
     "existing_code": null,
-    "validation_notes": "传本与流派",
+    "validation_notes": "可导入旧奇门盘作比较，太公法本体规则未证实",
     "output_contract": [
       "direction_1x2",
       "handicap_side",
@@ -793,7 +827,9 @@
       "half_full",
       "score_candidates"
     ],
-    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准"
+    "independence_rule": "必须先产出独立盘面和实验结论；同源衍生不得作为多个独立票；统计概率需单独校准",
+    "runner": "ancient-omen-football-lab/research_v3.js",
+    "accuracy_claim": "未证实；历史研究或软件计算可用，不代表有足球预测准确性"
   },
   {
     "id": "METHOD-43",
