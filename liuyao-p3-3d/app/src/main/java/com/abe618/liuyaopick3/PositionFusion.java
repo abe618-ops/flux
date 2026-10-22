@@ -21,6 +21,7 @@ public final class PositionFusion {
         public double[][] scores=new double[3][10];
         public int[][] votes=new int[3][10];
         public String[] masks;
+        public String[] customPicks;
         public List<String> choices=new ArrayList<>();
         public List<String> groups=new ArrayList<>();
         public int[] singleOrder=new int[10];
@@ -80,7 +81,11 @@ public final class PositionFusion {
     private static void add(double[][] m,int p,int d,double w){
         if(p>=0&&p<3&&d>=0&&d<10)m[p][d]+=w;
     }
-    private static boolean valid(int digit, String mask) {
+    private static boolean valid(int digit, String mask, String picks) {
+        if(picks!=null&&!picks.trim().isEmpty()){
+            int[] allowed=parseDigits(picks);
+            if(allowed.length>0){boolean found=false;for(int n:allowed)if(n==digit)found=true;if(!found)return false;}
+        }
         boolean large=digit>=5, even=digit%2==0;
         switch(mask) {
             case "大单":return large&&!even;
@@ -115,9 +120,10 @@ public final class PositionFusion {
         int[] out=new int[set.size()];int i=0;for(int d:set)out[i++]=d;
         return out;
     }
-    public static Result analyze(LiuyaoEngine.Analysis base,String[] filter,String voteText){
+    public static Result analyze(LiuyaoEngine.Analysis base,String[] filter,String[] customPicks,String voteText){
         Result r=new Result();
         r.masks=filter.clone();
+        r.customPicks=customPicks.clone();
         double[][] s=r.scores;
         StringBuilder trace=new StringBuilder();
 
@@ -195,7 +201,7 @@ public final class PositionFusion {
 
         ArrayList<String[]> combos=new ArrayList<>();
         for(int a=0;a<10;a++)for(int b=0;b<10;b++)for(int c=0;c<10;c++) {
-            if(!valid(a,filter[0])||!valid(b,filter[1])||!valid(c,filter[2]))continue;
+            if(!valid(a,filter[0],customPicks[0])||!valid(b,filter[1],customPicks[1])||!valid(c,filter[2],customPicks[2]))continue;
             r.validCount++;
             String num=""+a+b+c;
             double score=s[0][a]+s[1][b]+s[2][c];
@@ -217,7 +223,7 @@ public final class PositionFusion {
         sb.append("胆码（模型排序）：").append(r.single).append("；双胆：")
           .append(digits(r.singleOrder,2)).append("\n");
         for(int p=0;p<3;p++)sb.append(new String[]{"百位","十位","个位"}[p])
-            .append(" ").append(filter[p]).append("：")
+            .append(" ").append(filter[p]).append(customPicks[p].trim().isEmpty()?"":"[限定"+customPicks[p]+"]").append("：")
             .append(digits(r.positionOrder[p],4)).append("\n");
         sb.append("直选研究序列：").append(String.join("、",r.choices)).append("\n");
         sb.append("组选研究：").append(String.join("、",r.groups.subList(0,Math.min(8,r.groups.size())))).append("\n");
@@ -238,7 +244,7 @@ public final class PositionFusion {
         }
         trace.append("\n复盘纪律：原始盘、条件变动、投票快照应分别冻结；事后筛选不可记为事前命中。\n");
         r.details=trace.toString();
-        r.frozenKey=VERSION+"|"+base.masterSeed+"|"+base.game+"|"+Arrays.toString(filter)+"|"+voteText+"|"+r.summary;
+        r.frozenKey=VERSION+"|"+base.masterSeed+"|"+base.game+"|"+Arrays.toString(filter)+"|"+Arrays.toString(customPicks)+"|"+voteText+"|"+r.summary;
         return r;
     }
 
