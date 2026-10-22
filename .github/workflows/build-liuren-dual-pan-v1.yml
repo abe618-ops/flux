@@ -1,0 +1,105 @@
+name: Build DaLiuRen MultiLayer v2
+
+on:
+  push:
+    branches: [ "feature/daliuren-dual-pan-v1" ]
+    paths:
+      - "android/daliuren-dual-pan-v2/**"
+      - ".github/workflows/build-liuren-dual-pan-v1.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Android platform
+        run: |
+          SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | sort -V | tail -1)"
+          test -x "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Expand v2 project source
+        run: |
+          cd "$RUNNER_TEMP"
+          cat "$GITHUB_WORKSPACE"/android/daliuren-dual-pan-v2/project.b64.part* > project.b64
+          base64 -d project.b64 > project.tgz
+          tar -xzf project.tgz
+          test -f daliuren_dual_pan_v1/app/build.gradle
+          test -f daliuren_dual_pan_v1/app/src/main/assets/app/app.js
+          echo "PROJECT=$RUNNER_TEMP/daliuren_dual_pan_v1" >> "$GITHUB_ENV"
+
+      - name: Import Apache-2.0 DaLiuRen engine
+        run: |
+          git clone --depth 1 https://github.com/woaiys3/pusuan-agent.git "$RUNNER_TEMP/pusuan-agent"
+          mkdir -p "$PROJECT/app/src/main/assets/app/engine" "$PROJECT/app/src/main/assets/app/js" "$PROJECT/app/src/main/assets/licenses"
+          cp "$RUNNER_TEMP/pusuan-agent/assets/app/engine/liuren/lrpp.js" "$PROJECT/app/src/main/assets/app/engine/lrpp.js"
+          cp "$RUNNER_TEMP/pusuan-agent/assets/app/engine/liuren/nongli.js" "$PROJECT/app/src/main/assets/app/engine/nongli.js"
+          cp "$RUNNER_TEMP/pusuan-agent/assets/app/engine/liuren/tys_20230527.js" "$PROJECT/app/src/main/assets/app/engine/tys_20230527.js"
+          cp "$RUNNER_TEMP/pusuan-agent/assets/app/js/engine/liuren.js" "$PROJECT/app/src/main/assets/app/js/liuren.js"
+          cp "$RUNNER_TEMP/pusuan-agent/LICENSE" "$PROJECT/app/src/main/assets/licenses/pusuan-agent-LICENSE.txt"
+          test -s "$PROJECT/app/src/main/assets/app/engine/lrpp.js"
+          test -s "$PROJECT/app/src/main/assets/app/js/liuren.js"
+
+      - name: Sanity check v2 features
+        run: |
+          grep -q "神煞盘" "$PROJECT/app/src/main/assets/app/index.html"
+          ! grep -q "神煞二" "$PROJECT/app/src/main/assets/app/index.html"
+          grep -q "运移盘" "$PROJECT/app/src/main/assets/app/index.html"
+          grep -q "时刻分秒" "$PROJECT/app/src/main/assets/app/index.html"
+          grep -q "足球预测" "$PROJECT/app/src/main/assets/app/index.html"
+          grep -q "MOVE_PALACES" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "tongdaoxian" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "五马遁" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "五狗遁" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "实验秒盘" "$PROJECT/app/src/main/assets/app/app.js"
+          grep -q "四层共振" "$PROJECT/app/src/main/assets/app/app.js"
+
+      - name: Build signed release APK
+        working-directory: ${{ env.PROJECT }}
+        run: |
+          gradle --no-daemon :app:assembleRelease
+          mkdir -p dist
+          cp app/build/outputs/apk/release/app-release.apk dist/DaLiuRen-MultiLayer-Shensha-Yunyi-Football-v2.0.0.apk
+          cp app/build/outputs/apk/release/app-release.apk "dist/六壬多层-神煞运移-足球-v2.0.0.apk"
+          sha256sum dist/*.apk | tee dist/SHA256SUMS.txt
+
+      - name: Verify APK
+        run: |
+          APK="$PROJECT/dist/DaLiuRen-MultiLayer-Shensha-Yunyi-Football-v2.0.0.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee "$PROJECT/dist/apksigner.txt"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee "$PROJECT/dist/aapt-badging.txt"
+          grep -q "versionCode='2'" "$PROJECT/dist/aapt-badging.txt"
+          grep -q "versionName='2.0.0'" "$PROJECT/dist/aapt-badging.txt"
+          grep -q "package: name='com.abe618.liuren.yunyi.v1'" "$PROJECT/dist/aapt-badging.txt"
+
+      - name: Package source snapshot
+        run: |
+          cd "$RUNNER_TEMP"
+          zip -qr "$PROJECT/dist/DaLiuRen-MultiLayer-v2.0.0-source.zip" daliuren_dual_pan_v1
+
+      - name: Upload APK and source
+        uses: actions/upload-artifact@v4
+        with:
+          name: DaLiuRen-MultiLayer-v2.0.0
+          path: |
+            ${{ env.PROJECT }}/dist/*
+          if-no-files-found: error
+          retention-days: 30
