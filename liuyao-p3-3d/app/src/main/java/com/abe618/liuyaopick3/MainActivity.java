@@ -134,6 +134,13 @@ public class MainActivity extends Activity {
         audit.addView(freeze,weight());
         audit.addView(restore,weight());
         root.addView(audit,matchWrap());
+        Button showHistory=button("查看历史冻结记录");
+        root.addView(showHistory,matchWrap());
+        showHistory.setOnClickListener(v->{
+            output.setText("【本地历史冻结索引】\\n"+prefs.getString("freeze_history","暂无记录")
+                +"\\n仅用于本机留存；记录本身不具有外部时间戳证明。");
+            output.setVisibility(View.VISIBLE);
+        });
 
         actual=input("输入已开奖号复盘，例如 784","");
         actual.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -148,6 +155,11 @@ public class MainActivity extends Activity {
         output.setPadding(0,dp(14),0,dp(24));
         output.setText("先选择一种起盘方式。\n\n研究流程建议：事前起盘 → 冻结 → 开奖后输入号码 → 复盘。");
         root.addView(output,matchWrap());
+        output.setVisibility(View.GONE);
+        Button expandOriginal=button("查看/收起原始六爻盘与复盘");
+        root.addView(expandOriginal,matchWrap());
+        expandOriginal.setOnClickListener(v->output.setVisibility(
+            output.getVisibility()==View.VISIBLE?View.GONE:View.VISIBLE));
         Button details=button("展开/收起逐术取数明细");
         root.addView(details,matchWrap());
         fusionDetails=new TextView(this);
@@ -165,6 +177,7 @@ public class MainActivity extends Activity {
         review.setOnClickListener(v->review());
 
         setContentView(scroll);
+        run(LiuyaoEngine.Mode.TIME);
     }
 
     private void run(LiuyaoEngine.Mode mode) {
@@ -176,6 +189,9 @@ public class MainActivity extends Activity {
             output.setText(last.text);
             updateFusion();
         } catch(Exception e) {
+            last=null;lastFusion=null;
+            fusionView.setText("起盘失败；请检查输入的日期和时间。");
+            output.setVisibility(View.VISIBLE);
             output.setText("起盘失败："+e.getClass().getSimpleName()+"\n"+e.getMessage()
                     +"\n\n请检查日期格式 YYYY-MM-DD、时间格式 HH:mm。");
         }
@@ -211,7 +227,14 @@ public class MainActivity extends Activity {
                 .putString("frozen_method_version",PositionFusion.VERSION)
                 .putString("frozen_custom",String.join("|",lastFusion.customPicks))
                 .apply();
-        toast("已冻结：审计号 "+sha.substring(0,12));
+        String oldHistory=prefs.getString("freeze_history","");
+        String row=stamp+"｜"+last.game+"｜起盘"+last.effectiveTime
+            +"｜原胆"+lastFusion.single+"｜候选"+lastFusion.choices.subList(0,Math.min(3,lastFusion.choices.size()))
+            +"｜SHA "+sha.substring(0,12)+"\\n";
+        String updated=oldHistory+row;
+        if(updated.length()>28000)updated=updated.substring(updated.length()-22000);
+        prefs.edit().putString("freeze_history",updated).apply();
+        toast("已冻结：本地校验号 "+sha.substring(0,12));
     }
 
     private void restore() {
@@ -223,6 +246,7 @@ public class MainActivity extends Activity {
                 +"\\n版本："+prefs.getString("frozen_method_version","旧版")
                 +"\\n\\n【事前冻结的合参】\\n"+prefs.getString("frozen_fusion","未记录")
                 +"\\n\\n【原六爻盘】\\n"+text);
+        output.setVisibility(View.VISIBLE);
     }
 
     private void review() {
@@ -273,6 +297,7 @@ public class MainActivity extends Activity {
               .append("冻结审计号：").append(prefs.getString("frozen_sha","")).append("\\n");
         } else b.append("\\n未冻结新版合参；当前结果不能计入事前成绩。\\n");
         output.setText(b.toString());
+        output.setVisibility(View.VISIBLE);
     }
 
     private static int[] topK(double[] v,int k){
