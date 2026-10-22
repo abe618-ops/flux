@@ -35,6 +35,7 @@ public class MainActivity extends Activity {
     private LiuyaoEngine.Analysis last;
     private PositionFusion.Result lastFusion;
     private final Spinner[] posFilters=new Spinner[3];
+    private final EditText[] posPicks=new EditText[3];
     private EditText nineVotes;
     private TextView fusionView;
     private TextView fusionDetails;
@@ -94,6 +95,15 @@ public class MainActivity extends Activity {
             masks.addView(posFilters[i],weight());
         }
         root.addView(masks,matchWrap());
+        root.addView(label("可选：分位复式限定（留空不限）"));
+        LinearLayout picksRow=row();
+        String[] posNames={"百位 7,9","十位 2,4,8","个位 3,5,7,9"};
+        for(int i=0;i<3;i++){
+            posPicks[i]=input(posNames[i],"");
+            posPicks[i].setInputType(InputType.TYPE_CLASS_TEXT);
+            picksRow.addView(posPicks[i],weight());
+        }
+        root.addView(picksRow,matchWrap());
 
         nineVotes=new EditText(this);
         nineVotes.setHint("可选：粘贴九术分位投票，每行：名称:百位候选|十位候选|个位候选\\n例：太玄数:4,6,7|0,2,1|5,8,1");
@@ -176,7 +186,9 @@ public class MainActivity extends Activity {
         try{
             String[] filters=new String[3];
             for(int i=0;i<3;i++)filters[i]=String.valueOf(posFilters[i].getSelectedItem());
-            lastFusion=PositionFusion.analyze(last,filters,nineVotes.getText().toString());
+            String[] picks=new String[3];
+            for(int i=0;i<3;i++)picks[i]=posPicks[i].getText().toString();
+            lastFusion=PositionFusion.analyze(last,filters,picks,nineVotes.getText().toString());
             fusionView.setText(lastFusion.summary);
             fusionDetails.setText(lastFusion.details);
         }catch(Exception e){fusionView.setText("合参计算失败："+e.getMessage());}
@@ -197,6 +209,7 @@ public class MainActivity extends Activity {
                 .putString("frozen_top_direct",String.join(",",lastFusion.choices))
                 .putString("frozen_masks",String.join(",",lastFusion.masks))
                 .putString("frozen_method_version",PositionFusion.VERSION)
+                .putString("frozen_custom",String.join("|",lastFusion.customPicks))
                 .apply();
         toast("已冻结：审计号 "+sha.substring(0,12));
     }
@@ -255,7 +268,8 @@ public class MainActivity extends Activity {
             b.append("\\n【冻结的新版合参复盘（不使用事后重算）】\\n")
               .append("原单胆 ").append(single).append("：").append(hit?"出现":"未出现").append("\\n")
               .append("原冻结直选 Top12：").append(chosen?"命中":"未中").append("\\n")
-              .append("原位置条件：").append(prefs.getString("frozen_masks","")).append("\\n")
+              .append("原位置条件：").append(prefs.getString("frozen_masks",""))
+              .append("；限定候选号：").append(prefs.getString("frozen_custom","")).append("\\n")
               .append("冻结审计号：").append(prefs.getString("frozen_sha","")).append("\\n");
         } else b.append("\\n未冻结新版合参；当前结果不能计入事前成绩。\\n");
         output.setText(b.toString());
