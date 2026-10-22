@@ -49,14 +49,16 @@ jobs:
           unzip -t "$APK"
           SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
           "$SDK_ROOT/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 12
-          cp "$APK" /tmp/Liuyao-P3-3D-v1.0.0-beta1-debug.apk
-          sha256sum /tmp/Liuyao-P3-3D-v1.0.0-beta1-debug.apk | tee /tmp/Liuyao-P3-3D-SHA256.txt
+          "$SDK_ROOT/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          "$SDK_ROOT/build-tools/35.0.0/zipalign" -c -v 4 "$APK"
+          cp "$APK" /tmp/P3-NineArts-Liuyao-v2.1.0-debug.apk
+          sha256sum /tmp/P3-NineArts-Liuyao-v2.1.0-debug.apk | tee /tmp/Liuyao-P3-3D-SHA256.txt
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Liuyao-P3-3D-v1.0.0-beta1
+          name: P3-NineArts-Liuyao-v2.1.0
           path: |
-            /tmp/Liuyao-P3-3D-v1.0.0-beta1-debug.apk
+            /tmp/P3-NineArts-Liuyao-v2.1.0-debug.apk
             /tmp/Liuyao-P3-3D-SHA256.txt
           if-no-files-found: error
