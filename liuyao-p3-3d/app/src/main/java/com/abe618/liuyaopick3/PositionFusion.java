@@ -29,6 +29,7 @@ public final class PositionFusion {
         public int validCount;
         public int voteMethods;
         public int single;
+        public int conditionalSingle;
         public String details;
         public String summary;
         public String frozenKey;
@@ -198,6 +199,12 @@ public final class PositionFusion {
             global[d]+=s[p][d] / 3.0;
         r.singleOrder=sort(global);
         r.single=r.singleOrder[0];
+        r.conditionalSingle=-1;
+        for(int d:r.singleOrder){
+            boolean allowed=false;
+            for(int p=0;p<3;p++)if(valid(d,filter[p],customPicks[p]))allowed=true;
+            if(allowed){r.conditionalSingle=d;break;}
+        }
 
         ArrayList<String[]> combos=new ArrayList<>();
         for(int a=0;a<10;a++)for(int b=0;b<10;b++)for(int c=0;c<10;c++) {
@@ -219,16 +226,28 @@ public final class PositionFusion {
         }
         r.groups.addAll(groups);
         StringBuilder sb=new StringBuilder();
-        sb.append("【新版合参 v2.0】\n");
-        sb.append("胆码（模型排序）：").append(r.single).append("；双胆：")
-          .append(digits(r.singleOrder,2)).append("\n");
-        for(int p=0;p<3;p++)sb.append(new String[]{"百位","十位","个位"}[p])
-            .append(" ").append(filter[p]).append(customPicks[p].trim().isEmpty()?"":"[限定"+customPicks[p]+"]").append("：")
-            .append(digits(r.positionOrder[p],4)).append("\n");
-        sb.append("直选研究序列：").append(String.join("、",r.choices)).append("\n");
-        sb.append("组选研究：").append(String.join("、",r.groups.subList(0,Math.min(8,r.groups.size())))).append("\n");
-        sb.append("满足位置条件的组合：").append(r.validCount).append("/1000\n");
-        sb.append("结构：组六/组三/豹子均参与，未用开奖后数据调整；模型分数非中奖概率。");
+        sb.append("【新版合参 v2.1】\\n");
+        sb.append("原始单胆：").append(r.single).append("；条件单胆：").append(r.conditionalSingle)
+          .append("；原双胆：").append(digits(r.singleOrder,2)).append("\\n");
+        for(int p=0;p<3;p++){
+            sb.append(new String[]{"百位","十位","个位"}[p]).append(" ").append(filter[p])
+              .append(customPicks[p].trim().isEmpty()?"":"[限定"+customPicks[p]+"]").append("：");
+            int used=0;
+            for(int d:r.positionOrder[p])if(valid(d,filter[p],customPicks[p])){
+                if(used++>0)sb.append("、");
+                sb.append(d);
+                if(used>=4)break;
+            }
+            sb.append("\\n");
+        }
+        sb.append("直选研究序列：").append(String.join("、",r.choices)).append("\\n");
+        if(!r.choices.isEmpty()){
+            int distinct=countRepeated(r.choices.get(0));
+            sb.append("第一直选结构：").append(distinct==3?"组六":(distinct==2?"组三":"豹子")).append("\\n");
+        }else sb.append("没有符合条件的组合，请检查各位置限定号码是否冲突。\\n");
+        sb.append("组选研究：").append(String.join("、",r.groups.subList(0,Math.min(8,r.groups.size())))).append("\\n");
+        sb.append("满足位置条件的组合：").append(r.validCount).append("/1000\\n");
+        sb.append("实验数理排序，不代表真实开奖概率；保留原始盘和条件预测两套结果。");
         r.summary=sb.toString();
 
         trace.append("\n【逐术位置与合参】\n");
