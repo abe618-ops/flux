@@ -33,20 +33,17 @@ jobs:
           echo "ANDROID_HOME=$ANDROID_HOME"
           ls "$ANDROID_HOME/platforms" | tail -10
       - run: gradle :app:assembleDebug --stacktrace
-      - name: Publish APK into repository
-        if: github.event_name == 'push'
+      - name: Verify signed APK and alignment
         run: |
-          mkdir -p releases
-          cp app/build/outputs/apk/debug/app-debug.apk releases/ShuShuFootball-v0.1.apk
-          sha256sum releases/ShuShuFootball-v0.1.apk > releases/ShuShuFootball-v0.1.sha256
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add releases/
-          git diff --cached --quiet && exit 0
-          git commit -m "Publish ShuShu Football v0.1 APK [skip ci]"
-          git push
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          "${SDK_ROOT}/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          "${SDK_ROOT}/build-tools/35.0.0/zipalign" -c -v 4 "$APK"
+          "${SDK_ROOT}/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 10
       - uses: actions/upload-artifact@v4
         with:
-          name: ShuShuFootball-v0.1
+          name: Liuyao-Qin-Football-v2.0
           path: shushu-football/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
