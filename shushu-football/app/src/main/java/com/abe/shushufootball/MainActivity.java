@@ -11,6 +11,8 @@ import android.text.InputType;
 import java.text.*;
 import java.util.*;
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class MainActivity extends Activity {
     private final int BG=Color.rgb(245,242,234), CARD=Color.WHITE, INK=Color.rgb(49,42,34), ACCENT=Color.rgb(107,79,43), MUTED=Color.rgb(112,105,96);
@@ -20,11 +22,12 @@ public class MainActivity extends Activity {
     private LinearLayout tabs;
     private final List<R> results=new ArrayList<>();
     private R ensemble;
+    private LiuyaoEngine.Analysis latestHex;
     private int selected=0;
     private long randomMasterSeed=0L;
     private final SecureRandom secureRandom=new SecureRandom();
 
-    private static final String[] NAMES={"合参","梅花","太玄","轨策","大定","演禽","铁板"};
+    private static final String[] NAMES={"合参","六爻","穿禽","梅花","太玄","轨策","大定","演禽","铁板"};
     private static final String[] TRI={"乾","兑","离","震","巽","坎","艮","坤"};
     private static final String[] ELEM={"金","金","火","木","木","水","土","土"};
     private static final int[] CE={36,28,28,32,28,32,32,24};
@@ -47,13 +50,19 @@ public class MainActivity extends Activity {
         ScrollView scroll=new ScrollView(this); scroll.setFillViewport(true); scroll.setBackgroundColor(BG);
         LinearLayout root=col(); root.setPadding(dp(18),dp(18),dp(18),dp(36)); scroll.addView(root);
 
-        root.addView(txt("术数足球合参",28,INK,true));
-        TextView sub=txt("六门独立排盘 · 时刻盘 / 随机盘 · 统一比分概率层",13,MUTED,false);
+        root.addView(txt("六爻·穿禽足球合参 V2",25,INK,true));
+        TextView sub=txt("六爻纳甲 + 穿禽实验 + 六门数术｜先看结果、盘面展开｜离线盲测",13,MUTED,false);
         sub.setPadding(0,dp(5),0,dp(14)); root.addView(sub);
+
+        LinearLayout rc=card(); root.addView(rc,lp(-1,-2,0,0,0,dp(12)));
+        rc.addView(txt("综合预测 · 胜平负 / 半全场 / 进球 / 比分",17,INK,true));
+        summaryView=txt("",16,INK,false);
+        summaryView.setTypeface(Typeface.MONOSPACE);summaryView.setLineSpacing(0,1.14f);
+        summaryView.setPadding(0,dp(8),0,0);rc.addView(summaryView);
 
         LinearLayout c=card(); root.addView(c,lp(-1,-2,0,0,0,dp(12)));
         LinearLayout teams=row();
-        homeEdit=input("主队","主队"); awayEdit=input("客队","客队");
+        homeEdit=input("主队（可不填）",""); awayEdit=input("客队（可不填）","");
         teams.addView(homeEdit,new LinearLayout.LayoutParams(0,dp(50),1));
         teams.addView(space(dp(10),1));
         teams.addView(awayEdit,new LinearLayout.LayoutParams(0,dp(50),1));
@@ -84,13 +93,15 @@ public class MainActivity extends Activity {
             tabs.addView(b,lp(dp(72),dp(42),0,0,dp(6),0));
         }
 
-        LinearLayout rc=card(); root.addView(rc,lp(-1,-2,0,0,0,dp(12)));
-        rc.addView(txt("预测结果",17,INK,true));
-        summaryView=txt("",15,INK,false); summaryView.setTypeface(Typeface.MONOSPACE); summaryView.setLineSpacing(0,1.15f); summaryView.setPadding(0,dp(10),0,0); rc.addView(summaryView);
+
 
         LinearLayout dc=card(); root.addView(dc);
-        dc.addView(txt("盘面与推导",17,INK,true));
-        detailView=txt("",13,INK,false); detailView.setTypeface(Typeface.MONOSPACE); detailView.setLineSpacing(0,1.12f); detailView.setPadding(0,dp(10),0,0); dc.addView(detailView);
+        Button detailsToggle=btn("展开／收起各术排盘与取数依据",false);dc.addView(detailsToggle,lp(-1,dp(44),0,0,0,0));
+        detailView=txt("",13,INK,false);
+        detailView.setTypeface(Typeface.MONOSPACE);detailView.setLineSpacing(0,1.12f);
+        detailView.setPadding(0,dp(10),0,0);detailView.setTextIsSelectable(true);
+        detailView.setVisibility(View.GONE);dc.addView(detailView);
+        detailsToggle.setOnClickListener(v->detailView.setVisibility(detailView.getVisibility()==View.GONE?View.VISIBLE:View.GONE));
         setContentView(scroll);
     }
 
@@ -101,15 +112,93 @@ public class MainActivity extends Activity {
         if(!random)randomMasterSeed=0L;
         long base=random?randomMasterSeed:mix(epoch^hash(h+"|"+a));
         results.clear();
+        results.add(liuyao(base^0x18A27DCC31E6A92DL,epoch,h,a,random));
+        results.add(chuanqin(base^0x2198AEC74FB306D1L,epoch,h,a));
         results.add(meihua(base^0x13579BDF2468ACE1L,epoch,h,a));
         results.add(taixuan(base^0x2468ACE113579BDFL,epoch,h,a));
         results.add(cegui(base^0x55AA33CC77EE1199L,epoch,h,a));
         results.add(dading(base^0x1029384756ABCDEFL,epoch,h,a));
         results.add(yanqin(base^0x7F4A7C159E3779B9L,epoch,h,a));
         results.add(tieban(base^0x6A09E667F3BCC909L,epoch,h,a));
-        ensemble=ensemble(results,h,a,base);
+        ensemble=ensemble(results,h,a,base);selected=0;
         seedView.setText(random?"随机盘 Seed："+hex(randomMasterSeed)+"（可复盘）":"时刻盘：同一球队 + 同一时间 → 同一结果");
         paintTabs(); render();
+    }
+
+
+    // Genuine NaJia-style six-line layout comes from the shared P3 engine.
+    // The next two mappings into football strength/pace are explicitly experimental.
+    private R liuyao(long seed,long epoch,String h,String a,boolean random){
+        Calendar when=cal(epoch);
+        LocalDate date=LocalDate.of(when.get(Calendar.YEAR),when.get(Calendar.MONTH)+1,when.get(Calendar.DAY_OF_MONTH));
+        LocalTime time=LocalTime.of(when.get(Calendar.HOUR_OF_DAY),when.get(Calendar.MINUTE));
+        String topic="足球|"+h+"|"+a;
+        latestHex=LiuyaoEngine.run(topic,random?LiuyaoEngine.Mode.RANDOM:LiuyaoEngine.Mode.TIME,date,time,hex(seed));
+        LiuyaoEngine.Analysis q=latestHex;
+        LiuyaoEngine.Line shi=q.lines[Math.max(0,Math.min(5,q.shi-1))];
+        LiuyaoEngine.Line ying=q.lines[Math.max(0,Math.min(5,q.ying-1))];
+        int moving=0,child=0,ghost=0,fortune=0;
+        for(LiuyaoEngine.Line ln:q.lines){
+            if(ln.moving)moving++;
+            if("子孙".equals(ln.relative))child+=1+(ln.strength>0?1:0)+(ln.moving?1:0);
+            if("官鬼".equals(ln.relative))ghost+=1+(ln.strength>0?1:0);
+            if("妻财".equals(ln.relative))fortune+=1+(ln.strength>0?1:0);
+        }
+        int first=q.topDigits.length>0?q.topDigits[0]:4;
+        int second=q.topDigits.length>1?q.topDigits[1]:5;
+        double diff=0.15*(shi.strength-ying.strength)
+          +(shi.moving?0.25:0)-(ying.moving?0.25:0)
+          +0.04*(fortune-2)*((q.shi<=3)?1:-1);
+        double pace=2.32+0.20*(moving-2)+0.075*(child-ghost)
+           +0.055*((first%7)-3)+0.035*((second%7)-3);
+        StringBuilder t=new StringBuilder("【六爻纳甲｜足球映射实验】\n")
+           .append(q.fourPillars).append("\n")
+           .append(q.hexName).append(" → ").append(q.changedHexName).append("\n")
+           .append(q.palace).append("　世").append(q.shi).append("　应").append(q.ying)
+           .append("　动爻").append(moving).append("个\n");
+        for(int i=5;i>=0;i--)t.append(q.lines[i].display()).append("\n");
+        t.append("世旺衰 ").append(shi.strength).append("／应旺衰 ").append(ying.strength)
+         .append("；子孙/官鬼/妻财：").append(child).append("/").append(ghost).append("/").append(fortune).append("\n")
+         .append("河图数、旬空、冲合墓、旺动等候选：").append(Arrays.toString(q.topDigits)).append("\n")
+         .append("取数→总进球：使用数字模7和动爻修正作为固定实验映射，不是古法原生预测。\n")
+         .append("主客：世爻与应爻的相对旺衰及动静；总球：子孙、官鬼、动爻与取数；")
+         .append("前后程：动爻爻位辅助。");
+        return make("六爻",diff,pace,seed,h,a,t.toString());
+    }
+
+    private R chuanqin(long seed,long epoch,String h,String a){
+        Calendar c=cal(epoch);
+        long day=floorDiv(epoch+8*3600000L,86400000L);
+        long anchor=daysUtc(1986,5,29);
+        int dayIdx=mod((int)(day-anchor)+7,28);
+        int hour=mod((c.get(Calendar.HOUR_OF_DAY)+1)/2,12);
+        int yuan=mod((int)(day-anchor),7);
+        int hourIdx=mod(dayIdx+hour*2+yuan,28);
+        double side=0;int fire=0,water=0,match=0;
+        StringBuilder t=new StringBuilder("【禽星穿六爻｜非古籍复原的实验层】\n");
+        t.append("日禽 ").append(XIU[dayIdx]).append("；时禽 ").append(XIU[hourIdx])
+         .append("；七元余 ").append(yuan+1).append("\n");
+        for(int i=0;i<6;i++){
+            LiuyaoEngine.Line ln=latestHex.lines[i];
+            int idx=mod(hourIdx+4*i,28);
+            String star=XIU[idx],starElement=xiuElem(idx);
+            double link=relation(starElement,ln.element);
+            if(starElement.equals(ln.element))match++;
+            if("火".equals(starElement))fire++;
+            if("水".equals(starElement))water++;
+            double factor=(ln.moving?1.15:0.65);
+            if(ln.no==latestHex.shi)side+=0.30*factor*link;
+            if(ln.no==latestHex.ying)side-=0.30*factor*link;
+            t.append(i+1).append("爻 ").append(ln.branch).append(ln.element)
+             .append(ln.moving?" 动":" 静").append(" ← ").append(star)
+             .append(" [").append(starElement).append("] ").append(relText(starElement,ln.element)).append("\n");
+        }
+        double diff=0.32*side+0.16*center(seed,18);
+        double pace=2.36+0.10*(fire-water)+0.07*(match-2);
+        t.append("穿禽实验规则：从时禽起，每爻顺推四宿，仅测试宿曜五行与爻五行的联系。\n")
+         .append("历史《禽星易见》有七元时禽、到将/番禽系统，但并没有核实这套『每爻四宿』为传统穿爻算法。\n")
+         .append("这一路与演禽同源，合参时减权，避免重复统计。");
+        return make("穿禽",diff,pace,seed,h,a,t.toString());
     }
 
     private R meihua(long seed,long epoch,String h,String a){
@@ -177,10 +266,17 @@ public class MainActivity extends Activity {
     }
 
     private R ensemble(List<R> rs,String h,String a,long seed){
-        double lh=0,la=0,hs=0,as=0; StringBuilder t=new StringBuilder("【六门合参】\n");
-        for(R r:rs){lh+=r.lh;la+=r.la;hs+=r.hs;as+=r.as;t.append(String.format(Locale.CHINA,"%-4s λ %.2f : %.2f  %s  %s\n",r.name,r.lh,r.la,r.wdl,r.score));}
-        lh/=rs.size();la/=rs.size();hs/=rs.size();as/=rs.size();
-        t.append("\n第一版等权合参；后续可按胜平负/大小/单双/总球MAE分别学习权重。\n");
+        double lh=0,la=0,hs=0,as=0,sw=0;
+        StringBuilder t=new StringBuilder("【八路分项合参】\n");
+        for(R r:rs){
+            double w=r.name.equals("穿禽")?0.40:(r.name.equals("六爻")?1.5:0.85);
+            lh+=r.lh*w;la+=r.la*w;hs+=r.hs*w;as+=r.as*w;sw+=w;
+            t.append(r.name).append(" 权").append(w).append(" λ ")
+             .append(fmt(r.lh)).append(":").append(fmt(r.la))
+             .append(" ").append(r.wdl).append(" ").append(r.score).append("\n");
+        }
+        lh/=sw;la/=sw;hs/=sw;as/=sw;
+        t.append("\n八路加权的系数是事前实验参数，绝非按历史命中率训练所得。穿禽与演禽相关，因此减权。\n");
         return fromLambda("合参",lh,la,hs,as,seed,t.toString());
     }
 
@@ -216,7 +312,7 @@ public class MainActivity extends Activity {
     }
 
     private long parseEpoch(){
-        try{SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US);f.setLenient(false);return f.parse(dateEdit.getText().toString().trim()+" "+timeEdit.getText().toString().trim()).getTime();}
+        try{SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.US);f.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));f.setLenient(false);return f.parse(dateEdit.getText().toString().trim()+" "+timeEdit.getText().toString().trim()).getTime();}
         catch(Exception e){return System.currentTimeMillis();}
     }
 
@@ -235,7 +331,7 @@ public class MainActivity extends Activity {
     private int mod(int a,int n){int r=a%n;return r<0?r+n:r;}
     private long floorDiv(long a,long b){long q=a/b,r=a%b;return(r!=0&&((a^b)<0))?q-1:q;}
     private long daysUtc(int y,int m,int d){Calendar c=Calendar.getInstance(TimeZone.getTimeZone("UTC"));c.clear();c.set(y,m-1,d,0,0,0);return floorDiv(c.getTimeInMillis(),86400000L);}
-    private Calendar cal(long e){Calendar c=Calendar.getInstance();c.setTimeInMillis(e);return c;}
+    private Calendar cal(long e){Calendar c=Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai"));c.setTimeInMillis(e);return c;}
     private String fmt(double x){return String.format(Locale.CHINA,"%.2f",x);}
     private String hex(long x){return String.format(Locale.US,"%016X",x);}
     private String clean(String s,String d){s=s.trim();return s.length()==0?d:s;}
