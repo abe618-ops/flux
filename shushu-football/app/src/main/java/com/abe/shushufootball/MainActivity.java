@@ -1,6 +1,7 @@
 package com.abe.shushufootball;
 
 import android.app.*;
+import android.content.SharedPreferences;
 import android.os.*;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -11,6 +12,8 @@ import android.text.InputType;
 import java.text.*;
 import java.util.*;
 import java.security.SecureRandom;
+import java.security.MessageDigest;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -22,6 +25,10 @@ public class MainActivity extends Activity {
     private LinearLayout tabs;
     private final List<R> results=new ArrayList<>();
     private R ensemble;
+    private EditText finalEdit, halfEdit;
+    private TextView reviewView;
+    private SharedPreferences storage;
+    private String frozenDigest="";
     private LiuyaoEngine.Analysis latestHex;
     private int selected=0;
     private long randomMasterSeed=0L;
@@ -42,6 +49,7 @@ public class MainActivity extends Activity {
         getWindow().setStatusBarColor(BG);
         getWindow().setNavigationBarColor(BG);
         if(Build.VERSION.SDK_INT>=23)getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        storage=getSharedPreferences("hexqin_football_v2",MODE_PRIVATE);
         buildUi();
         generate(false);
     }
@@ -82,8 +90,41 @@ public class MainActivity extends Activity {
         randomMode=new RadioButton(this); randomMode.setText("随机实验盘"); randomMode.setTextColor(INK);
         rg.addView(timeMode); rg.addView(randomMode); c.addView(rg);
 
-        Button gen=btn("生成 / 重新起盘",true); gen.setOnClickListener(v->generate(true)); c.addView(gen,lp(-1,dp(48),0,dp(8),0,0));
-        seedView=txt("",12,MUTED,false); seedView.setPadding(dp(2),dp(8),0,0); c.addView(seedView);
+        Button gen=btn("重新起盘",false);
+        gen.setOnClickListener(v->generate(true));c.addView(gen,lp(-1,dp(44),0,dp(8),0,0));
+        Button next=btn("随机下一场 · 一键预测",true);
+        next.setOnClickListener(v->{randomMode.setChecked(true);generate(true);});
+        c.addView(next,lp(-1,dp(52),0,dp(8),0,0));
+        seedView=txt("",12,MUTED,false);
+        seedView.setPadding(dp(2),dp(8),0,0);c.addView(seedView);
+
+        LinearLayout audit=card();root.addView(audit,lp(-1,-2,0,0,0,dp(12)));
+        audit.addView(txt("盲测留存与复盘",16,INK,true));
+        finalEdit=input("赛后全场比分，例如 2:1","");
+        halfEdit=input("半场比分（可空，例如 1:0）","");
+        finalEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+        halfEdit.setInputType(InputType.TYPE_CLASS_TEXT);
+        LinearLayout scores=row();
+        scores.addView(finalEdit,new LinearLayout.LayoutParams(0,dp(48),1));
+        scores.addView(space(dp(8),1));
+        scores.addView(halfEdit,new LinearLayout.LayoutParams(0,dp(48),1));
+        audit.addView(scores,lp(-1,dp(48),0,dp(8),0,dp(10)));
+        LinearLayout actions=row();
+        Button freezeBtn=btn("赛前冻结",true);
+        Button reviewBtn=btn("开奖/赛后复盘",false);
+        actions.addView(freezeBtn,new LinearLayout.LayoutParams(0,dp(44),1));
+        actions.addView(space(dp(8),1));
+        actions.addView(reviewBtn,new LinearLayout.LayoutParams(0,dp(44),1));
+        audit.addView(actions);
+        Button showLog=btn("历史冻结与累计准确率",false);
+        audit.addView(showLog,lp(-1,dp(42),0,dp(8),0,0));
+        reviewView=txt("",13,INK,false);
+        reviewView.setTextIsSelectable(true);
+        reviewView.setPadding(0,dp(6),0,0);
+        audit.addView(reviewView);
+        freezeBtn.setOnClickListener(v->freezeSnapshot());
+        reviewBtn.setOnClickListener(v->reviewFrozen());
+        showLog.setOnClickListener(v->showArchive());
 
         HorizontalScrollView hsv=new HorizontalScrollView(this); hsv.setHorizontalScrollBarEnabled(false);
         tabs=row(); hsv.addView(tabs); root.addView(hsv,lp(-1,dp(50),0,dp(2),0,dp(10)));
@@ -299,6 +340,113 @@ public class MainActivity extends Activity {
         R r=new R();r.name=name;r.lh=lh;r.la=la;r.hs=hs;r.as=as;r.wdl=wdl;r.htft=htr+"/"+ftr;r.total=tg;r.score=top.score();
         r.top3=all.get(0).score()+" / "+all.get(1).score()+" / "+all.get(2).score();r.ou=(1-under)>=0.5?"大2.5":"小2.5";r.parity=tg%2==0?"双":"单";r.net=top.h-top.a;r.seed=seed;r.trace=trace;
         r.probs=String.format(Locale.CHINA,"主 %.1f%%  平 %.1f%%  客 %.1f%%",pw*100,pd*100,pl*100);return r;
+    }
+
+
+    private static String sha256(String data){
+        try {
+            byte[] bytes=MessageDigest.getInstance("SHA-256").digest(data.getBytes(StandardCharsets.UTF_8));
+            StringBuilder v=new StringBuilder();
+            for(byte b:bytes)v.append(String.format(Locale.US,"%02x",b&0xff));
+            return v.toString();
+        }catch(Exception e){throw new IllegalStateException(e);}
+    }
+    private static int[] parseMatchScore(String s){
+        if(!s.trim().matches("\\d{1,2}:\\d{1,2}"))return null;
+        String[] x=s.trim().split(":");
+        int h=Integer.parseInt(x[0]),a=Integer.parseInt(x[1]);
+        return h<=20&&a<=20?new int[]{h,a}:null;
+    }
+    private static String decision(int a,int b){return a>b?"主胜":a<b?"客胜":"平";}
+    private static String halfDecision(int a,int b){return a>b?"主":a<b?"客":"平";}
+
+    private void freezeSnapshot(){
+        if(ensemble==null){Toast.makeText(this,"先起盘",Toast.LENGTH_SHORT).show();return;}
+        StringBuilder body=new StringBuilder("HEXQIN_V2|").append(seedView.getText()).append("\\n");
+        for(int i=0;i<=results.size();i++){
+            R x=i==0?ensemble:results.get(i-1);
+            body.append(x.name).append("|").append(x.wdl).append("|").append(x.total).append("|")
+                .append(x.ou).append("|").append(x.parity).append("|").append(x.score).append("|")
+                .append(x.top3.replace(" / ",",")).append("|").append(x.htft).append("\\n");
+        }
+        String raw=body.toString();
+        frozenDigest=sha256(raw);
+        String when=new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.CHINA).format(new Date());
+        String old=storage.getString("log","");
+        String line=when+" "+clean(homeEdit.getText().toString(),"主队")+" vs "
+            +clean(awayEdit.getText().toString(),"客队")
+            +" "+ensemble.wdl+" "+ensemble.top3+" HASH "+frozenDigest.substring(0,12)+"\\n";
+        String log=old+line;
+        if(log.length()>28000)log=log.substring(log.length()-20000);
+        storage.edit().putString("frozen",raw).putString("digest",frozenDigest)
+           .putString("frozen_at",when).putString("log",log).apply();
+        reviewView.setText("已保存赛前预测；SHA-256 "+frozenDigest.substring(0,16)
+          +"\\n保存时刻："+when+"。本地校验码用于识别预测快照，不是第三方可信时间戳。");
+    }
+
+    private void reviewFrozen(){
+        String raw=storage.getString("frozen","");
+        if(raw.isEmpty()){reviewView.setText("没有赛前冻结记录，不能把事后重算计为命中。");return;}
+        int[] ft=parseMatchScore(finalEdit.getText().toString());
+        if(ft==null){reviewView.setText("请填写正确全场比分，例如 2:1");return;}
+        String htText=halfEdit.getText().toString().trim();
+        int[] ht=htText.isEmpty()?null:parseMatchScore(htText);
+        if(!htText.isEmpty()&&ht==null){reviewView.setText("半场比分格式应为 1:0 或留空。");return;}
+        if(ht!=null&&(ht[0]>ft[0]||ht[1]>ft[1])){reviewView.setText("半场进球不能大于全场进球");return;}
+        String[] rows=raw.split("\\n");
+        String actual=ft[0]+":"+ft[1],result=decision(ft[0],ft[1]);
+        int total=ft[0]+ft[1];
+        String ou=total>=3?"大2.5":"小2.5",parity=total%2==0?"双":"单";
+        String htft=ht==null?"":halfDecision(ht[0],ht[1])+"/"+halfDecision(ft[0],ft[1]);
+        StringBuilder output=new StringBuilder("【冻结预测复盘】实际全场 ").append(actual)
+          .append("　").append(result).append("　").append(ou).append("　").append(parity).append("\\n");
+        int reviewed=0;int correctWdl=0,correctOu=0,correctOdd=0,correctExact=0;
+        for(int i=1;i<rows.length;i++){
+            String[] v=rows[i].split("\\|");
+            if(v.length<8)continue;
+            reviewed++;
+            boolean wdl=v[1].equals(result),size=v[3].equals(ou),odd=v[4].equals(parity),exact=v[5].equals(actual);
+            if(wdl)correctWdl++;if(size)correctOu++;if(odd)correctOdd++;if(exact)correctExact++;
+            boolean top3=Arrays.asList(v[6].split(",")).contains(actual);
+            output.append(v[0]).append(" 胜平负").append(wdl?"✓":"×")
+                  .append(" 大小").append(size?"✓":"×")
+                  .append(" 单双").append(odd?"✓":"×")
+                  .append(" 比分").append(exact?"✓":"×")
+                  .append(" Top3").append(top3?"✓":"×");
+            if(ht!=null)output.append(" 半全场").append(v[7].equals(htft)?"✓":"×");
+            output.append("\\n");
+            String k="n_"+v[0],ck="w_"+v[0],sk="s_"+v[0],ok="o_"+v[0],xk="x_"+v[0];
+            // Stats count one match per frozen SHA, even when reviewed multiple times.
+            if(!storage.getString("reviewed_sha","").equals(storage.getString("digest",""))){
+               storage.edit().putInt(k,storage.getInt(k,0)+1)
+                .putInt(ck,storage.getInt(ck,0)+(wdl?1:0))
+                .putInt(sk,storage.getInt(sk,0)+(size?1:0))
+                .putInt(ok,storage.getInt(ok,0)+(odd?1:0))
+                .putInt(xk,storage.getInt(xk,0)+(exact?1:0)).apply();
+            }
+        }
+        storage.edit().putString("reviewed_sha",storage.getString("digest","")).apply();
+        output.append("本期：胜平负 ").append(correctWdl).append("/").append(reviewed)
+          .append("　大小 ").append(correctOu).append("/").append(reviewed)
+          .append("　单双 ").append(correctOdd).append("/").append(reviewed)
+          .append("　直选 ").append(correctExact).append("/").append(reviewed).append("\\n")
+          .append("按冻结快照统计，未用当前临时重算号码。");
+        reviewView.setText(output.toString());
+    }
+
+    private void showArchive(){
+        StringBuilder b=new StringBuilder("【历史冻结】\\n")
+          .append(storage.getString("log","暂无记录")).append("\\n【累计对照】\\n");
+        String[] names={"合参","六爻","穿禽","梅花","太玄","轨策","大定","演禽","铁板"};
+        for(String name:names){
+            int n=storage.getInt("n_"+name,0);
+            if(n>0)b.append(name).append(" 样本").append(n)
+              .append(" 胜平负").append(storage.getInt("w_"+name,0)).append("/").append(n)
+              .append(" 大小").append(storage.getInt("s_"+name,0)).append("/").append(n)
+              .append(" 单双").append(storage.getInt("o_"+name,0)).append("/").append(n)
+              .append(" 直选").append(storage.getInt("x_"+name,0)).append("/").append(n).append("\\n");
+        }
+        reviewView.setText(b.toString());
     }
 
     private void render(){
