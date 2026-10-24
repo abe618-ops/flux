@@ -332,13 +332,23 @@ public class MainActivity extends Activity {
         lh=Math.max(0.10,Math.min(4.80,lh)); la=Math.max(0.10,Math.min(4.80,la));
         double pw=0,pd=0,pl=0; List<S> all=new ArrayList<>();
         for(int i=0;i<=6;i++)for(int j=0;j<=6;j++){double p=pois(i,lh)*pois(j,la);all.add(new S(i,j,p));if(i>j)pw+=p;else if(i==j)pd+=p;else pl+=p;}
-        Collections.sort(all,(x,y)->Double.compare(y.p,x.p)); S top=all.get(0),ht=topScore(lh*0.45,la*0.45);
+        Collections.sort(all,(x,y)->Double.compare(y.p,x.p)); S top=all.get(0);
         String wdl=(pw>=pd&&pw>=pl)?"主胜":(pl>=pd?"客胜":"平");
-        String htr=ht.h>ht.a?"主":ht.h<ht.a?"客":"平",ftr=top.h>top.a?"主":top.h<top.a?"客":"平";
+        int firstH=(int)Math.round(top.h*0.46),firstA=(int)Math.round(top.a*0.46);
+        String htr=firstH>firstA?"主":firstH<firstA?"客":"平",ftr=top.h>top.a?"主":top.h<top.a?"客":"平";
         double total=lh+la,under=Math.exp(-total)*(1+total+total*total/2.0);
         int tg=top.h+top.a;
         R r=new R();r.name=name;r.lh=lh;r.la=la;r.hs=hs;r.as=as;r.wdl=wdl;r.htft=htr+"/"+ftr;r.total=tg;r.score=top.score();
-        r.top3=all.get(0).score()+" / "+all.get(1).score()+" / "+all.get(2).score();r.ou=(1-under)>=0.5?"大2.5":"小2.5";r.parity=tg%2==0?"双":"单";r.net=top.h-top.a;r.seed=seed;r.trace=trace;
+        r.top3=all.get(0).score()+" / "+all.get(1).score()+" / "+all.get(2).score();
+        r.ou=(1-under)>=0.5?"大2.5":"小2.5";
+        r.parity=tg%2==0?"双":"单";
+        r.halfScore=firstH+":"+firstA;
+        ArrayList<Integer> goals=new ArrayList<>();
+        for(int k=0;k<=8;k++)goals.add(k);
+        final double totalRate=total;
+        goals.sort((x,y)->Double.compare(pois(y,totalRate),pois(x,totalRate)));
+        r.goalsTop=goals.get(0)+"、"+goals.get(1)+"、"+goals.get(2);
+        r.overPct=(1-under)*100.0;r.net=top.h-top.a;r.seed=seed;r.trace=trace;
         r.probs=String.format(Locale.CHINA,"主 %.1f%%  平 %.1f%%  客 %.1f%%",pw*100,pd*100,pl*100);return r;
     }
 
@@ -451,7 +461,14 @@ public class MainActivity extends Activity {
 
     private void render(){
         R r=selected==0?ensemble:results.get(selected-1); if(r==null)return;
-        summaryView.setText("胜平负  "+r.wdl+"\n"+r.probs+"\n\n半全场  "+r.htft+"\n总进球  "+r.total+"\n比分首选  "+r.score+"\n比分前三  "+r.top3+"\n大小球  "+r.ou+"\n进球单双  "+r.parity+"\n净胜球  "+(r.net>0?"+":"")+r.net+"\n\n预期进球 λ  "+fmt(r.lh)+" : "+fmt(r.la)+"\n强弱指数    "+fmt(r.hs)+" : "+fmt(r.as));
+        summaryView.setText("胜平负  "+r.wdl+"\n"+r.probs+"\n\n半场比分  "+r.halfScore+"\n半全场  "+r.htft
+            +"\n进球总数主选 "+r.total+"\n总进球候选 "+r.goalsTop
+            +"\n比分首选  "+r.score+"\n比分前三  "+r.top3
+            +"\n大小／上下  "+r.ou+(r.ou.startsWith("大")?"（上）":"（下）")
+            +"\n模型大2.5值 "+fmt(r.overPct)+"%（非真实概率）"
+            +"\n进球单双  "+r.parity+"（首选比分）"
+            +"\n净胜球  "+(r.net>0?"+":"")+r.net
+            +"\n\n模型 λ主/客  "+fmt(r.lh)+" : "+fmt(r.la));
         detailView.setText(r.trace+"\n\n统一映射层：盘面 → 主客强弱差/比赛节奏 → λ主/λ客 → 0:0~6:6 泊松比分矩阵。\n因此胜平负、比分、总球、大小和单双来自同一组参数。\n内部Seed："+hex(r.seed));
     }
 
@@ -496,5 +513,5 @@ public class MainActivity extends Activity {
     private int dp(int x){return(int)(x*getResources().getDisplayMetrics().density+.5f);}
 
     static class S{int h,a;double p;S(int h,int a,double p){this.h=h;this.a=a;this.p=p;}String score(){return h+":"+a;}}
-    static class R{String name,wdl,htft,score,top3,ou,parity,trace,probs;int total,net;double lh,la,hs,as;long seed;}
+    static class R{String name,wdl,htft,halfScore,score,top3,goalsTop,ou,parity,trace,probs;int total,net;double lh,la,hs,as,overPct;long seed;}
 }
