@@ -1,0 +1,137 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>策数应期 · 四式合参 V3</title><style>
+:root{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#152633;background:#f5f3ed;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header{background:#142d39;color:white;padding:18px 16px 17px}header h1{font-size:22px;line-height:1.4;margin:0 0 3px;font-weight:800}header small{color:#c3d7db}main{max-width:1000px;margin:auto;padding:10px 12px 36px}.panel{background:#fff;border:1px solid #e6e6e1;border-radius:14px;padding:13px;margin:9px 0;box-shadow:0 2px 12px #1836430a}.panel h2{font-size:17px;display:flex;align-items:center;gap:8px;margin:0 0 10px}.no{display:inline-flex;align-items:center;justify-content:center;color:#fff;background:#164e5d;border-radius:7px;min-width:23px;height:23px;font-size:13px}label{font-size:12px;color:#52636c;display:block;margin-bottom:4px;font-weight:650}.fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.f3{grid-template-columns:repeat(3,minmax(0,1fr))}.f2{grid-template-columns:repeat(2,minmax(0,1fr))}select,input,textarea{appearance:auto;background:#fff;border:1px solid #cfd7d9;border-radius:8px;font:inherit;color:#142d39;padding:10px 7px;min-width:0;width:100%;outline-offset:2px}textarea{min-height:65px;resize:vertical;font-size:13px}input{font-size:14px}button{border:0;background:#145d6f;color:white;border-radius:9px;padding:10px 13px;font-size:13px;font-weight:750;cursor:pointer;white-space:normal}button.sub{background:#e9f1f2;color:#125164}button.warn{background:#f1e9d8;color:#5e4b23}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:1}.meta{font-size:12px;color:#587078}.hero{display:flex;justify-content:space-between;gap:10px;align-items:center}.hero strong{font-size:17px}.pill{font-size:11px;border-radius:30px;padding:5px 9px;background:#eff3e3;color:#527122;font-weight:700}.board{display:grid;grid-template-columns:130px 1fr;gap:10px;align-items:center;margin-top:10px}.lines{display:flex;flex-direction:column;gap:7px;align-items:stretch;justify-content:center;background:#f7f6f0;border-radius:10px;padding:16px}.line{height:9px;background:#155468;border-radius:3px;position:relative}.line.yin{background:linear-gradient(90deg,#155468 0 42%,transparent 42% 58%,#155468 58% 100%)}.line.moving:after{content:'动';position:absolute;right:-24px;top:-5px;color:#c06035;font-size:12px}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.stat{padding:9px 11px;background:#f6f8f8;border-radius:10px;min-width:0}.stat b{font-size:23px;color:#194f61}.stat label{margin:0 0 4px}.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:10px}.four .slot{background:#eaf2f1;border-radius:9px;text-align:center;padding:8px 1px}.slot b{display:block;font-size:22px}.slot span{font-size:12px;color:#52717b}.small{font-size:12px;color:#657780;line-height:1.65}.note{background:#f8f4e8;border-left:3px solid #c29a4c;padding:9px;margin-top:9px;font-size:12px;color:#6d5a34;line-height:1.55;border-radius:3px}.vote-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.vote{border:1px solid #dce4e4;border-radius:10px;padding:9px;background:#f9fbfb}.vote b{display:block;font-size:13px;min-height:19px}.vote select{margin-top:7px}.result{background:#eff7f5;padding:11px;border-radius:10px;margin-top:10px;color:#194c56;font-weight:700;font-size:14px;line-height:1.6}.dash{height:7px;background:#e4e9e7;border-radius:10px;display:flex;overflow:hidden;margin:9px 0}.dash span:nth-child(1){width:24.444%;background:#95bdab}.dash span:nth-child(2){width:25.556%;background:#d6b17d}.dash span:nth-child(3){width:24.444%;background:#73a1b3}.dash span:nth-child(4){width:25.556%;background:#687b98}.timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.timeline span{font-size:11px;text-align:center;border:1px solid #dce4e2;background:#f8faf8;padding:7px 2px;border-radius:7px}.timeline span.selected{background:#cfe4dc;border:2px solid #2d856c;font-weight:800}.wide{grid-column:1/-1}.mini{font-size:11px;color:#5b6c76}.counter{font-variant-numeric:tabular-nums}details{margin-top:8px;border-top:1px dashed #d6dedc;padding-top:9px}summary{cursor:pointer;font-size:13px;font-weight:650;color:#23536a}pre{overflow:auto;font-size:11px;white-space:pre-wrap;word-break:break-all}footer{font-size:11px;color:#738087;text-align:center;line-height:1.7;margin:16px 0}.green{color:#277a50}.text{margin:6px 0}.hr{margin:12px 0;border-top:1px solid #e6ebea}#msg{font-size:12px;color:#276077;margin-top:7px;min-height:17px}@media(min-width:680px){.vote-grid{grid-template-columns:repeat(4,1fr)}.board{grid-template-columns:180px 1fr}.stats{grid-template-columns:repeat(3,1fr)}main{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.panel.full{grid-column:1/-1}}@media(max-width:360px){.fields{gap:5px}.panel{padding:10px}select,input{font-size:12px;padding:9px 3px}}
+</style><style>#versionNote{border-left:3px solid #9a7132;background:#fcf7ec;padding:8px 10px;font-size:12px;line-height:1.65;color:#614b2a;border-radius:4px;margin:9px 0}#nativeCheck{font-size:11px;color:#2b7354}</style></head><body><header><h1>策数应期 <span style="color:#e0c38c">V2</span></h1><small>古籍策数复算 · 四式票据合参 · 足球90分钟实验　｜　离线研究应用</small></header><main><div id="versionNote">V3 新策数内核：先天／后天原策、演策、神易数与四式实验合参。四式真实独立排盘尚未接入；随机连抽是负对照，不代表预测准确率。<div id="nativeCheck">Android原生数值交叉校验：等待起卦</div></div>
+<section class="panel full"><div class="hero"><div><strong id="matchTitle">DEMO-001 · 示例甲队 VS 示例乙队</strong><div class="meta" id="matchMeta">演示数据 · 非真实赛事</div></div><span class="pill" id="sourceBadge">演示比赛</span></div>
+<div class="actions"><button id="nextMatch">下一场</button><button class="sub" id="randomDemo">随机抽至三家一致</button><button class="sub" id="saveRecord">导出赛前记录</button></div>
+<details><summary>导入真实比赛列表（CSV，每行：ID,主队,客队,开球时间）</summary><textarea id="matches" placeholder="示例：M001,主队A,客队B,2026-10-20T19:30:00+08:00"></textarea><div class="actions"><button class="sub" id="importMatches">导入并从第一场开始</button></div><p class="small">不会联网拉取赛程；从赛事来源复制比赛信息后再导入。演示用比赛绝不计入准确率。</p></details></section>
+<section class="panel"><h2><span class="no">1</span> 先天／后天策数排盘</h2><div class="fields"><div><label>上卦</label><select id="upper"></select></div><div><label>下卦</label><select id="lower"></select></div><div><label>动爻</label><select id="moving"></select></div><div><label>体系</label><select id="system"><option>先天</option><option>后天</option></select></div></div>
+<div class="board"><div class="lines" id="guaLines"></div><div class="stats"><div class="stat"><label>原策</label><b id="original">180</b></div><div class="stat"><label>演策</label><b id="extended">10634</b></div><div class="stat"><label>乘数</label><b id="multiplier">59</b></div><div class="stat"><label>动爻</label><b id="activeMoving">五</b></div></div></div>
+<div class="four" id="fourNumbers"></div><div class="small">爻线从上到下展示；策数基于文献算例重构。数字与古籍异文处不会自动断定唯一结论。</div></section>
+<section class="panel"><h2><span class="no">2</span> 应期与90分钟实验</h2><div class="small">四层元、会、运、世对应古籍年月日时的分层思想；下列比赛时段是<strong>现代实验映射</strong>。</div><div class="dash"><span></span><span></span><span></span><span></span></div><div class="timeline" id="timeline"></div><div class="result" id="timeResult"></div><div class="small" id="symbolResult"></div><div class="note">现代实验规则 M-TIME-V2-01：元位先取数根，其他三位直接取数位；只选唯一最大值，并列则放弃唯一判断。未经回测，不能当作进球时间预测概率。</div></section>
+<section class="panel"><h2><span class="no">3</span> 四式合参（结果录入与模拟）</h2><div class="vote-grid" id="votes"></div><div class="fields f2" style="margin-top:10px"><div><label>随机种子（可复现）</label><input id="seed" value="20261019" autocomplete="off"></div><div><label>自动抽取上限</label><select id="maxDraw"><option>10</option><option selected>100</option><option>200</option></select></div></div><div class="actions"><button id="checkVotes">检查当前四票</button><button class="sub" id="clearVotes">清空人工票</button></div><div class="result" id="voteResult">尚未录入真实四盘结果。</div><div class="small" id="drawHint">实际四式独立排盘尚未接入，本页不能自动算出真正的飞盘奇门、转盘奇门、太乙、大六壬四局。</div></section>
+<section class="panel"><h2><span class="no">4</span> 神易数：干支／四柱策数</h2><div class="fields f2"><div><label>单柱干支</label><input id="gz" value="甲子" maxlength="2"></div><div><label>&nbsp;</label><button style="width:100%" id="calcGZ">计算神易策数</button></div></div><div class="result" id="singleResult">甲子 · 天水讼 · 离宫 · 84策</div><div class="hr"></div><div class="fields"><div><label>年柱</label><input id="year" value="甲子" maxlength="2"></div><div><label>月柱</label><input id="month" value="丁丑" maxlength="2"></div><div><label>日柱</label><input id="day" value="丙寅" maxlength="2"></div><div><label>时柱</label><input id="hour" value="戊子" maxlength="2"></div></div><div class="fields f2" style="margin-top:9px"><div><label>占类</label><select id="mode"><option>天时</option><option>人事</option></select></div><div><label>年命（人事模式必填）</label><input id="birth" placeholder="例如丁酉" maxlength="2"></div></div><div class="actions"><button class="sub" id="calcFour">四柱合数</button></div><div id="fourResult" class="small">本页不自动推算四柱干支；请使用正确历法与时区结果输入。</div></section>
+<section class="panel full"><h2><span class="no">5</span> 复盘登记（不含真实赛程接口）</h2><div class="fields f3"><div><label>真实结果</label><select id="actual"><option value="">待赛后</option><option value="主胜">主胜</option><option value="平">平</option><option value="客胜">客胜</option></select></div><div><label>进球时刻</label><input id="goals" placeholder="12,45+2,73"></div><div><label>实际比分</label><input id="score" placeholder="2:1"></div></div><div class="actions"><button class="sub" id="evaluate">查看复盘</button><button class="warn" id="downloadLog">导出当前JSON记录</button></div><div class="result" id="evaluation">待输入赛后结果。模拟抽票与示例比赛不计入正式回测。</div><details><summary>完整数据与使用说明</summary><p class="small">本地离线运行，数据不会自动上传。点击“导出”才会生成文件。比赛时间及来源需赛前冻结后才有研究意义；赛后不能不断重抽再回填。</p><pre id="raw"></pre></details></section>
+</main><footer>策数应期研究 V2 · 文献算法、象征应期、随机负对照分开展示<br>历史术数预测效果尚未经科学验证；不应用于高风险决策或投注保证。</footer>
+<script>/* Offline browser companion to Python engine. No fetch, no remote data. */
+(function(root){'use strict';
+const gua={乾:[1,1,1],兑:[1,1,0],离:[1,0,1],震:[1,0,0],巽:[0,1,1],坎:[0,1,0],艮:[0,0,1],坤:[0,0,0]};
+const xt={乾:1,兑:2,离:3,震:4,巽:5,坎:6,艮:7,坤:8};
+const ht={坎:1,坤:2,震:3,巽:4,乾:6,兑:7,艮:8,离:9};
+const zt={艮:1,兑:2,坎:3,离:4,震:5,巽:6,坤:8,乾:9};
+const palace={艮:9,兑:17,坎:7,离:6,震:5,巽:8,坤:16,乾:12};
+const stems={甲:'乾',乙:'坤',丙:'艮',丁:'兑',戊:'坎',己:'离',庚:'震',辛:'巽',壬:'乾',癸:'坤'};
+const branches={子:'坎',丑:'艮',寅:'艮',卯:'震',辰:'巽',巳:'巽',午:'离',未:'坤',申:'坤',酉:'兑',戌:'乾',亥:'乾'};
+const methods=['飞盘奇门','转盘奇门','太乙神数','大六壬'], votes=['主胜','平','客胜'];
+const symbols={1:['坎','水'],2:['离','火'],3:['震','木'],4:['兑','金'],5:['艮','土'],6:['坎','水'],7:['离','火'],8:['巽','木'],9:['乾','金'],10:['坤','土']};
+const trigrams=Object.keys(gua),labels=['本宫','一世','二世','三世','四世','五世','游魂','归魂'];
+const keybits=(a,b)=>gua[b].concat(gua[a]).join('');
+let jf={};
+for(const [name,bits] of Object.entries(gua)){
+ const state=bits.concat(bits),stages=[state.join('')];
+ for(let i=0;i<5;i++){state[i]^=1;stages.push(state.join(''));}
+ state[3]^=1;stages.push(state.join(''));
+ for(let i=0;i<3;i++)state[i]^=1;
+ stages.push(state.join(''));
+ stages.forEach((b,i)=>{if(jf[b])throw Error('京房宫重复');jf[b]=[name,labels[i]];});
+}
+if(Object.keys(jf).length!==64)throw Error('京房宫不全');
+function calculate(a,b,m,sys='先天'){
+ if(!gua[a]||!gua[b]||!(m>=1&&m<=6)||!Number.isInteger(m)||!['先天','后天'].includes(sys))throw Error('输入无效');
+ const seq=sys==='先天'?xt:ht,base=keybits(a,b).split('').reduce((s,c)=>s+(sys==='先天'?(+c?36:24):(+c?128:112)),0);
+ const mult=1+(m>=4?10*m+seq[a]:10*seq[b]+m);
+ const total=base*mult+seq[a]+seq[b]+m;
+ const digits=[Math.floor(total/1000),Math.floor(total/100)%10,Math.floor(total/10)%10,total%10];
+ return {system:sys,upper:a,lower:b,moving:m,original:base,multiplier:mult,total,digits};
+}
+function shenyi(gz){
+ if(gz.length!==2||!stems[gz[0]]||!branches[gz[1]])throw Error('请输入有效干支');
+ if('甲乙丙丁戊己庚辛壬癸'.indexOf(gz[0])%2!=='子丑寅卯辰巳午未申酉戌亥'.indexOf(gz[1])%2)throw Error('天干地支阴阳不配，非六十甲子');
+ const upper=stems[gz[0]],lower=branches[gz[1]],p=jf[keybits(upper,lower)],pos=upper===lower?zt[upper]:zt[upper]+zt[lower];
+ return {ganzhi:gz,upper,lower,palace:p[0],stage:p[1],positive:pos,base:palace[p[0]],total:(palace[p[0]]+1)*pos};
+}
+function symbolOf(num){if(num===0)return '无(0)';const p=symbols[num];return p?`${p[0]}·${p[1]}${[4,5,10].includes(num)?'†':''}`:'未定';}
+function digitRoot(n){return n===0?0:1+(n-1)%9;}
+function timeFeature(result){
+ const d=result.digits,s=[digitRoot(d[0]),...d.slice(1)],high=Math.max(...s),hits=s.map((v,i)=>v===high?i:-1).filter(v=>v>=0);
+ const windows=['0–22′','23–45′（含补时）','46–67′','68–90′（含补时）'];
+ return {scores:s,hit:hits.length===1&&high>0?hits[0]:null,windows,ambiguous:hits.length!==1||high===0};
+}
+function mix32(str){
+ const bytes=new TextEncoder().encode(str);let x=2166136261;
+ for(const c of bytes)x=Math.imul(x^c,16777619)>>>0;
+ x^=x>>>16;x=Math.imul(x,0x7feb352d)>>>0;x^=x>>>15;x=Math.imul(x,0x846ca68b)>>>0;x^=x>>>16;return x>>>0;
+}
+function pseudoVote(seed,id,attempt,method){return votes[mix32(`${seed}|${id}|${attempt}|${method}`)%3];}
+function consensus(arr){const counts=Object.fromEntries(votes.map(v=>[v,arr.filter(x=>x===v).length]));const best=votes.reduce((a,b)=>counts[b]>counts[a]?b:a);return {winner:counts[best]>=3?best:null,count:counts[best],ok:counts[best]>=3};}
+function draw(seed,id,max=100){if(!seed||!id)throw Error('比赛ID和种子不能空');for(let i=1;i<=max;i++){
+ const each=methods.map(m=>pseudoVote(seed,id,i,m));const result=consensus(each);
+ if(result.ok)return {attempts:i,each,result,mode:'SIMULATION'};
+ }return {attempts:max,each:methods.map(m=>pseudoVote(seed,id,max,m)),result:consensus(methods.map(m=>pseudoVote(seed,id,max,m))),mode:'SIMULATION'};}
+function goalWindow(t){t=String(t).trim().replace('′','');if(t.includes('+')){
+ const a=t.split('+').map(Number);if(a.length!==2||![45,90].includes(a[0])||!Number.isInteger(a[1])||a[1]<1||a[1]>25)throw Error('分钟错误');t=a[0];
+ }else{if(!/^\d+$/.test(t)||Number(t)>90)throw Error('分钟错误');t=Number(t);}
+ return t<=22?0:t<=45?1:t<=67?2:3;
+}
+const api={gua,methods,votes,calculate,shenyi,symbolOf,timeFeature,pseudoVote,consensus,draw,goalWindow};
+if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.Ceshu=api;
+})(typeof window!=='undefined'?window:globalThis);
+</script>
+<script>
+(function(){
+ if(!window.Ceshu) return;
+ const orig=window.Ceshu.calculate;
+ window.Ceshu.calculate=function(a,b,m,sys){
+  const out=orig(a,b,m,sys);
+  if(window.AndroidBridge && typeof window.AndroidBridge.calculateStalks==="function"){
+   try{
+    const n=JSON.parse(window.AndroidBridge.calculateStalks(a,b,m,sys));
+    if(n.original!==out.original || n.total!==out.total || n.multiplier!==out.multiplier){
+     throw Error("原生引擎与网页内核数值不一致");
+    }
+    const v=document.getElementById("nativeCheck");if(v)v.textContent="✓ 原生Java与网页内核交叉校验通过";
+   }catch(e){const v=document.getElementById("nativeCheck");if(v)v.textContent="引擎校验失败："+e.message;throw e;}
+  }
+  return out;
+ };
+})();
+</script>
+<script>
+(function(){'use strict';const E=window.Ceshu;
+const el=x=>document.getElementById(x);const names=['乾','兑','离','震','巽','坎','艮','坤'];
+const demos=[['DEMO-001','示例甲队','示例乙队','演示用虚构比赛'],['DEMO-002','示例丙队','示例丁队','演示用虚构比赛'],['DEMO-003','示例戊队','示例己队','演示用虚构比赛']];
+let matches=demos,idx=0,source='demo',lastCalc,lastFeature,lastDraw=null,voteMode='manual',frozen=null;
+for(const k of ['upper','lower']){el(k).innerHTML=names.map(v=>`<option>${v}</option>`).join('')};el('upper').value='坤';el('lower').value='乾';
+el('moving').innerHTML=[1,2,3,4,5,6].map(n=>`<option value="${n}">${n}</option>`).join('');el('moving').value='5';
+const vn=el('votes');E.methods.forEach((m,i)=>{let div=document.createElement('div');div.className='vote';let name=document.createElement('b');name.textContent=m;div.append(name);let sel=document.createElement('select');sel.id='vote'+i;sel.innerHTML='<option value="">未录入</option><option>主胜</option><option>平</option><option>客胜</option>';sel.addEventListener('change',()=>{voteMode='manual';lastDraw=null;refreshVotes()});div.append(sel);vn.append(div)});
+function match(){const m=matches[idx];el('matchTitle').textContent=`${m[0]} · ${m[1]} VS ${m[2]}`;el('matchMeta').textContent=m[3]||'未提供开球时间';el('sourceBadge').textContent=source==='demo'?'演示比赛':'已导入';frozen=null;lastDraw=null;voteMode='manual';E.methods.forEach((_,i)=>el('vote'+i).value='');refreshVotes();renderRaw()}
+function refreshVotes(){let v=E.methods.map((_,i)=>el('vote'+i).value);let s=E.consensus(v);el('voteResult').textContent=s.ok?`${voteMode==='simulation'?'随机模拟':'录入结果'}：${s.winner}，${s.count}/4 一致`:`${voteMode==='simulation'?'随机模拟':'人工录入'}：未达到3/4一致（最高${s.count}/4）`;
+ el('drawHint').textContent=voteMode==='simulation'?`第 ${lastDraw?.attempts||0} 轮达到结果；随机负对照，不等于有预测效力。`:'四式各盘结果需独立产生并录入；还没有接入其完整排盘程序。';renderRaw()}
+function render(){try{lastCalc=E.calculate(el('upper').value,el('lower').value,+el('moving').value,el('system').value);lastFeature=E.timeFeature(lastCalc);
+ el('original').textContent=lastCalc.original;el('extended').textContent=lastCalc.total.toLocaleString('zh-CN');el('multiplier').textContent=lastCalc.multiplier;el('activeMoving').textContent=el('moving').value;
+ let bits=E.gua[lastCalc.lower].concat(E.gua[lastCalc.upper]);const lines=el('guaLines');lines.innerHTML='';bits.reverse().forEach((v,i)=>{let d=document.createElement('div');d.className='line'+(v?'':' yin')+(i===6-lastCalc.moving?' moving':'');lines.append(d)});
+ el('fourNumbers').innerHTML=lastCalc.digits.map((v,i)=>`<div class="slot"><span>${['元','会','运','世'][i]}</span><b>${v}</b></div>`).join('');
+ el('timeline').innerHTML=lastFeature.windows.map((w,i)=>`<span class="${i===lastFeature.hit?'selected':''}">${['元','会','运','世'][i]}<br>${w}</span>`).join('');
+ el('timeResult').textContent=lastFeature.ambiguous?`四位得分 ${lastFeature.scores.join(' / ')}，出现并列：不输出唯一时段`:`四位得分 ${lastFeature.scores.join(' / ')}；实验时间候选：${lastFeature.windows[lastFeature.hit]}`;
+ el('symbolResult').textContent='传统应期数象：'+lastCalc.digits.map((n,i)=>`${['元','会','运','世'][i]} ${E.symbolOf(n)}`).join('　')+'（† 存异文）';renderRaw();
+ }catch(e){el('timeResult').textContent='计算错误：'+e.message}}
+function renderRaw(){if(!lastCalc)return;let o={match:matches[idx],matchSource:source,upper:lastCalc.upper,lower:lastCalc.lower,moving:lastCalc.moving,original:lastCalc.original,extended:lastCalc.total,experimentalWindow:lastFeature?.hit===null?null:lastFeature?.windows[lastFeature?.hit],
+ voteOrigin:voteMode,votes:Object.fromEntries(E.methods.map((m,i)=>[m,el('vote'+i).value||null])),seed:el('seed').value,simulatedDraw:lastDraw?.attempts||null,protocol:'仅赛前封存的独立预测可计入正式回测'};
+ el('raw').textContent=JSON.stringify(o,null,2);return o;}
+function download(name,text){if(window.AndroidBridge && typeof window.AndroidBridge.saveJson==='function'){window.AndroidBridge.saveJson(name,text);return;}let blob=new Blob([text],{type:'application/json;charset=utf-8'});let href=URL.createObjectURL(blob),a=document.createElement('a');a.href=href;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(href),2500)}
+['upper','lower','moving','system'].forEach(id=>el(id).addEventListener('change',render));el('seed').addEventListener('change',renderRaw);
+el('nextMatch').onclick=()=>{idx=(idx+1)%matches.length;match()};
+el('importMatches').onclick=()=>{let raw=el('matches').value.trim();let rows=raw.split(/\r?\n/).map(x=>x.split(',').map(z=>z.trim())).filter(a=>a.length>=4&&a.slice(0,4).every(Boolean)).map(a=>a.slice(0,4));if(!rows.length){alert('没有有效数据，请每行输入ID,主队,客队,开球时间');return;}matches=rows;idx=0;source='imported';match()};
+el('randomDemo').onclick=()=>{try{let m=matches[idx],r=E.draw(el('seed').value.trim(),m[0],+el('maxDraw').value);lastDraw=r;voteMode='simulation';r.each.forEach((v,i)=>el('vote'+i).value=v);refreshVotes()}catch(e){alert(e.message)}};
+el('checkVotes').onclick=refreshVotes;
+el('clearVotes').onclick=()=>{E.methods.forEach((_,i)=>el('vote'+i).value='');voteMode='manual';lastDraw=null;refreshVotes()};
+el('saveRecord').onclick=()=>{let data=renderRaw();data.recordType='pre-match-snapshot';data.timestamp=new Date().toISOString();data.warning=source==='demo'?'演示比赛不能参与回测':voteMode==='simulation'?'随机负对照不能作为预测':'人工录入未经独立验证';data.eligibleForFormalBacktest=source==='imported'&&voteMode==='manual'&&!!matches[idx][3]&&Number.isFinite(Date.parse(matches[idx][3]))&&Date.now()<Date.parse(matches[idx][3])&&E.methods.every((_,i)=>!!el('vote'+i).value);data.warning+=data.eligibleForFormalBacktest?'；赛前格式完整，仍需核查四盘来源':'；本记录不满足正式赛前回测封存条件';frozen=data;download(`策数赛前记录_${matches[idx][0]}.json`,JSON.stringify(data,null,2));};
+el('calcGZ').onclick=()=>{try{const r=E.shenyi(el('gz').value.trim());el('singleResult').textContent=`${r.ganzhi} · 上${r.upper}下${r.lower} · ${r.palace}宫${r.stage} · (${r.base}+1)×${r.positive} = ${r.total}策`;}catch(e){el('singleResult').textContent=e.message}};
+el('calcFour').onclick=()=>{try{let z=['year','month','day','hour'].map(k=>E.shenyi(el(k).value.trim()));let b=el('mode').value==='天时'?('子寅辰未酉亥'.includes(el('year').value.trim()[1])?720:360):E.shenyi(el('birth').value.trim()).total;
+ el('fourResult').textContent=`四柱 ${z.map(x=>x.total).join('+')} + ${b} = ${z.reduce((a,c)=>a+c.total,0)+b} 策。${el('mode').value==='天时'?'加错综数':'加年命策数'}。`;}catch(e){el('fourResult').textContent='输入检查：'+e.message}};
+el('evaluate').onclick=()=>{let g=el('goals').value.split(/[,，、\s]+/).filter(Boolean),res=el('actual').value,win=E.consensus(E.methods.map((_,i)=>el('vote'+i).value));let txt=[];
+ if(res)txt.push(`录入赛果：${res}${el('score').value?'（'+el('score').value+'）':''}`);if(win.ok&&res)txt.push(`当前四票方向：${win.winner}；${win.winner===res?'一致':'不一致'}`);
+ if(g.length){try{let arr=g.map(s=>E.goalWindow(s)),i=lastFeature.hit;txt.push(i===null?'实验时段弃权':`进球时间 ${g.join('、')}，落入实验窗口${lastFeature.windows[i]}的进球 ${arr.filter(x=>x===i).length}/${g.length} 个`)}catch(e){txt.push(e.message)}}
+ txt.push(source==='demo'||voteMode==='simulation'?'本条为演示／模拟，不能计入真实预测胜率。':'正式回测须先保存赛前快照，再另行保存赛后数据。');el('evaluation').textContent=txt.join('；')};
+el('downloadLog').onclick=()=>{let o=renderRaw();o.outcome={result:el('actual').value,score:el('score').value,goalMinutes:el('goals').value};o.recordType='review';o.saved_at=new Date().toISOString();download(`策数复盘_${matches[idx][0]}.json`,JSON.stringify(o,null,2))};
+render();match();el('calcGZ').click();el('calcFour').click();})();
+</script></body></html>
