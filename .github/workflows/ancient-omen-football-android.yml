@@ -1,0 +1,106 @@
+name: Build Ancient Omen Football V3 Android APK
+
+on:
+  push:
+    branches:
+      - 'research/ancient-omens-football-v1-20261017'
+    paths:
+      - 'ancient-omen-football-android/**'
+      - 'ancient-omen-football-lab/**'
+      - '.github/workflows/ancient-omen-football-android.yml'
+      - 'bingfa-qimen-football-v2/app/src/main/java/**'
+      - 'four-divination-football/app/src/main/java/**'
+      - 'four-shushu-random-chart-v1/app/src/main/java/**'
+      - 'six-fusion-football/app/src/main/java/**'
+      - 'sanshi-random-football-v2/app/src/main/java/**'
+      - 'astro-football-lab/app/src/main/java/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android 35 SDK
+        shell: bash
+        run: |
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Stage tested V3 lab and original Java engines
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSETS="ancient-omen-football-android/app/src/main/assets"
+          JAVA="ancient-omen-football-android/app/src/main/java"
+          mkdir -p "$ASSETS/research"
+          cp ancient-omen-football-lab/index.html "$ASSETS/index.html"
+          cp ancient-omen-football-lab/engine.js "$ASSETS/engine.js"
+          cp ancient-omen-football-lab/research_v2.js "$ASSETS/research_v2.js"
+          cp ancient-omen-football-lab/research_v3.js "$ASSETS/research_v3.js"
+          cp ancient-omen-football-lab/research/source_catalog.json "$ASSETS/research/"
+          cp ancient-omen-football-lab/research/method_registry.json "$ASSETS/research/"
+          cp ancient-omen-football-lab/research/chapter_dossiers_v2.json "$ASSETS/research/"
+          cp ancient-omen-football-lab/research/remaining_18_v3.md "$ASSETS/research/"
+          sed -i 's#</body></html>#<script src="native-controls.js"></script></body></html>#' "$ASSETS/index.html"
+          node -e "const f=require('fs').readFileSync(process.argv[1],'utf8');for(const x of ['engine.js','research_v2.js','research_v3.js','native-controls.js'])if(!f.includes(x))throw Error('Missing asset '+x)" "$ASSETS/index.html"
+          for pair in \
+            "bingfa-qimen-football-v2/app/src/main/java/com/abe618/bingfaqimenv2/QimenEngine.java" \
+            "four-divination-football/app/src/main/java/com/abe618/fourdivfootball/FourDivinationEngine.java" \
+            "four-shushu-random-chart-v1/app/src/main/java/com/abe618/fourshushurandom/ChartEngine.java" \
+            "six-fusion-football/app/src/main/java/com/abe618/sixfusionfootball/FusionEngine.java" \
+            "sanshi-random-football-v2/app/src/main/java/com/abe618/sanshifootball/TraditionalEngine.java" \
+            "astro-football-lab/app/src/main/java/com/abe618/triastrofootball/PredictionEngine.java"
+          do
+            mkdir -p "$JAVA/$(dirname "${pair#*/app/src/main/java/}")"
+            cp "$pair" "$JAVA/${pair#*/app/src/main/java/}"
+          done
+          echo "Bundled V3 browser modules and 6 original Java engines."
+
+      - name: Run V3 core tests
+        run: |
+          node ancient-omen-football-lab/tests/test_core.cjs
+          node ancient-omen-football-lab/tests/test_v2.cjs
+          node ancient-omen-football-lab/tests/test_v3.cjs
+
+      - name: Build installable Android APK
+        working-directory: ancient-omen-football-android
+        run: gradle :app:assembleDebug --stacktrace --no-daemon
+
+      - name: Validate and name APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ancient-omen-football-android/out
+          cp ancient-omen-football-android/app/build/outputs/apk/debug/app-debug.apk ancient-omen-football-android/out/AncientOmenFootball-V3-Android-debug.apk
+          ls -lh ancient-omen-football-android/out/
+          unzip -t ancient-omen-football-android/out/AncientOmenFootball-V3-Android-debug.apk | tail -n 1
+          (cd ancient-omen-football-android/out && sha256sum AncientOmenFootball-V3-Android-debug.apk > SHA256SUMS.txt)
+
+      - name: Upload APK build
+        uses: actions/upload-artifact@v4
+        with:
+          name: AncientOmenFootball-V3-Android-APK
+          path: ancient-omen-football-android/out/*
+          if-no-files-found: error
+          retention-days: 30
