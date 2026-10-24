@@ -76,9 +76,13 @@ public class MainActivity extends Activity {
         teams.addView(awayEdit,new LinearLayout.LayoutParams(0,dp(50),1));
         c.addView(teams);
 
-        Calendar now=Calendar.getInstance();
-        dateEdit=input("比赛日期",new SimpleDateFormat("yyyy-MM-dd",Locale.US).format(now.getTime()));
-        timeEdit=input("开赛时间",new SimpleDateFormat("HH:mm",Locale.US).format(now.getTime()));
+        Calendar now=Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai"));
+        SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd",Locale.US);
+        SimpleDateFormat tf=new SimpleDateFormat("HH:mm",Locale.US);
+        df.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        tf.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        dateEdit=input("比赛日期（北京时间）",df.format(now.getTime()));
+        timeEdit=input("开赛时间（北京时间）",tf.format(now.getTime()));
         LinearLayout dt=row(); dt.setPadding(0,dp(10),0,0);
         dt.addView(dateEdit,new LinearLayout.LayoutParams(0,dp(50),1));
         dt.addView(space(dp(10),1));
@@ -332,8 +336,13 @@ public class MainActivity extends Activity {
         lh=Math.max(0.10,Math.min(4.80,lh)); la=Math.max(0.10,Math.min(4.80,la));
         double pw=0,pd=0,pl=0; List<S> all=new ArrayList<>();
         for(int i=0;i<=6;i++)for(int j=0;j<=6;j++){double p=pois(i,lh)*pois(j,la);all.add(new S(i,j,p));if(i>j)pw+=p;else if(i==j)pd+=p;else pl+=p;}
+        double norm=pw+pd+pl;
+        if(norm>0){pw/=norm;pd/=norm;pl/=norm;}
         Collections.sort(all,(x,y)->Double.compare(y.p,x.p)); S top=all.get(0);
         String wdl=(pw>=pd&&pw>=pl)?"主胜":(pl>=pd?"客胜":"平");
+        // Highest individual score consistent with categorical W/D/L majority.
+        // The unconditional probability top three remains visible as a separate comparison.
+        for(S c:all){if(decision(c.h,c.a).equals(wdl)){top=c;break;}}
         int firstH=(int)Math.round(top.h*0.46),firstA=(int)Math.round(top.a*0.46);
         String htr=firstH>firstA?"主":firstH<firstA?"客":"平",ftr=top.h>top.a?"主":top.h<top.a?"客":"平";
         double total=lh+la,under=Math.exp(-total)*(1+total+total*total/2.0);
@@ -381,7 +390,9 @@ public class MainActivity extends Activity {
         }
         String raw=body.toString();
         frozenDigest=sha256(raw);
-        String when=new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.CHINA).format(new Date());
+        SimpleDateFormat timestampFmt=new SimpleDateFormat("yyyy-MM-dd HH:mm",Locale.CHINA);
+        timestampFmt.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        String when=timestampFmt.format(new Date());
         String old=storage.getString("log","");
         String line=when+" "+clean(homeEdit.getText().toString(),"主队")+" vs "
             +clean(awayEdit.getText().toString(),"客队")
@@ -441,6 +452,7 @@ public class MainActivity extends Activity {
           .append("　单双 ").append(correctOdd).append("/").append(reviewed)
           .append("　直选 ").append(correctExact).append("/").append(reviewed).append("\\n")
           .append("按冻结快照统计，未用当前临时重算号码。");
+        if(ht==null)output.append(" 未提供半场比分，不统计半全场正确率。");
         reviewView.setText(output.toString());
     }
 
