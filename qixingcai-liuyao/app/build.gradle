@@ -1,0 +1,15 @@
+plugins { id 'com.android.application' }
+android {
+  namespace 'com.abe618.qixingcai'
+  compileSdk 35
+  defaultConfig {
+    applicationId 'com.abe618.qixingcai.hexfusion.v1'
+    minSdk 26
+    targetSdk 32
+    versionCode 100
+    versionName '1.0.0'
+  }
+  buildTypes { debug { minifyEnabled false }; release { minifyEnabled false } }
+  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+dependencies { implementation 'cn.6tail:lunar:1.7.7' }
