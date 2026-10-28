@@ -1,0 +1,70 @@
+name: Build MediaRebuild v1
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'apps/media-rebuild/**'
+      - '.github/workflows/media-rebuild-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Restore Android source
+        shell: bash
+        run: |
+          cat apps/media-rebuild/source.b64.* | tr -d '[:space:]' | base64 -d > /tmp/MediaRebuild-source-v1.zip
+          unzip -t /tmp/MediaRebuild-source-v1.zip
+          mkdir -p /tmp/media-rebuild-src
+          unzip -q /tmp/MediaRebuild-source-v1.zip -d /tmp/media-rebuild-src
+          PROJECT_DIR="/tmp/media-rebuild-src/media_rebuild_android"
+          test -f "$PROJECT_DIR/app/build.gradle"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+      - name: Install Android SDK 35
+        shell: bash
+        run: |
+          SDK_ROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          SDKMANAGER="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SDKMANAGER" ]; then SDKMANAGER="$(command -v sdkmanager)"; fi
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        shell: bash
+        run: gradle --no-daemon --stacktrace -p "$PROJECT_DIR" :app:assembleDebug
+
+      - name: Verify APK
+        shell: bash
+        run: |
+          APK="$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          unzip -t "$APK"
+          cp "$APK" /tmp/MediaRebuild-v1-debug.apk
+          sha256sum /tmp/MediaRebuild-v1-debug.apk | tee /tmp/SHA256.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MediaRebuild-v1-debug
+          path: |
+            /tmp/MediaRebuild-v1-debug.apk
+            /tmp/SHA256.txt
+          if-no-files-found: error
