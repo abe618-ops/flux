@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>河南刮刮乐·四术合参</title>
+<style>
+:root{--bg:#10161d;--panel:#1d2831;--line:#39474d;--ink:#f3eee2;--muted:#b3c1c4;--gold:#e4bb74;--teal:#79cbbb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans CJK SC",sans-serif}
+.wrap{max-width:730px;margin:auto;padding:16px 14px 70px}header{padding:15px 6px}h1{font-size:24px;margin:4px 0;color:var(--gold)}
+.small{font-size:12px;color:var(--muted);line-height:1.6}h2{font-size:18px;margin:3px 0 13px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);border-radius:11px;background:#293740;color:var(--ink);padding:11px 12px}
+button.primary,.tabs .active{background:var(--gold);border-color:var(--gold);color:#17202a;font-weight:700}
+button:disabled{opacity:.5}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px;margin:12px 0}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px}
+input,select,textarea{width:100%;border-radius:8px;border:1px solid #536069;background:#142029;color:#fff;padding:11px;font-size:15px}
+textarea{min-height:58px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.actions{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}.actions button{flex:1}
+.pill{display:inline-block;padding:3px 9px;border-radius:40px;border:1px solid #576567;font-size:12px;margin:3px 4px 2px 0}
+.hero{background:linear-gradient(125deg,#2c3737,#3b3026);border:1px solid #826e4e;border-radius:16px;padding:16px}
+.very{font-size:24px;color:#f8d596;font-weight:800;padding:7px 0}.result{line-height:1.8}
+.result strong{color:var(--gold)}.split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:#172329;border:1px solid #35454d;border-radius:11px;padding:10px}
+.kpi b{font-size:18px;color:var(--teal)}.kpi span{font-size:12px;color:var(--muted);display:block}
+.line{border-top:1px solid var(--line);margin:14px 0}.muted{color:var(--muted)}
+.hide{display:none!important}.item{border-top:1px solid var(--line);padding:12px 0;font-size:14px;line-height:1.7}
+.ticket{border-left:4px solid var(--gold);padding:8px 11px;margin:8px 0;background:#152127;border-radius:7px}
+code{font-family:monospace;word-break:break-all}input[type=number]{appearance:textfield}
+footer{color:#8ca1a6;font-size:12px;line-height:1.7;margin-top:23px}
+</style></head><body><div class="wrap">
+<header><div class="small">研究原型 · 离线 APK · v1.0.0-beta1</div><h1>河南刮刮乐 · 四术合参</h1><div class="small">正时／活时／随机 · 六爻／六壬／奇门／梅花 · 方向与网点序号 · 复盘</div></header>
+<div class="tabs"><button id="t0" class="active" onclick="tab(0)">合参起盘</button><button id="t1" onclick="tab(1)">票种资料</button><button id="t2" onclick="tab(2)">历史复盘</button></div>
+<section id="p0">
+ <div class="card">
+ <h2>① 起盘与场景</h2>
+ <div class="grid"><div><label>模式</label><select id="mode"><option value="now">北京时间正时</option><option value="custom">自定时间 / 活时</option><option value="random">完全随机时刻</option></select></div>
+ <div><label>彩票类别</label><select id="class"><option value="体彩">体彩顶呱刮</option><option value="福彩">福彩即开票</option></select></div></div>
+ <label>时间（北京时间，可自行调整）</label><input id="when" type="datetime-local">
+ <label>附近店铺编号（逗号分隔；为空按01至12模拟）</label><input id="shops" placeholder="如：10501, 10503, 10506">
+ <div class="grid"><div><label>单册可见票数（自定义）</label><input id="count" type="number" value="30" min="1" max="200"></div><div><label>实验规则版本</label><input value="HN-SCRATCH-EXP-1" disabled></div></div>
+ <div class="actions"><button class="primary" onclick="generate()">生成四术合参盘</button></div>
+ <p class="small">完全随机使用设备安全随机源；不依赖输入时间作为随机种子。正时盘使用北京时间，亦可手动指定时刻。门店方向需由实际地图/方位核实。</p>
+ </div>
+ <div id="output" class="hide">
+  <div class="hero"><div class="small" id="stamp"></div><div class="very" id="headline"></div><div id="summary" class="result"></div></div>
+  <div class="card"><h2>② 四家分别判断</h2><div id="methods"></div></div>
+  <div class="card"><h2>③ 封存记录及实际结果</h2>
+  <div class="grid"><div><label>实际花费（元）</label><input id="cost" type="number" min="0" step=".01" placeholder="未购买填0"></div><div><label>实际奖金（元）</label><input id="win" type="number" min="0" step=".01" placeholder="未揭晓可留空"></div></div>
+  <label>备注（票面序号、店铺、实际执行情况）</label><textarea id="note" placeholder="例如：到店缺货，未执行。"></textarea>
+  <div class="actions"><button class="primary" onclick="saveResult()">保存本次记录</button><button onclick="copyCurrent()">复制本次排盘 JSON</button></div>
+  <p class="small">生成当时的结果先于开奖记录保存；历史条目不随规则升级重算。方向与票号是未经证实的实验编码，不能反推实体彩票奖额。</p>
+  </div>
+ </div>
+</section>
+<section id="p1" class="hide"><div class="card"><h2>票种资料库（可核验的代表票种）</h2><div id="catalog"></div>
+<p class="small">“已确认上市”与“河南此刻在售”不是同一事实。店铺库存、区域销售与停销状态请以河南当地官方公告为准，票色/名称仅作记录字段，不是有奖率判断依据。</p></div>
+<div class="card"><h2>研究资料状态</h2><p>体彩：保留已找到官方上市报道的代表票种；其他2026年河南上市公告仍需逐款核实和补齐。</p><p>福彩：河南在售全目录与具体版式尚未完成逐项核验，此版不虚构票名、颜色、价格或销售状态。</p></div></section>
+<section id="p2" class="hide"><div class="card"><h2>复盘台账</h2><div id="stats" class="split"></div><div class="actions"><button onclick="exportAll()">复制全部记录 JSON</button><button onclick="clearAll()">清空本机记录</button></div><div id="history"></div></div></section>
+<footer><strong>重要说明</strong>：这是一款传统术数研究与盲测记录工具，不是官方彩票应用。简化六壬、奇门与梅花评分是实验映射，尚非经验证的完整古法排盘；尚无可信证据表明卦象、方向、店铺编号、颜色或票张顺序可以预测刮刮乐中奖。不得将输出作为有奖概率、回本保证或加大投注的理由。</footer>
+</div><script>
+"use strict";
+const $=id=>document.getElementById(id);
+const directions=["北","东北","东","东南","南","西南","西","西北"];
+const colors=["青色","红色","金色","蓝色","绿色","紫色","白色","黑色"];
+const trigrams=["坤","震","坎","兑","艮","离","巽","乾"];
+const tickets=[
+ {org:"体彩",name:"吉",price:20,colors:"青花瓷／青铜器／漆器",status:"2026年秋季官方公布"},
+ {org:"体彩",name:"中国风",price:30,colors:"青花瓷／工笔画／敦煌壁画",status:"2026年秋季官方公布"},
+ {org:"体彩",name:"华夏寻宝·唐",price:50,colors:"盛唐国风插画",status:"2026年秋季官方公布"},
+ {org:"体彩",name:"顺",price:null,colors:"待核实",status:"河南本地销售与面值待核实"}
+];
+let current=null;
+let records=[];
+try{let saved=JSON.parse(localStorage.getItem("hn-scratch-v1")||"[]");if(Array.isArray(saved))records=saved;}catch(_){}
+function persist(){localStorage.setItem("hn-scratch-v1",JSON.stringify(records));}
+function secureInt(bound){
+ if(!Number.isInteger(bound)||bound<1||bound>1000000000)throw Error("无效随机范围");
+ if(window.crypto&&window.crypto.getRandomValues){
+  let arr=new Uint32Array(1),limit=4294967296-(4294967296%bound);
+  do{window.crypto.getRandomValues(arr);}while(arr[0]>=limit);
+  return arr[0]%bound;
+ }
+ if(window.LocalBridge&&window.LocalBridge.randomInt)return window.LocalBridge.randomInt(bound);
+ throw Error("设备没有可用的安全随机源");
+}
+function taipeiISOString(d){
+ const f=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Shanghai",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"});
+ const o={};f.formatToParts(d).forEach(p=>o[p.type]=p.value);
+ return o.year+"-"+o.month+"-"+o.day+"T"+o.hour+":"+o.minute;
+}
+function nowBeijing(){return taipeiISOString(new Date());}
+$("when").value=nowBeijing();
+$("mode").addEventListener("change",()=>{if($("mode").value==="now")$("when").value=nowBeijing();});
+function tab(n){for(let i=0;i<3;i++){$("t"+i).classList.toggle("active",i===n);$("p"+i).classList.toggle("hide",i!==n);}if(n===2)renderRecords();}
+function h(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function getClock(){
+ let mode=$("mode").value;
+ if(mode==="now")$("when").value=nowBeijing();
+ if(mode==="random"){let yr=2020+secureInt(16),m=1+secureInt(12),day=1+secureInt(28),hr=secureInt(24),min=secureInt(60);
+ $("when").value=yr+"-"+String(m).padStart(2,"0")+"-"+String(day).padStart(2,"0")+"T"+String(hr).padStart(2,"0")+":"+String(min).padStart(2,"0");}
+ let clock=$("when").value;
+ if(!/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(clock))throw Error("请填写正确的时间");
+ let [date,time]=clock.split("T"),parts=date.split("-").map(Number),hm=time.split(":").map(Number);
+ return {clock,yr:parts[0],mo:parts[1],day:parts[2],hr:hm[0],min:hm[1],mode};
+}
+function lineFor(v){return v===6?"⚋ ×":v===7?"⚊":v===8?"⚋":"⚊ ○";}
+function generate(){
+ try{
+ const c=getClock();
+ let seed=Array.from({length:16},()=>secureInt(256)),lines=Array.from({length:6},()=>6+secureInt(4));
+ // 三钱法：分别投三枚公平硬币（2 或 3），形成老阴6、少阳7、少阴8、老阳9。
+ lines=Array.from({length:6},()=>6+secureInt(2)+secureInt(2)+secureInt(2));
+ const bit=a=>a===7||a===9?1:0;
+ const tri=(offset)=>trigrams[lines.slice(offset,offset+3).reduce((v,a,i)=>v+(bit(a)<<i),0)];
+ const moving=lines.flatMap((a,i)=>(a===6||a===9)?[i+1]:[]);
+ const targetData=c.yr*372+c.mo*31+c.day+c.hr*7+c.min;
+ const salt=seed.reduce((acc,n)=>Math.imul(acc^n,16777619)>>>0,2166136261);
+ const sixDirection=(lines.reduce((v,a,i)=>v+a*(i+1),0)+moving.length)%8;
+ const sixScore=(sixDirection*13+moving.length*7+lines[0])%100;
+ // 以下六壬、奇门、梅花为实验性数值取象，不是完整四课三传/转盘/农历梅花起卦。
+ const ren=(targetData+salt)%8;
+ const qi=(Math.floor(targetData/7)+salt%9)%8;
+ const mei=(c.yr+c.mo+c.day+c.hr+c.min)%8;
+ const methods=[
+ {name:"六爻（三钱法起卦）",dir:sixDirection,score:sixScore,
+  desc:"自下而上："+lines.map(lineFor).join("　")+"；上卦"+tri(3)+"／下卦"+tri(0)+"；动爻："+(moving.join("、")||"无")},
+ {name:"大六壬（实验映射）",dir:ren,score:(ren*17+Math.floor(salt/97)%31)%100,
+  desc:"时间数与随机种子映射；正式月将、四课、三传尚待接入"},
+ {name:"转盘奇门（实验映射）",dir:qi,score:(qi*19+Math.floor(salt/41)%29)%100,
+  desc:"九宫方位实验索引；节气定局、值符值使、九星八门尚待接入"},
+ {name:"梅花易数（实验映射）",dir:mei,score:(mei*11+c.hr*3+c.min)%100,
+  desc:"公历时数实验取象；正式农历年月日时及互变卦尚待接入"}
+ ];
+ const tally=Array(8).fill(0);
+ methods.forEach(m=>tally[m.dir]+=1);
+ const top=Math.max(...tally),winners=tally.map((n,i)=>n===top?i:-1).filter(i=>i>=0);
+ const dir=winners[secureInt(winners.length)];
+ const list=$("shops").value.split(/[,，;；\n]+/).map(x=>x.trim()).filter(Boolean);
+ const shops=list.length?list:Array.from({length:12},(_,i)=>String(i+1).padStart(2,"0"));
+ const shop=shops[(salt+targetData)%shops.length];
+ const count=Math.min(200,Math.max(1,Number($("count").value)||30));
+ const pos=1+((salt>>>3)%count);
+ const catalog=tickets.filter(t=>t.org===$("class").value&&t.price!==null);
+ const t=catalog.length?catalog[(salt>>>6)%catalog.length]:null;
+ const color=colors[(salt>>>9)%colors.length];
+ const timestamp=nowBeijing().replace("T"," ");
+ current={
+  version:"HN-SCRATCH-EXP-1",generatedAtBeijing:timestamp,clockBeijing:c.clock,
+  mode:c.mode,seedHex:seed.map(x=>x.toString(16).padStart(2,"0")).join(""),
+  lotteryType:$("class").value,lines,methods,consensus:top,
+  direction:directions[dir],directionIndex:dir,shopId:shop,shopOrdinal:shops.indexOf(shop)+1,
+  ticketPosition:pos,bookSize:count,experimentalColor:color,
+  ticket:t?t.name:"福彩票种待核实",price:t?t.price:null,
+  note:"所有方向、门店、色彩、序号均为待验证实验输出，与实体票奖额无已知联系。"
+ };
+ $("output").classList.remove("hide");
+ $("stamp").textContent="封存时间："+timestamp+"（北京时间） · "+(c.mode==="random"?"安全随机时刻":c.mode==="custom"?"活时":"正时")+" · 四家同向："+top+"/4";
+ $("headline").textContent=directions[dir]+"方 · 网点 "+shop;
+ $("summary").innerHTML="<strong>推荐记录：</strong>"+h($("class").value)+" · "+h(current.ticket)+" · "+h(color)+"<br><strong>店铺序号：</strong>第"+current.shopOrdinal+"家（编号 "+h(shop)+"）<br><strong>票册位置：</strong>假定第"+pos+"张 / "+count+"张<br><span class='small'>仅为四术实验性方向合参，不代表更高中奖率；店铺地理位置需人工匹配。</span>";
+ $("methods").innerHTML=methods.map(m=>"<div class='item'><strong>"+h(m.name)+"</strong><span class='pill'>"+directions[m.dir]+"方</span><span class='pill'>实验分值 "+m.score+"</span><div class='small'>"+h(m.desc)+"</div></div>").join("");
+ $("cost").value="";$("win").value="";$("note").value="";
+ $("output").scrollIntoView({behavior:"smooth",block:"start"});
+ }catch(e){alert("生成失败："+e.message);}
+}
+function saveResult(){
+ if(!current)return;
+ const cost=$("cost").value,win=$("win").value;
+ const copy=JSON.parse(JSON.stringify(current));
+ copy.cost=cost===""?null:Number(cost);copy.prize=win===""?null:Number(win);copy.actualNotes=$("note").value;
+ records.unshift(copy);if(records.length>1000)records.length=1000;
+ try{persist();alert("已封存，现存 "+records.length+" 条记录");}catch(e){alert("本机存储失败："+e.message);}
+}
+function copyText(v){
+ let s=JSON.stringify(v,null,2);
+ if(window.LocalBridge&&window.LocalBridge.copyText){window.LocalBridge.copyText(s);return;}
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(s).then(()=>alert("已复制")).catch(()=>prompt("手动复制",s));
+ else prompt("手动复制",s);
+}
+function copyCurrent(){if(current)copyText(current);}
+function exportAll(){copyText(records);}
+function clearAll(){if(confirm("确定清空本机全部 "+records.length+" 条历史记录吗？不可恢复。")){records=[];persist();renderRecords();}}
+function renderRecords(){
+ let completed=records.filter(r=>Number.isFinite(r.cost)&&Number.isFinite(r.prize));
+ let outlay=completed.reduce((s,r)=>s+r.cost,0),gross=completed.reduce((s,r)=>s+r.prize,0);
+ let wins=completed.filter(r=>r.prize>0).length;
+ let stats=[
+ ["已封存排盘",records.length],["已填写实绩",completed.length],
+ ["有奖／已登记",wins+"/"+completed.length],["净额（元）",(gross-outlay).toFixed(2)]
+ ];
+ $("stats").innerHTML=stats.map(x=>"<div class='kpi'><b>"+h(x[1])+"</b><span>"+h(x[0])+"</span></div>").join("");
+ $("history").innerHTML=records.length?records.map((r,i)=>"<div class='item'><strong>#"+(records.length-i)+" "+h(r.generatedAtBeijing)+"</strong><div>"+h(r.lotteryType)+" · "+h(r.ticket)+" · "+h(r.direction)+"方 · 店铺 "+h(r.shopId)+" · 票第"+r.ticketPosition+"张</div><div class='small'>"+h(r.mode)+" / "+h(r.version)+" · 花费 "+(r.cost===null?"未填":r.cost)+" · 奖金 "+(r.prize===null?"待揭晓":r.prize)+"</div><div class='small'>"+h(r.actualNotes||"")+"</div></div>").join(""):"<p class='muted'>暂无记录。请到「合参起盘」生成并保存。</p>";
+}
+function renderCatalog(){
+ $("catalog").innerHTML=tickets.map(t=>"<div class='ticket'><b>"+h(t.org+" · "+t.name)+"</b><div>"+(t.price?"面额："+t.price+"元":"面额待核实")+" · 票面："+h(t.colors)+"</div><div class='small'>"+h(t.status)+"；河南销售状态以官方公告为准</div></div>").join("");
+}
+renderCatalog();renderRecords();
+</script></body></html>
