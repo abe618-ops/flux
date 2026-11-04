@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
         LinearLayout first=section(main);
         title(first,"① 设定所占事项");
         category=spinner(first,"预测项目",new String[]{"足球","篮球","排列三/福彩3D"});
-        home=input(first,"主队（数字模式可留空）","","false".equals("true"));
+        home=input(first,"主队（数字模式可留空）","",false);
         away=input(first,"客队（数字模式可留空）","",false);
         kickoff=input(first,"比赛开始时间（选填，设备当地时间 yyyy-MM-dd HH:mm）","",false);
         seed=input(first,"固定实验种子/备注（可留空）","",false);
@@ -270,17 +270,17 @@ public class MainActivity extends Activity {
                       raw=h+":"+a;
                       if(mode.equals("足球")) {
                           String win=h>a?"胜":h==a?"平":"负";
-                          String size=h+a>=3?"大":"小",par=(h+a)%2==0?"双":"单";
+                          String resultSize=h+a>=3?"大":"小",par=(h+a)%2==0?"双":"单";
                           review="胜平负"+(win.equals(r.optString("direction"))?"✓":"×")+
-                             "；大小"+(size.equals(r.optString("size"))?"✓":"×")+
+                             "；大小"+(resultSize.equals(r.optString("size"))?"✓":"×")+
                              "；单双"+(par.equals(r.optString("parity"))?"✓":"×")+
                              "；精确比分"+(raw.equals(r.optString("predictedScore"))?"✓":"×");
                       } else {
                           double spread=h+r.optDouble("handicap")-a,tot=h+a-r.optDouble("totalLine");
                           String direction=spread>0?"主队上盘":spread<0?"主队下盘":"走盘";
-                          String size=tot>0?"大分":tot<0?"小分":"走盘";
+                          String settledSize=tot>0?"大分":tot<0?"小分":"走盘";
                           review="让分"+(direction.equals("走盘")?"走盘":direction.equals(r.optString("direction"))?"✓":"×")+
-                                 "；大小"+(size.equals("走盘")?"走盘":size.equals(r.optString("size"))?"✓":"×");
+                                 "；大小"+(settledSize.equals("走盘")?"走盘":settledSize.equals(r.optString("size"))?"✓":"×");
                       }
                   }
                   r.put("actual",raw);r.put("review",review);r.put("settled",System.currentTimeMillis());
