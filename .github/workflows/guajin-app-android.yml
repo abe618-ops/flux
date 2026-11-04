@@ -1,0 +1,63 @@
+name: Build Guajin Chart Android APK
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/guajin-*'
+    paths:
+      - 'guajin-app/**'
+      - '.github/workflows/guajin-app-android.yml'
+  pull_request:
+    paths:
+      - 'guajin-app/**'
+      - '.github/workflows/guajin-app-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Test pure Java divination engine
+        run: |
+          mkdir -p /tmp/guajin-test
+          javac -d /tmp/guajin-test \
+            guajin-app/app/src/main/java/com/abe618/guajin/GuajinEngine.java \
+            guajin-app/tests/EngineSmokeTest.java
+          java -ea -cp /tmp/guajin-test EngineSmokeTest
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Ensure Android SDK 36
+        run: |
+          SDKROOT="$ANDROID_HOME"
+          SDKMANAGER="$(find "$SDKROOT/cmdline-tools" -type f -name sdkmanager 2>/dev/null | sort -V | tail -n 1)"
+          test -n "$SDKMANAGER"
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0"
+      - name: Cache debug signing certificate
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: guajin-debug-signing-v1
+      - name: Assemble debug APK
+        working-directory: guajin-app
+        run: gradle :app:assembleDebug --stacktrace
+      - name: Check produced APK
+        run: test -s guajin-app/app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish installable APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GuajinChart-v0.1.0-debug-APK
+          path: guajin-app/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+          if-no-files-found: error
