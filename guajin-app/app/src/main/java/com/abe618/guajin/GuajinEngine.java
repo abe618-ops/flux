@@ -142,8 +142,13 @@ public final class GuajinEngine {
         // 常用误差函数近似，足够用于界面方向参考，不替代校准模型。
         double x=Math.abs(z)/Math.sqrt(2.0);
         double t=1.0/(1.0+0.3275911*x);
-        double erf=1.0-(((((1.061405429*t-1.453152027)*t)
-          +1.421413741)*t-0.284496736)*t+0.254829592)*t)*Math.exp(-x*x);
+        double poly=1.061405429;
+        poly=poly*t-1.453152027;
+        poly=poly*t+1.421413741;
+        poly=poly*t-0.284496736;
+        poly=poly*t+0.254829592;
+        poly=poly*t;
+        double erf=1.0-poly*Math.exp(-x*x);
         return 0.5*(1+(z<0?-erf:erf));
     }
     public static Prediction basketball(Cast cast,double expectedHome,double expectedAway,
