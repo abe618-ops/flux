@@ -1,7 +1,7 @@
-name: Build PL3-36 Android APK
+name: Build PL3-36 Resonance Android APK
 on:
   push:
-    branches: [work/pl3-36-apk-20261109]
+    branches: [work/pl3-36-resonance-20261109]
     paths:
       - 'pl3-36-lab/**'
       - '.github/workflows/pl3-36-build.yml'
@@ -34,6 +34,6 @@ jobs:
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: PL3-36-Lab-v0.1-APK
+          name: PL3-36-Resonance-v0.2-APK
           path: pl3-36-lab/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30

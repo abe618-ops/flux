@@ -1,4 +1,4 @@
-package cn.abe618.pl3lab.v01;
+package cn.abe618.pl3lab.resonance;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -31,6 +31,8 @@ public final class MainActivity extends Activity {
         settings.setAllowFileAccessFromFileURLs(false);
         settings.setAllowUniversalAccessFromFileURLs(false);
         webView.addJavascriptInterface(new Bridge(),"Android");
+        getWindow().setStatusBarColor(android.graphics.Color.rgb(11,18,32));
+        getWindow().setNavigationBarColor(android.graphics.Color.rgb(11,18,32));
         setContentView(webView);
         webView.loadUrl("file:///android_asset/index.html");
     }

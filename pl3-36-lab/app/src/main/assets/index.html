@@ -1,9 +1,30 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>排列三 · 36术数实验室</title><style>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>排列三36术数共振实验室 V0.2</title><style>
 :root{color-scheme:dark;--bg:#0b1220;--panel:#172237;--panel2:#1d2b44;--line:#314059;--text:#edf3fa;--muted:#a1afc2;--accent:#74c9c0;--orange:#f4c380}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Noto Sans CJK SC','Microsoft YaHei',sans-serif;font-size:14px}.shell{width:min(100%,680px);margin:auto;padding:12px 12px 60px}header{padding:16px 6px 14px}.eyebrow{color:var(--accent);font-size:12px;letter-spacing:1.2px;font-weight:700}.eyebrow span{font-weight:400;color:var(--muted)}h1{font-size:23px;letter-spacing:.2px;margin:9px 0 5px}header p{color:var(--muted);margin:0;font-size:13px}.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;background:#111b2b;border-radius:12px;position:sticky;top:0;z-index:10;margin-bottom:12px}.nav button{background:none;border:0;color:#aebacb;border-radius:9px;padding:12px 2px;font-size:12px}.nav button.on{background:#31435b;color:#fff;font-weight:700}.page{display:none}.page.on{display:block}.pane{padding:15px;margin-bottom:10px;background:var(--panel);border:1px solid #293850;border-radius:14px;box-shadow:0 2px 10px #0002}.row{display:flex;gap:9px;align-items:center}.between{justify-content:space-between}.wrap{flex-wrap:wrap}h2{font-size:16px;margin:0 0 10px}h3{font-size:14px;margin:0}p{line-height:1.58}.hint,.muted{color:var(--muted);font-size:12px;line-height:1.55}.hint{margin:10px 0 0}.tag{display:inline-block;border:1px solid #44687a;background:#244053;color:#d7f7fa;border-radius:40px;padding:4px 9px;font-size:11px}.tag.muted{color:var(--muted);border-color:#405068;background:#223046}button,select,input,textarea{font:inherit}button{cursor:pointer;border-radius:9px;border:1px solid #3b546d;padding:10px 12px;color:var(--text);background:#2a3b54}button:disabled{opacity:.45;cursor:not-allowed}.primary{border-color:#65b6ae;background:#70c7ba;color:#092e2e;font-weight:800}.ghost{background:#26364d}.danger{color:#efb3ad;border-color:#8b5156}.stretch{flex:1}.field{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}.field input,.field select{min-width:0}.field input{width:138px}input,select,textarea{color:var(--text);background:#0e1828;border:1px solid #40516b;border-radius:8px;padding:10px 8px;max-width:100%}input:focus,textarea:focus{outline:2px solid #55a9a4}textarea{width:100%;resize:vertical;line-height:1.5}input[type=date]{width:147px;font-size:12px}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}.step{padding:11px 4px;border-radius:10px;text-align:center;border:1px solid #41506a;background:#1d2a3f;color:var(--muted)}.step b{display:block;font-size:14px}.step strong{display:block;font-size:20px;color:#e7f6f9;margin-top:5px}.step.done{border-color:#65ada9;background:#203a44}.step.next{border-color:var(--orange)}.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.score-card{padding:13px 8px;border-radius:10px;background:#0e1c2c;text-align:center;border:1px solid #314b5d}.score-card small{font-size:12px;color:var(--muted)}.score-card b{display:block;font-size:23px;margin:6px 0;color:var(--accent)}.score-card em{display:block;font-style:normal;font-size:11px;color:#b2c0d0}.big-number{font-size:25px;letter-spacing:2px;color:#f3ce91;font-weight:800}.mono{font-family:ui-monospace,SFMono-Regular,monospace}.method-list{border-top:1px solid #354057}.method{padding:10px 0;border-bottom:1px solid #354057}.method details summary{list-style:none;cursor:pointer}.method details summary::-webkit-details-marker{display:none}.method-head{display:flex;gap:5px;align-items:center;justify-content:space-between}.method-name{font-weight:650}.method-status{font-size:10px;color:#869ab0}.method-right{white-space:nowrap;color:var(--accent);font-weight:750}.trace{margin-top:8px;background:#101c2e;border-radius:8px;padding:10px;color:#bdc9da;font-size:11px;line-height:1.55}.trace b{color:#f6d296}.actions{position:sticky;bottom:8px;padding:8px 0;background:linear-gradient(transparent,#0b1220 22%)}.history-card{border-bottom:1px solid #354057;padding:11px 0}.history-card:last-child{border-bottom:0}.history-card button{padding:7px 10px;font-size:12px}.history-meta{font-size:11px;color:var(--muted)}.history-title{font-weight:800;font-size:14px}.history-title .result{color:var(--orange)}.history-nums{font-size:12px;margin-top:6px;color:#c6d5e6}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:8px 0 14px}.stat-grid .metric{background:#0e1a2b;border-radius:9px;padding:9px 5px;text-align:center}.stat-grid b{display:block;font-size:20px}.stat-grid small{font-size:10px;color:var(--muted)}.rank-row{padding:10px 0;border-bottom:1px solid #304059;display:grid;grid-template-columns:1fr auto;gap:5px}.rank-row b{font-size:13px}.rank-row small{display:block;color:var(--muted);margin-top:3px;font-size:11px}.rank-row span{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:700}.quads{display:grid;grid-template-columns:1fr 1fr;gap:7px}.quads>div{background:#0e1c2d;border:1px solid #34465b;border-radius:10px;padding:12px}.quads strong{display:block;font-size:19px;color:var(--accent);margin:5px 0}.quads span{font-size:11px;color:var(--muted)}.quads b{font-size:12px}.audit{overflow-wrap:anywhere;color:#c1ceec;font-family:ui-monospace,monospace;font-size:11px}.warn{color:#f5c991}footer{text-align:center;color:#71819a;font-size:11px;padding:18px 0}@media(min-width:580px){.shell{padding:20px}h1{font-size:27px}}
 
+</style><style>
+.reso-dashboard{border-color:#55877f;background:linear-gradient(145deg,#162b3b,#172237)}
+.reso-top,.reso-entry-bar,.reso-position-title{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.reso-top h2{font-size:18px;margin:0}
+.reso-cta{font-weight:800;font-size:17px;padding:15px;width:100%;margin:13px 0 6px}
+.reso-empty{border:1px dashed #426179;border-radius:12px;padding:12px;color:#b9cbd6;font-size:12px;line-height:1.6}
+.reso-subhead{padding:10px;border-radius:10px;background:#102035;color:#81d1c5;font-size:12px;font-weight:700;line-height:1.6}
+.reso-position{padding:11px;margin:11px 0;border:1px solid #3a5165;border-radius:12px;background:#101d30}
+.reso-position-title{color:#e7f5fb;font-size:15px;padding-bottom:7px}
+.reso-position-title span{font-size:12px;color:#81c6bd}
+.reso-axis{font-size:12px;color:#f1c88f;font-weight:800;margin:10px 0 5px}
+.reso-entry{background:#192b40;border-left:3px solid #72c9be;border-radius:5px 10px 10px 5px;padding:10px;margin:7px 0}
+.reso-entry-bar strong{font-size:13px}
+.reso-entry-bar b{color:#75d3c5;font-size:18px}
+.reso-names{font-size:13px;line-height:1.5;font-weight:650;margin-top:4px;overflow-wrap:anywhere}
+.reso-meta,.reso-note{color:#9db2c8;font-size:11px;line-height:1.6;margin-top:4px}
+.reso-note{margin-top:11px}
+.rank-row{display:flex!important;flex-direction:column!important;gap:6px!important}
+.rank-row>div:last-child{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.rank-row>div:last-child small{margin:0}
+.shell{padding-top:max(16px,env(safe-area-inset-top))}
 </style></head><body>
 <div class="shell">
-<header><div class="eyebrow">PL3-36 · 数术盲测实验室 <span>V0.1</span></div><h1>排列三 · 36术数合参</h1><p>百位 → 十位 → 个位｜随机取数｜封盘开盒</p></header>
+<header><div class="eyebrow">PL3-36 · 自动共振实验室 <span>V0.2</span></div><h1>排列三 · 36术数合参</h1><p>百位 → 十位 → 个位｜随机取数｜封盘开盒</p></header>
 <nav class="nav" id="tabs"><button data-tab="predict" class="on">本期预测</button><button data-tab="tunnel">历史风洞</button><button data-tab="rank">复盘排行</button><button data-tab="rules">术数/数据</button></nav>
 <section id="predict" class="page on">
 <div class="pane"><div class="row between"><span class="tag">当前试验</span><span id="issueLabel" class="muted">—</span></div><div class="row wrap" style="margin-top:10px"><label class="field">新期号 <input id="newIssue" inputmode="numeric" value="26299" maxlength="8" aria-label="期号"></label><button id="newSession" class="ghost">建立本期随机盘</button></div><div class="hint">本期预测不读取历史开奖号码。每次新盘保留独立随机种子与审计记录。</div></div>
@@ -245,7 +266,117 @@ function parseImport(input){let rows;if(input.trim().startsWith('[')){rows=JSON.
  const existing=new Map(dataset().map(x=>[x.issue,x.number]));let added=0,dups=0,conflicts=[];for(const raw of rows){let issue=String(raw.issue||'').trim();if(/^20\d{5}$/.test(issue))issue=issue.slice(2);const date=String(raw.date||''),number=String(raw.number||'').padStart(3,'0');if(!/^\d{5}$/.test(issue)||!/20\d\d-\d\d-\d\d/.test(date)||!/^\d{3}$/.test(number))throw Error('不正确的期号/日期/号码：'+JSON.stringify(raw));if(existing.has(issue)){if(existing.get(issue)!==number)conflicts.push(issue);else dups++;continue}const d={issue,date,number,source:raw.source||'manual_import',status:'import_unverified'};imported.push(d);existing.set(issue,number);added++}persist();return {added,dups,conflicts}}
 function exportBackup(){const text=JSON.stringify({exportedAt:new Date().toISOString(),version:LabEngine.VERSION,methods:METHODS,sessions,imported,seedDataset:'2026-08-10_to_2026-11-08'},null,2);if(window.Android&&typeof Android.saveJson==='function'){Android.saveJson('PL3-36-backup.json',text);return}try{const url=URL.createObjectURL(new Blob([text],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='PL3-36-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}catch(e){$('pasteData').value=text;alert('浏览器未支持下载；JSON已放入文本框，可复制备份。')}}
 function attach(){document.querySelectorAll('.nav button').forEach(btn=>btn.onclick=()=>{tab=btn.dataset.tab;render()});$('methodFilter').onchange=e=>{filter=e.target.value;renderPredict()};$('newSession').onclick=()=>{const issue=$('newIssue').value.trim();if(!/^\d{5}$/.test(issue)){alert('请输入5位排列三期号，例如26299');return}addSession({issue,date:''},'current');tab='predict';render()};$('nextRound').onclick=()=>nextRound(current());$('randomNext').onclick=()=>{pickHistory(1)};$('drawOne').onclick=()=>pickHistory(1);$('drawTen').onclick=()=>pickHistory(10);$('revealBatch').onclick=()=>{const batch=sessions.find(s=>s.batchId)?.batchId;const targets=sessions.filter(s=>s.batchId===batch&&s.hash&&!s.revealed);if(!targets.length)return;if(!confirm('确定将本轮 '+targets.length+' 期全部封盘开盒？所有结果将写入复盘账本。'))return;for(const s of targets){const d=dataset().find(x=>x.issue===s.issue);if(!d)continue;s.result=d.number;s.revealed=true;s.revealAt=now();s.resultSource=d.source;s.resultStatus=d.status}persist();render()};$('rankAxis').onchange=renderRank;$('rankK').onchange=renderRank;$('importData').onclick=()=>{try{const r=parseImport($('pasteData').value);$('dataMessage').textContent=`导入 ${r.added} 期；重复 ${r.dups} 期；冲突 ${r.conflicts.length} 期${r.conflicts.length?'（已拒绝覆盖：'+r.conflicts.join(',')+'）':''}`;renderRules()}catch(e){$('dataMessage').textContent='导入失败：'+e.message}};$('exportData').onclick=exportBackup;$('clearTrials').onclick=()=>{if(confirm('确定删除全部本机预测与复盘账本？本次动作不可撤销，请先导出备份。')){sessions=[];activeId=null;persist();tab='predict';addSession({issue:'26299'},'current');render()}};}
-if(!current())addSession({issue:'26299',date:''},'current');attach();render();
+
+/* V0.2 三家/四家高分共振筛选：历史参考来自用户截图，筛盘不读取开奖号。 */
+const RANK_REFERENCE=[
+ ['size','小','GZ,KB,TY',19,22],
+ ['size','小','GZ,TY,WA',20,24],
+ ['size','小','MH,SX,TY',21,26],
+ ['size','小','SX,TY,WG',18,22],
+ ['size','大','DY,KB,TY',21,26],
+ ['size','大','DY,OG,TY',23,29],
+ ['size','大','KB,PH,SX,TX',18,22],
+ ['size','小','BZ,JG,LY,TX',18,22],
+ ['parity','双','QM,TR,TX',19,23],
+ ['parity','单','DLR,TR,WG',25,32],
+ ['parity','单','CH,DLR,TR',28,37],
+ ['parity','单','HL,LL,QM',19,24],
+ ['parity','双','QM,TR,WX',23,30],
+ ['parity','单','MH,QM,WG,XLR',21,26],
+ ['parity','双','HA,JK,QM,WX',17,20],
+ ['parity','单','AS,DLR,TB,WX',17,20]
+].map(x=>({axis:x[0],value:x[1],ids:x[2].split(','),hit:x[3],n:x[4]}));
+const RESO_VERSION='V0.2|snapshot-ranking|3or4|both-size-parity|3positions|seed-only-no-result';
+let resoBusy=false;
+function qualifiedRows(rounds){
+ return rounds.map(rows=>{
+  const byId=new Map(rows.map(r=>[r.id,r]));
+  const out={size:[],parity:[]};
+  for(const ref of RANK_REFERENCE){
+   if(ref.n<20||ref.hit/ref.n<0.74)continue;
+   if(ref.ids.every(id=>byId.has(id)&&byId.get(id)[ref.axis]===ref.value))out[ref.axis].push(ref);
+  }
+  for(const dim of ['size','parity'])out[dim].sort((a,b)=>(b.hit/b.n)-(a.hit/a.n)||b.n-a.n);
+  return out;
+ });
+}
+function meetsAllSix(a){return a.length===3&&a.every(x=>x.size.length>0&&x.parity.length>0)}
+function setResoStatus(t){const e=$('resoStatus');if(e)e.textContent=t}
+function autoResonance(){
+ if(resoBusy)return;
+ const used=new Set(sessions.filter(s=>s.mode==='historical'&&s.hash).map(s=>s.issue));
+ const full=dataset(), unused=full.filter(x=>!used.has(x.issue));
+ const pool=unused.length?unused:full;
+ if(!pool.length){setResoStatus('没有历史期次；请从术数/数据导入历史记录');return}
+ const target=pool[randomInt(pool.length)];
+ const button=$('resoButton');if(button)button.disabled=true;
+ resoBusy=true;let attempts=0;const limit=1500;let winning=null;
+ function chunk(){
+  try{
+   for(let i=0;i<25&&attempts<limit;i++){
+    attempts++;
+    const seed=secureSeed()+'|attempt='+attempts;
+    const rounds=[0,1,2].map(p=>LabEngine.round(seed,p,METHODS));
+    const matches=qualifiedRows(rounds);
+    if(meetsAllSix(matches)){winning={seed,rounds,matches};break}
+   }
+   if(!winning&&attempts<limit){
+    setResoStatus('已随机起盘 '+attempts+' 次；持续寻找百、十、个位全部六个维度的高分三/四家同向组合…');
+    setTimeout(chunk,0);return;
+   }
+   if(!winning){
+    setResoStatus('尝试 '+attempts+' 次仍未满足条件；没有展示未达标盘。请再次点击继续抽取。');
+    return;
+   }
+   const s=addSession({issue:target.issue,date:target.date||''},'historical');
+   s.seed=winning.seed;s.rounds=winning.rounds;s.hash=LabEngine.freeze(s);
+   s.resoMatches=winning.matches;s.resoAttempts=attempts;s.resoVersion=RESO_VERSION;
+   s.resoAudit=LabEngine.sha256(JSON.stringify({issue:s.issue,seed:s.seed,version:s.resoVersion,rounds:s.rounds,matched:s.resoMatches,freeze:s.hash}));
+   persist();tab='predict';render();
+   setResoStatus('筛选成功｜随机历史 '+s.issue+' 期，号码封存不公开；抽取 '+attempts+' 次，6个分位判断均匹配了≥3家高分同向组合。');
+  }catch(error){setResoStatus('筛选出现错误：'+error.message)}
+  finally{if(winning||attempts>=limit){resoBusy=false;if(button)button.disabled=false}}
+ }
+ setResoStatus('随机抽取历史期次中；仅取期号日期，开奖数据仍隐藏。');
+ setTimeout(chunk,0);
+}
+function resoItem(x){
+ const pct=(100*x.hit/x.n).toFixed(1);
+ return '<div class="reso-entry"><div class="reso-entry-bar"><strong>'+x.value+' · '+x.ids.length+'家同向</strong><b>'+pct+'%</b></div><div class="reso-names">'+x.ids.map(id=>esc(METHOD_BY_ID.get(id)?.name||id)).join(' · ')+'</div><div class="reso-meta">'+x.hit+'/'+x.n+' 次历史截图命中（回溯参考，未独立验证）</div></div>';
+}
+function displayReso(){
+ const zone=$('resoDisplay');if(!zone)return;
+ const s=current();
+ if(!s?.resoMatches){
+  zone.innerHTML='<p class="reso-empty">直接点击“随机下一期”，软件会自动寻找36家中的历史高分3/4家共振。必须百位、十位、个位各有大小和单双同向组合，才封盘展示。</p>';
+  return;
+ }
+ zone.innerHTML='<div class="reso-subhead">'+esc(s.issue)+'期 · '+(s.revealed?'已开盒':'结果隐藏')+' · 重抽 '+s.resoAttempts+' 次 · 六维达标</div>'+
+ s.resoMatches.map((m,i)=>'<div class="reso-position"><div class="reso-position-title"><b>'+POS[i]+'位</b><span>大小 '+m.size[0].value+' / 单双 '+m.parity[0].value+'</span></div>'+
+ '<div class="reso-axis">大小 · 共振组合</div>'+m.size.slice(0,3).map(resoItem).join('')+
+ '<div class="reso-axis">单双 · 共振组合</div>'+m.parity.slice(0,3).map(resoItem).join('')+'</div>').join('')+
+ '<p class="reso-note">参考准确率来自截图中原模型的历史回溯统计，不代表筛选后的真实开奖命中概率。每次选择和重抽均不读取目标开奖号码，结果须开盒核验。</p>'+
+ '<details><summary class="reso-note">封盘与重抽审计SHA-256</summary><div class="audit">'+esc(s.resoAudit)+'</div><p class="hint">'+esc(s.resoVersion)+'</p></details>';
+}
+function installReso(){
+ const p=$('predict');
+ const div=document.createElement('div');div.id='resoDashboard';div.className='pane reso-dashboard';
+ div.innerHTML='<div class="reso-top"><h2>随机任意期 · 共振预测</h2><span class="tag">V0.2</span></div>'+
+ '<p class="hint">不填写期号。软件随机抽取任意历史一期，对百位、十位、个位分别判断大小与单双；只有高分3/4家同时指向同一方向才显示。</p>'+
+ '<button class="primary reso-cta" id="resoButton">随机下一期 · 抽到共振为止</button>'+
+ '<p id="resoStatus" class="hint">等待抽取。当前采用截图中历史高分组合为参考库。</p><div id="resoDisplay"></div>';
+ p.insertBefore(div,p.firstChild);
+ // 用户要求首页只保留结果，不再录入固定期号或按三轮手动点击
+ const newIssue=$('newIssue');if(newIssue)newIssue.closest('.pane').style.display='none';
+ const steps=$('steps');if(steps)steps.closest('.pane').style.display='none';
+ const next=$('randomNext');if(next)next.closest('.actions').style.display='none';
+ document.querySelectorAll('.nav button').forEach(e=>{if(e.dataset.tab==='predict')e.textContent='共振预测'});
+ $('resoButton').onclick=autoResonance;
+}
+const v01Render=render;
+render=function(){v01Render();if(tab==='predict')displayReso();};
+attach();installReso();render();
+
 })();
 
 </script></body></html>
