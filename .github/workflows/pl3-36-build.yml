@@ -1,0 +1,38 @@
+name: Build PL3-36 Android APK
+on:
+  push:
+    branches: [work/pl3-36-apk-20261109]
+    paths:
+      - 'pl3-36-lab/**'
+      - '.github/workflows/pl3-36-build.yml'
+  pull_request:
+    paths:
+      - 'pl3-36-lab/**'
+      - '.github/workflows/pl3-36-build.yml'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pl3-36-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Build signed debug APK
+        run: gradle --no-daemon --stacktrace assembleDebug
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PL3-36-Lab-v0.1-APK
+          path: pl3-36-lab/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

@@ -1,0 +1,251 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><title>排列三 · 36术数实验室</title><style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#172237;--panel2:#1d2b44;--line:#314059;--text:#edf3fa;--muted:#a1afc2;--accent:#74c9c0;--orange:#f4c380}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Noto Sans CJK SC','Microsoft YaHei',sans-serif;font-size:14px}.shell{width:min(100%,680px);margin:auto;padding:12px 12px 60px}header{padding:16px 6px 14px}.eyebrow{color:var(--accent);font-size:12px;letter-spacing:1.2px;font-weight:700}.eyebrow span{font-weight:400;color:var(--muted)}h1{font-size:23px;letter-spacing:.2px;margin:9px 0 5px}header p{color:var(--muted);margin:0;font-size:13px}.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:4px;background:#111b2b;border-radius:12px;position:sticky;top:0;z-index:10;margin-bottom:12px}.nav button{background:none;border:0;color:#aebacb;border-radius:9px;padding:12px 2px;font-size:12px}.nav button.on{background:#31435b;color:#fff;font-weight:700}.page{display:none}.page.on{display:block}.pane{padding:15px;margin-bottom:10px;background:var(--panel);border:1px solid #293850;border-radius:14px;box-shadow:0 2px 10px #0002}.row{display:flex;gap:9px;align-items:center}.between{justify-content:space-between}.wrap{flex-wrap:wrap}h2{font-size:16px;margin:0 0 10px}h3{font-size:14px;margin:0}p{line-height:1.58}.hint,.muted{color:var(--muted);font-size:12px;line-height:1.55}.hint{margin:10px 0 0}.tag{display:inline-block;border:1px solid #44687a;background:#244053;color:#d7f7fa;border-radius:40px;padding:4px 9px;font-size:11px}.tag.muted{color:var(--muted);border-color:#405068;background:#223046}button,select,input,textarea{font:inherit}button{cursor:pointer;border-radius:9px;border:1px solid #3b546d;padding:10px 12px;color:var(--text);background:#2a3b54}button:disabled{opacity:.45;cursor:not-allowed}.primary{border-color:#65b6ae;background:#70c7ba;color:#092e2e;font-weight:800}.ghost{background:#26364d}.danger{color:#efb3ad;border-color:#8b5156}.stretch{flex:1}.field{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}.field input,.field select{min-width:0}.field input{width:138px}input,select,textarea{color:var(--text);background:#0e1828;border:1px solid #40516b;border-radius:8px;padding:10px 8px;max-width:100%}input:focus,textarea:focus{outline:2px solid #55a9a4}textarea{width:100%;resize:vertical;line-height:1.5}input[type=date]{width:147px;font-size:12px}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}.step{padding:11px 4px;border-radius:10px;text-align:center;border:1px solid #41506a;background:#1d2a3f;color:var(--muted)}.step b{display:block;font-size:14px}.step strong{display:block;font-size:20px;color:#e7f6f9;margin-top:5px}.step.done{border-color:#65ada9;background:#203a44}.step.next{border-color:var(--orange)}.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.score-card{padding:13px 8px;border-radius:10px;background:#0e1c2c;text-align:center;border:1px solid #314b5d}.score-card small{font-size:12px;color:var(--muted)}.score-card b{display:block;font-size:23px;margin:6px 0;color:var(--accent)}.score-card em{display:block;font-style:normal;font-size:11px;color:#b2c0d0}.big-number{font-size:25px;letter-spacing:2px;color:#f3ce91;font-weight:800}.mono{font-family:ui-monospace,SFMono-Regular,monospace}.method-list{border-top:1px solid #354057}.method{padding:10px 0;border-bottom:1px solid #354057}.method details summary{list-style:none;cursor:pointer}.method details summary::-webkit-details-marker{display:none}.method-head{display:flex;gap:5px;align-items:center;justify-content:space-between}.method-name{font-weight:650}.method-status{font-size:10px;color:#869ab0}.method-right{white-space:nowrap;color:var(--accent);font-weight:750}.trace{margin-top:8px;background:#101c2e;border-radius:8px;padding:10px;color:#bdc9da;font-size:11px;line-height:1.55}.trace b{color:#f6d296}.actions{position:sticky;bottom:8px;padding:8px 0;background:linear-gradient(transparent,#0b1220 22%)}.history-card{border-bottom:1px solid #354057;padding:11px 0}.history-card:last-child{border-bottom:0}.history-card button{padding:7px 10px;font-size:12px}.history-meta{font-size:11px;color:var(--muted)}.history-title{font-weight:800;font-size:14px}.history-title .result{color:var(--orange)}.history-nums{font-size:12px;margin-top:6px;color:#c6d5e6}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:8px 0 14px}.stat-grid .metric{background:#0e1a2b;border-radius:9px;padding:9px 5px;text-align:center}.stat-grid b{display:block;font-size:20px}.stat-grid small{font-size:10px;color:var(--muted)}.rank-row{padding:10px 0;border-bottom:1px solid #304059;display:grid;grid-template-columns:1fr auto;gap:5px}.rank-row b{font-size:13px}.rank-row small{display:block;color:var(--muted);margin-top:3px;font-size:11px}.rank-row span{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:700}.quads{display:grid;grid-template-columns:1fr 1fr;gap:7px}.quads>div{background:#0e1c2d;border:1px solid #34465b;border-radius:10px;padding:12px}.quads strong{display:block;font-size:19px;color:var(--accent);margin:5px 0}.quads span{font-size:11px;color:var(--muted)}.quads b{font-size:12px}.audit{overflow-wrap:anywhere;color:#c1ceec;font-family:ui-monospace,monospace;font-size:11px}.warn{color:#f5c991}footer{text-align:center;color:#71819a;font-size:11px;padding:18px 0}@media(min-width:580px){.shell{padding:20px}h1{font-size:27px}}
+
+</style></head><body>
+<div class="shell">
+<header><div class="eyebrow">PL3-36 · 数术盲测实验室 <span>V0.1</span></div><h1>排列三 · 36术数合参</h1><p>百位 → 十位 → 个位｜随机取数｜封盘开盒</p></header>
+<nav class="nav" id="tabs"><button data-tab="predict" class="on">本期预测</button><button data-tab="tunnel">历史风洞</button><button data-tab="rank">复盘排行</button><button data-tab="rules">术数/数据</button></nav>
+<section id="predict" class="page on">
+<div class="pane"><div class="row between"><span class="tag">当前试验</span><span id="issueLabel" class="muted">—</span></div><div class="row wrap" style="margin-top:10px"><label class="field">新期号 <input id="newIssue" inputmode="numeric" value="26299" maxlength="8" aria-label="期号"></label><button id="newSession" class="ghost">建立本期随机盘</button></div><div class="hint">本期预测不读取历史开奖号码。每次新盘保留独立随机种子与审计记录。</div></div>
+<div class="pane"><div class="row between"><h2>三轮分位</h2><span id="freezeBadge" class="tag muted">未完成</span></div><div class="steps" id="steps"></div><div class="row"><button class="primary stretch" id="nextRound">生成百位预测</button></div><p class="hint">先完整生成百位，再十位，最后个位；三轮完成自动封盘，禁止修改该次预测。</p></div>
+<div id="summary"></div><div class="pane"><div class="row between"><h2>36家方法列表</h2><select id="methodFilter"><option value="all">全部</option><option value="east">东方24</option><option value="west">西方12</option></select></div><div id="methodRows" class="method-list"></div></div>
+<div class="pane" id="revealPanel"></div><div class="actions"><button id="randomNext" class="primary stretch">随机下一期 · 新盘</button></div>
+</section>
+<section id="tunnel" class="page"><div class="pane"><h2>历史风洞 · 遮盲抽取</h2><p class="hint">开奖虽已发生，但抽取与生成期间只向预测引擎传入期号、日期和随机种子；结果只在封盘后解封。属于历史回溯遮盲，不是实际开奖前的前瞻记录。</p><div class="row wrap"><label class="field">起始日期 <input type="date" id="fromDate" value="2026-08-10"></label><label class="field">结束日期 <input type="date" id="toDate" value="2026-11-08"></label></div><div class="row wrap"><button class="primary stretch" id="drawOne">随机抽一期</button><button class="ghost stretch" id="drawTen">随机抽10期 · 自动三轮封盘</button></div><div class="row" style="margin-top:9px"><button id="revealBatch" class="ghost stretch">本轮封盘10期 · 一键开盒</button></div><div class="hint" id="histStatus"></div></div><div class="pane"><div class="row between"><h2>本地试验账本</h2><span id="sessionCount" class="muted"></span></div><div id="historyList" class="history-list"></div></div></section>
+<section id="rank" class="page"><div class="pane"><h2>组合准确率排行</h2><p class="hint">仅使用已开盒且不同期号的首次样本；三家/四家需来自不同家族。排行采用95% Wilson置信下界，同一期多次重抽不重复计样本。样本内排行不等于样本外预测优势。</p><div class="stat-grid" id="rankSummary"></div><div class="row wrap"><label class="field">维度 <select id="rankAxis"><option value="size">大小</option><option value="parity">单双</option><option value="quad">联合四象限</option></select></label><label class="field">共振 <select id="rankK"><option value="3">3家同向</option><option value="4">4家同向</option></select></label></div><div id="comboTable"></div></div><div class="pane"><h2>单家各位置排行</h2><div id="singleTable"></div></div></section>
+<section id="rules" class="page"><div class="pane"><h2>数字规则</h2><div class="quads"><div><b>小单</b><strong>1 · 3</strong><span>理论占比20%</span></div><div><b>小双</b><strong>0 · 2 · 4</strong><span>理论占比30%</span></div><div><b>大单</b><strong>5 · 7 · 9</strong><span>理论占比30%</span></div><div><b>大双</b><strong>6 · 8</strong><span>理论占比20%</span></div></div><p class="hint">单独大小、单双每位随机基线均为50%；四象限的随机基线并非都25%。十位、个位同理。</p></div><div class="pane"><h2>数据与备份</h2><p id="datasetLabel" class="hint"></p><textarea id="pasteData" rows="3" placeholder="批量导入：每行 期号 日期 号码，如 26298 2026-11-08 597；或者导入 JSON 数组。导入时自动判重，不覆盖冲突号码。"></textarea><div class="row wrap"><button id="importData" class="ghost">导入记录</button><button id="exportData" class="ghost">备份JSON</button><button id="clearTrials" class="ghost danger">清空试验账本</button></div><div id="dataMessage" class="hint"></div></div><div class="pane"><h2>36种方法目录</h2><p class="hint">传统排盘与彩票位数映射分层。基础版只实现部分术式的随机符号生成，其余为独立可复算适配器；尚未宣称36种完整古法复原。</p><div id="catalogList" class="method-list"></div></div><div class="pane"><h2>研究限制</h2><p class="hint">历史数据为公开第三方快照，未逐期官方校验；任何术数与开奖结果之间的预测关系均未获科学证明。使用固定映射、冻结版本、独立随机种子和随机对照组检验，严禁用事后最优组合冒充事前表现。</p></div></section>
+<footer>离线实验型工具 · 结果仅供模型复盘研究，不构成购彩建议</footer></div>
+<script>
+/* 36 种术数目录：名称/传统来自历史实践；排盘符号至彩票位数的对应均为预注册实验映射。
+   level='partial' 表示仅基础随机符号结构，非完整历法/四课三传排盘。
+   level='adapter' 为纯研究占位适配器，待原典与流派的完整规则核验。 */
+const METHODS = [
+['LY','六爻纳甲','易卦','line6', 'partial','六次三钱法生成六爻与动爻；完整纳甲六亲六神/世应待接入'],
+['MH','梅花易数','易卦','meihua','partial','随机三数生成上下卦、动爻；彩票映射为实验规则'],
+['QM','奇门遁甲','奇门','qimen','adapter','随机九宫/八门/九星符号；非节气拆补、置闰正式排盘'],
+['DLR','大六壬','六壬','liuren','adapter','地支抽样；四课三传、月将、贵人正式盘尚待复原'],
+['JK','金口诀','六壬','jinkou','adapter','随机人元、贵神、将神、地分符号；不替代真实起课'],
+['TY','太乙神数','太乙','palace9','adapter','随机九宫与主客算符号占位'],
+['HJ','皇极经世','皇极','number64','adapter','元会运世数随机映射实验'],
+['HL','河洛理数','河洛','palace9','adapter','河图洛书数与分位实验'],
+['TX','太玄经','太玄','number81','adapter','八十一首随机取序实验'],
+['JYL','焦氏易林','易卦','number64','adapter','卦序随机映射；卦辞解释暂未编码'],
+['LQ','灵棋经','灵棋','number12','adapter','十二灵棋随机象数实验'],
+['DY','大衍筮法','易卦','line6','partial','蓍草过程的等价六爻概率近似抽样；非真实50策演算'],
+['XLR','小六壬','六壬','number6','adapter','六神随机起课实验'],
+['ZG','诸葛神数','诸葛数','number384','adapter','签序随机映射；不冒充原典断辞'],
+['TB','铁板神数','铁板','number64','adapter','数字映射占位；传本不统一'],
+['WX','五行生克','五行','number5','adapter','金木水火土随机抽样规则'],
+['GZ','天干地支','干支','number60','adapter','六十甲子随机位序'],
+['JG','九宫洛书','九宫','palace9','adapter','九宫位置与数字实验映射'],
+['BZ','四柱八字','四柱','number60','adapter','随机干支象征组合；非精确历法四柱'],
+['ZW','紫微斗数','紫微','palace12','adapter','十二宫随机符号；非完整斗数排盘'],
+['QZ','七政四余','七政','palace12','adapter','十二宫随机位序；非天文星历计算'],
+['SX','十二生肖','生肖','palace12','adapter','生肖随机次序，单双单列'],
+['ZY','周易卦序','易卦','number64','adapter','六十四卦序随机取数'],
+['LL','十二律吕','律吕','number12','adapter','十二律序数随机抽取'],
+['TR','塔罗七牌','纸牌','tarot7','partial','78张牌不放回抽七张及正逆位'],
+['KB','卡巴拉数值术','卡巴拉','number22','adapter','字母数值学随机输入；未采集文本，不称完整gematria'],
+['PY','毕达哥拉斯数字学','数字学','number9','adapter','1–9数位归约的实验性随机输入'],
+['CH','迦勒底数字学','数字学','number8','adapter','1–8体系随机输入，与毕达哥拉斯同家族'],
+['WA','西方本命占星','西方占星','palace12','adapter','随机十二宫/行星符号；非实际出生星图'],
+['HA','卜卦占星','西方占星','palace12','adapter','随机宫位；非问卜时刻严谨星图'],
+['PH','行星时占','西方占星','number7','adapter','七曜时辰象征性随机抽样'],
+['RU','北欧符文','符文','runes','partial','24枚古弗萨克符文随机抽取及翻转'],
+['WG','西洋土占','土占','geomancy','partial','四组单双点得到16种土占图形'],
+['LE','雷诺曼牌','纸牌','lenormand','partial','36张雷诺曼牌随机抽三张，不放回'],
+['OG','欧甘树文','欧甘','ogham','partial','20个基础欧甘符号随机抽样'],
+['AS','骰骨占','骰占','dice','partial','六面骰三枚的模拟掷骰']
+].map(([id,name,family,kind,level,note])=>({id,name,family,kind,level,note}));
+
+</script><script>
+/* 仅第三方公开资料，非全部逐条官方核验；静态快照截至 2026-11-08。
+   https://www.futifenxi.com/pls/history ; 26294-26298 对照东方财富。
+   每行: 期号 日期 开奖码。应按期号核实最终官方公告。 */
+const HIST_CSV = `26298 2026-11-08 597
+26297 2026-11-07 777
+26296 2026-11-06 320
+26295 2026-11-05 291
+26294 2026-11-04 329
+26293 2026-11-03 811
+26292 2026-11-02 446
+26291 2026-11-01 276
+26290 2026-10-31 039
+26289 2026-10-30 299
+26288 2026-10-29 415
+26287 2026-10-28 154
+26286 2026-10-27 218
+26285 2026-10-26 613
+26284 2026-10-25 677
+26283 2026-10-24 258
+26282 2026-10-23 647
+26281 2026-10-22 983
+26280 2026-10-21 864
+26279 2026-10-20 471
+26278 2026-10-19 583
+26277 2026-10-18 278
+26276 2026-10-17 906
+26275 2026-10-16 206
+26274 2026-10-15 361
+26273 2026-10-14 703
+26272 2026-10-13 890
+26271 2026-10-12 622
+26270 2026-10-11 641
+26269 2026-10-10 067
+26268 2026-10-09 300
+26267 2026-10-08 216
+26266 2026-10-07 121
+26265 2026-10-06 954
+26264 2026-10-05 592
+26263 2026-09-30 171
+26262 2026-09-29 273
+26261 2026-09-28 538
+26260 2026-09-27 449
+26259 2026-09-26 379
+26258 2026-09-25 137
+26257 2026-09-24 493
+26256 2026-09-23 690
+26255 2026-09-22 764
+26254 2026-09-21 069
+26253 2026-09-20 893
+26252 2026-09-19 190
+26251 2026-09-18 237
+26250 2026-09-17 985
+26249 2026-09-16 872
+26248 2026-09-15 126
+26247 2026-09-14 051
+26246 2026-09-13 286
+26245 2026-09-12 125
+26244 2026-09-11 620
+26243 2026-09-10 915
+26242 2026-09-09 244
+26241 2026-09-08 050
+26240 2026-09-07 579
+26239 2026-09-06 470
+26238 2026-09-05 361
+26237 2026-09-04 950
+26236 2026-09-03 173
+26235 2026-09-02 779
+26234 2026-09-01 301
+26233 2026-08-31 163
+26232 2026-08-30 802
+26231 2026-08-29 187
+26230 2026-08-28 946
+26229 2026-08-27 280
+26228 2026-08-26 560
+26227 2026-08-25 431
+26226 2026-08-24 201
+26225 2026-08-23 116
+26224 2026-08-22 912
+26223 2026-08-21 223
+26222 2026-08-20 877
+26221 2026-08-19 969
+26220 2026-08-18 482
+26219 2026-08-17 662
+26218 2026-08-16 079
+26217 2026-08-15 019
+26216 2026-08-14 953
+26215 2026-08-13 927
+26214 2026-08-12 014
+26213 2026-08-11 740
+26212 2026-08-10 839`;
+const SEED_HISTORY=HIST_CSV.trim().split('\n').map(line=>{const [issue,date,number]=line.split(' ');return {issue,date,number,source:'https://www.futifenxi.com/pls/history',status:'third_party_crosscheck_needed'};});
+
+</script><script>
+/* 无历史号码依赖：这一文件完全不知道 开奖数据、DOM 或存储。 */
+const LabEngine = (()=>{
+ 'use strict';
+ const VERSION='PL3-36-v0.1.0-fixed';
+ const QUADS={小单:[1,3],小双:[0,2,4],大单:[5,7,9],大双:[6,8]};
+ function seed32(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+ function prng(str){let a=seed32(str);return ()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296}}
+ function randint(f,lo,hi){return lo+Math.floor(f()*(hi-lo+1))}
+ function chart(m,f){let v=[],trace='';
+   if(m.kind==='line6'){for(let i=0;i<6;i++){if(m.id==='DY'){const r=randint(f,1,16);v.push(r===1?6:r<=6?7:r<=13?8:9);}else{v.push(randint(f,2,3)+randint(f,2,3)+randint(f,2,3));}}trace='初爻→上爻 '+v.join(' · ')+'；动爻 '+(v.map((x,i)=>(x===6||x===9)?i+1:null).filter(Boolean).join(',')||'无')}
+   else if(m.kind==='meihua'){v=[randint(f,1,8),randint(f,1,8),randint(f,1,6)];trace='上卦 '+v[0]+' / 下卦 '+v[1]+' / 动爻 '+v[2]}
+   else if(m.kind==='qimen'){v=[randint(f,1,9),randint(f,1,8),randint(f,1,9)];trace='九宫 '+v[0]+' / 门 '+v[1]+' / 星 '+v[2]+'（象征抽样）'}
+   else if(m.kind==='liuren'){v=Array.from({length:4},()=>randint(f,1,12));trace='地支符号 '+v.join(' / ')+'（非四课三传）'}
+   else if(m.kind==='jinkou'){v=[randint(f,1,10),randint(f,1,12),randint(f,1,12),randint(f,1,12)];trace='人元·贵神·将神·地分 '+v.join('/')+'（非正式起课）'}
+   else if(m.kind==='tarot7'){let deck=Array.from({length:78},(_,i)=>i);for(let i=0;i<7;i++){let j=randint(f,i,77);[deck[i],deck[j]]=[deck[j],deck[i]];v.push(deck[i]*2+randint(f,0,1))}trace='七张索引与逆位 '+v.map(x=>Math.floor(x/2)+1+(x%2?'逆':'正')).join(' / ')}
+   else if(m.kind==='runes'){v=[randint(f,1,24),randint(f,1,24),randint(f,0,1)];trace='符文序数 '+v[0]+'/'+v[1]+' · 翻转 '+v[2]}
+   else if(m.kind==='geomancy'){v=Array.from({length:4},()=>randint(f,1,2));trace='四行点数 '+v.join('-')}
+   else if(m.kind==='lenormand'){let deck=Array.from({length:36},(_,i)=>i+1);for(let i=0;i<3;i++){const j=randint(f,i,35);[deck[i],deck[j]]=[deck[j],deck[i]];v.push(deck[i])}trace='三张牌号 '+v.join('/')}
+   else if(m.kind==='ogham'){v=[randint(f,1,20),randint(f,1,20)];trace='欧甘符号 '+v.join('/')}
+   else if(m.kind==='dice'){v=[randint(f,1,6),randint(f,1,6),randint(f,1,6)];trace='三骰 '+v.join('+')}
+   else {const n=Number((m.kind.match(/\d+/)||['64'])[0]);v=[randint(f,1,n),randint(f,1,n),randint(f,1,n)];trace='象征序数 '+v.join(' · ')+'（实验适配器）'}
+   return {v,trace};
+ }
+ function one(m,root,position){const f=prng(root+'|'+VERSION+'|'+m.id+'|'+position);const c=chart(m,f);const salt=[randint(f,0,65535),randint(f,0,65535),randint(f,0,65535)];const a=c.v.reduce((acc,x,i)=>acc+x*(i+1),0),b=c.v.reduce((acc,x,i)=>acc+x*(i+2)*(i+1),0);
+  const size=((a+salt[0])%2===0)?'小':'大',parity=((b+salt[1])%2===0)?'双':'单';const quad=size+parity, pool=QUADS[quad],digit=pool[(a+b+salt[2])%pool.length];return {id:m.id,name:m.name,family:m.family,level:m.level,size,parity,quad,digit,pool:[...pool],trace:c.trace};}
+ function round(root,position,methods){return methods.map(m=>one(m,root,position))}
+ function dominant(values,field){const counts={};for(const x of values)counts[x[field]]=(counts[x[field]]||0)+1;const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);return {value: sorted[0]?.[1]===sorted[1]?.[1]?'待定':(sorted[0]?.[0]||'待定'),counts}}
+ function fusion(rows){const size=dominant(rows,'size'),parity=dominant(rows,'parity'),digitCount=Array(10).fill(0);for(const r of rows)digitCount[r.digit]++;const digits=Array.from({length:10},(_,i)=>i).sort((x,y)=>digitCount[y]-digitCount[x]||x-y);let core=rows.filter(r=>['LY','QM','DLR'].includes(r.id));const cs=dominant(core,'size'),cp=dominant(core,'parity');const q=(size.value==='待定'||parity.value==='待定')?'待定':size.value+parity.value;
+  return {size,parity,quad:q,topDigits:digits.slice(0,4),digitCounts:digitCount,core:{size:cs,parity:cp},eligible:QUADS[q]||[]};}
+ function summary(rounds){if(rounds.length!==3||rounds.some(x=>!x))return null;const fusionByPosition=rounds.map(fusion);const pools=fusionByPosition.map(x=>x.topDigits.slice(0,4));const direct=[];for(const a of pools[0])for(const b of pools[1])for(const c of pools[2])direct.push(''+a+b+c);const primary=direct.slice(0,8);return {fusionByPosition,pools,primary,direct,group6:[...new Set(direct.filter(x=>new Set(x).size===3).map(x=>x.split('').sort().join('')))],group3:[...new Set(direct.filter(x=>new Set(x).size===2).map(x=>x.split('').sort().join('')))]};}
+ // SHA-256 sync，输入为 UTF-8，便于离线 file:// 的 Android WebView 计算审计码
+ function sha256(str){const s=unescape(encodeURIComponent(str)),words=[],K=[],H=[];let prime=2;function isPrime(n){for(let i=2;i*i<=n;i++)if(n%i===0)return false;return true}while(K.length<64){if(isPrime(prime)){if(H.length<8)H.push((Math.pow(prime,.5)%1*4294967296)>>>0);K.push((Math.pow(prime,1/3)%1*4294967296)>>>0)}prime++}
+  const bytes=Array.from(s,c=>c.charCodeAt(0)),bitLen=bytes.length*8;bytes.push(0x80);while(bytes.length%64!==56)bytes.push(0);const hi=Math.floor(bitLen/4294967296),lo=bitLen>>>0;for(let n of [hi,lo])bytes.push((n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255);function rotr(x,n){return (x>>>n)|(x<<(32-n))}
+  for(let off=0;off<bytes.length;off+=64){for(let i=0;i<16;i++)words[i]=((bytes[off+i*4]<<24)|(bytes[off+i*4+1]<<16)|(bytes[off+i*4+2]<<8)|bytes[off+i*4+3])>>>0;for(let i=16;i<64;i++){const a=words[i-15],b=words[i-2];words[i]=(words[i-16]+(rotr(a,7)^rotr(a,18)^(a>>>3))+words[i-7]+(rotr(b,17)^rotr(b,19)^(b>>>10)))>>>0}let [a,b,c,d,e,f,g,h]=H;for(let i=0;i<64;i++){const t1=(h+(rotr(e,6)^rotr(e,11)^rotr(e,25))+((e&f)^(~e&g))+K[i]+words[i])>>>0;const t2=((rotr(a,2)^rotr(a,13)^rotr(a,22))+((a&b)^(a&c)^(b&c)))>>>0;h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0}for(let i=0;i<8;i++)H[i]=(H[i]+[a,b,c,d,e,f,g,h][i])>>>0;}
+  return H.map(x=>x.toString(16).padStart(8,'0')).join('');}
+ function freeze(s){if(s.rounds.length!==3||s.rounds.some(x=>!x))throw Error('必须完成三个位置');const payload={issue:s.issue,date:s.date,mode:s.mode,seed:s.seed,version:VERSION,rounds:s.rounds};return sha256(JSON.stringify(payload));}
+ function classify(d){return {size:Number(d)<5?'小':'大',parity:Number(d)%2?'单':'双',quad:(Number(d)<5?'小':'大')+(Number(d)%2?'单':'双')}}
+ function score(s,number){if(!/^\d{3}$/.test(number))throw Error('需要三位开奖号码，保留前导0');const out=[];for(let i=0;i<3;i++){const actual=classify(number[i]),f=fusion(s.rounds[i]);const methods=s.rounds[i].map(x=>({...x,hitSize:x.size===actual.size,hitParity:x.parity===actual.parity,hitQuad:x.quad===actual.quad,hitExact:x.digit===Number(number[i])}));out.push({position:i,actual,f,hitSize:f.size.value===actual.size,hitParity:f.parity.value===actual.parity,hitQuad:f.quad===actual.quad,hitTop4:f.topDigits.includes(Number(number[i])),methods})}const sum=summary(s.rounds);return {number,out,hitDirect:sum.direct.includes(number),hitTop8:sum.primary.includes(number),hitGroup6:sum.group6.includes(number.split('').sort().join('')),hitGroup3:sum.group3.includes(number.split('').sort().join(''))}}
+ const wilson=(hit,n)=>{if(!n)return 0;const p=hit/n,z=1.96,z2=z*z;return (p+z2/(2*n)-z*Math.sqrt((p*(1-p)+z2/(4*n))/n))/(1+z2/n)};
+ function stats(sessions){const revealed=sessions.filter(x=>x.revealed&&x.rounds?.length===3&&x.result).sort((a,b)=>a.created-b.created);const seen=new Set(),samples=[],duplicates=[];for(const s of revealed){const key=s.issue;if(seen.has(key)){duplicates.push(s);continue}seen.add(key);samples.push(s)}
+  let methodMap=new Map(),comboMap=new Map();const add=(key,hit,map,baseline=.5)=>{let row=map.get(key);if(!row){row={key,n:0,hit:0,expectedSum:0};map.set(key,row)}row.n++;row.expectedSum+=baseline;if(hit)row.hit++};
+  function combos(arr,k,callback){let buf=[];function walk(start){if(buf.length===k){callback(buf);return}for(let i=start;i<=arr.length-(k-buf.length);i++){buf.push(arr[i]);walk(i+1);buf.pop()}}if(arr.length>=k)walk(0)}
+  for(const s of samples){const actual=s.result;for(let p=0;p<3;p++){let truth=classify(actual[p]),rows=s.rounds[p];for(const row of rows){add(row.id+'|size|'+p,row.size===truth.size,methodMap);add(row.id+'|parity|'+p,row.parity===truth.parity,methodMap);add(row.id+'|quad|'+p,row.quad===truth.quad,methodMap,QUADS[row.quad].length/10);add(row.id+'|digit|'+p,row.digit===Number(actual[p]),methodMap,.1)}
+    for(const axis of ['size','parity','quad']){for(const label of (axis==='size'?['小','大']:axis==='parity'?['单','双']:Object.keys(QUADS))){const pool=rows.filter(x=>x[axis]===label).sort((a,b)=>a.id.localeCompare(b.id));for(const k of [3,4])combos(pool,k,selected=>{if(new Set(selected.map(x=>x.family)).size!==k)return;const ids=selected.map(x=>x.id).join('+');add(axis+'|'+k+'|'+label+'|'+ids,label===truth[axis],comboMap,axis==='quad'?QUADS[label].length/10:.5)})}}}}
+  const enrich=r=>({...r,rate:r.hit/r.n,baseline:r.expectedSum/r.n,lower:wilson(r.hit,r.n),lift:wilson(r.hit,r.n)-r.expectedSum/r.n});const methodRows=[...methodMap.values()].map(enrich).sort((a,b)=>b.lower-a.lower||b.n-a.n);const combosRows=[...comboMap.values()].map(enrich).sort((a,b)=>(b.n>=20)-(a.n>=20)||b.lift-a.lift||b.n-a.n);return {samples:samples.length,duplicates:duplicates.length,methods:methodRows,combos:combosRows};}
+ return {VERSION,QUADS,seed32,prng,one,round,fusion,summary,sha256,freeze,classify,score,stats};
+})();
+
+</script><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),POS=['百','十','个'],KEY='pl3lab_v01_sessions',DATAKEY='pl3lab_v01_extra_data';
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function read(k,defaultValue){try{const v=JSON.parse(localStorage.getItem(k));return v??defaultValue}catch(_){return defaultValue}}
+let sessions=read(KEY,[]), imported=read(DATAKEY,[]), activeId=sessions[0]?.id||null, tab='predict',filter='all';let lastStatsKey='',lastStats=null;
+const METHOD_BY_ID=new Map(METHODS.map(x=>[x.id,x]));
+function dataset(){const mp=new Map(SEED_HISTORY.map(x=>[x.issue,x]));for(const d of imported)if(!mp.has(d.issue))mp.set(d.issue,d);return [...mp.values()].sort((a,b)=>a.issue.localeCompare(b.issue))}
+function secureSeed(){const ar=new Uint32Array(4);if(typeof crypto!=='undefined'&&crypto.getRandomValues){crypto.getRandomValues(ar);return Array.from(ar,x=>x.toString(16).padStart(8,'0')).join('')}return [Date.now().toString(16),Math.random().toString(16).slice(2)].join(':')+'-nonsecure-fallback'}
+function randomInt(n){if(n<1)return 0;const ar=new Uint32Array(1);if(typeof crypto!=='undefined'&&crypto.getRandomValues){const max=Math.floor(4294967296/n)*n;let v;do{crypto.getRandomValues(ar);v=ar[0]}while(v>=max);return v%n}return Math.floor(Math.random()*n)}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(sessions));localStorage.setItem(DATAKEY,JSON.stringify(imported));return true}catch(e){alert('无法保存到本机：'+e.message);return false}}
+function now(){return Date.now()}
+function current(){return sessions.find(s=>s.id===activeId)||null}
+function addSession(d,mode='current',makeActive=true){const seed=secureSeed(),s={id:'s'+Date.now().toString(36)+'_'+randomInt(999999).toString(36),issue:d.issue,date:d.date||'',mode,seed,created:now(),version:LabEngine.VERSION,rounds:[],hash:null,revealed:false,result:null};sessions.unshift(s);if(makeActive)activeId=s.id;persist();return s}
+function nextRound(s){if(!s||s.hash||s.rounds.length>=3)return;const i=s.rounds.length;s.rounds.push(LabEngine.round(s.seed,i,METHODS));if(s.rounds.length===3)s.hash=LabEngine.freeze(s);persist();render()}
+function makeFull(s){while(s.rounds.length<3){s.rounds.push(LabEngine.round(s.seed,s.rounds.length,METHODS))}s.hash=LabEngine.freeze(s)}
+function reveal(s){if(!s||!s.hash||s.revealed)return;const d=dataset().find(x=>x.issue===s.issue);if(!d){alert('未导入该期开奖号码；请先补充数据，不能自行推测。');return}if(!confirm('确认已生成并冻结3轮预测，现公开 '+s.issue+' 期实际开奖号并结算？'))return;s.result=d.number;s.revealed=true;s.revealAt=now();s.resultSource=d.source;s.resultStatus=d.status;persist();render()}
+function pickHistory(n){let pool=dataset().filter(x=>(!$('fromDate').value||x.date>=$('fromDate').value)&&(!$('toDate').value||x.date<=$('toDate').value));const tested=new Set(sessions.filter(s=>s.mode==='historical').map(s=>s.issue));const unused=pool.filter(x=>!tested.has(x.issue));if(unused.length)pool=unused;if(!pool.length){alert('当前日期范围内没有可抽取的历史数据；请导入更多期次或调整日期。');return}const chosen=[];const batchId='batch_'+Date.now().toString(36)+'_'+randomInt(100000);pool=[...pool];while(chosen.length<Math.min(n,pool.length)){const idx=randomInt(pool.length);chosen.push(pool.splice(idx,1)[0])}for(const d of chosen){const s=addSession(d,'historical',false);s.batchId=batchId;if(n>1)makeFull(s)}activeId=sessions[0].id;persist();tab=n===1?'predict':'tunnel';render()}
+function renderTabs(){document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id===tab))}
+function roundStatus(s,i){if(!s?.rounds[i])return '—';const f=LabEngine.fusion(s.rounds[i]);return f.size.value+f.parity.value}
+function renderPredict(){const s=current();$('issueLabel').textContent=s?`${s.issue}期 · ${s.mode==='historical'?'历史遮盲':'当期实验'} · ${s.date||'未设日期'}`:'未建盘';$('freezeBadge').textContent=s?.hash?'已冻结':`第 ${Math.min(3,(s?.rounds.length||0)+1)} 轮待生成`;
+ $('steps').innerHTML=POS.map((p,i)=>`<div class="step ${s?.rounds[i]?'done':(s?.rounds.length===i?'next':'')}"><b>${i+1} · ${p}位</b><strong>${esc(roundStatus(s,i))}</strong></div>`).join('');
+ const next=s?.rounds.length||0;$('nextRound').disabled=!s||!!s.hash;$('nextRound').textContent=s?.hash?'三轮完成 · 已封盘':`生成第${next+1}轮 · ${POS[next]||'完'}位`;let html='';
+ if(s?.rounds.length){html+='<div class="pane"><h2>36家同向合参</h2><div class="score-grid">';for(let i=0;i<3;i++){const f=s.rounds[i]?LabEngine.fusion(s.rounds[i]):null;html+=`<div class="score-card"><small>${POS[i]}位</small><b>${f?esc(f.size.value+f.parity.value):'—'}</b><em>${f?'主推 '+f.topDigits.join(' / '):'待起盘'}</em></div>`}html+='</div>';if(s.hash){const sum=LabEngine.summary(s.rounds);html+=`<p class="hint"><b>原始三盘独立合参</b>：${sum.fusionByPosition.map((f,i)=>POS[i]+'位'+f.core.size.value+f.core.parity.value).join('、')}。首轮六爻、奇门、大六壬的投票不被36家合参覆盖；每位候选4码形成64个直选组合。八注实验精选：<span class="warn mono">${sum.primary.join(' ')}</span></p><p class="hint">组选6覆盖 ${sum.group6.length} 组；组选3覆盖 ${sum.group3.length} 组。这些是随机映射排名，不代表开奖概率提升。</p><p class="hint">审计SHA-256：<span class="audit">${s.hash}</span></p>`}html+='</div>'}
+ $('summary').innerHTML=html;
+ const lists=[];for(let i=0;i<(s?.rounds.length||0);i++){const posrows=s.rounds[i],filterRows=posrows.filter(x=>filter==='all'||(filter==='east'?METHODS.indexOf(METHOD_BY_ID.get(x.id))<24:METHODS.indexOf(METHOD_BY_ID.get(x.id))>=24));lists.push(`<h3 style="padding:12px 0;color:var(--orange)">${POS[i]}位 · 第${i+1}轮</h3>`);for(let j=0;j<filterRows.length;j++){const r=filterRows[j],m=METHOD_BY_ID.get(r.id),val=s?.revealed?LabEngine.classify(s.result[i]):null;const hit=val?(r.quad===val.quad?' ✓':' ×'):'';lists.push(`<div class="method"><details><summary class="method-head"><span><span class="method-name">${esc(m.name)}</span> <span class="method-status">${m.level==='partial'?'符号结构':'实验适配'}</span></span><span class="method-right">${r.quad} · ${r.digit}${hit}</span></summary><div class="trace">${esc(r.trace)}<p>随机映射：${r.quad} ⇒ 候选 ${r.pool.join('、')}；定位 ${r.digit}。该映射为实验公式，不是原典中奖规则。</p></div></details></div>`)}}
+ $('methodRows').innerHTML=lists.length?lists.join(''):'完成第一轮后，这里展示36种方法的具体结果。';
+ if(s?.hash){$('revealPanel').innerHTML=s.revealed?renderScore(s):`<h2>封盘完成</h2><p class="hint">结果已不可编辑。${s.mode==='historical'?'可在这里开盒，或到历史风洞批量查看。':'当前期号尚未导入开奖数据，待官方公布后导入核验。'}</p><div class="row"><button class="ghost stretch" ${dataset().some(x=>x.issue===s.issue)?'':'disabled'} id="revealNow">开盒 · 检验实际号码</button></div>`;const revealBtn=$('revealNow');if(revealBtn)revealBtn.onclick=()=>reveal(s)}else $('revealPanel').innerHTML='<h2>尚未封盘</h2><p class="hint">完成全部三轮才允许开盒。</p>';
+}
+function renderScore(s){const scored=LabEngine.score(s,s.result);const detail=scored.out.map((r,i)=>`${POS[i]}位 ${s.result[i]}：大小${r.hitSize?'✓':'×'} / 单双${r.hitParity?'✓':'×'} / 同时${r.hitQuad?'✓':'×'} / 4码${r.hitTop4?'✓':'×'}`).join('<br>');return `<h2>开盒结果 <span class="big-number">${esc(s.result)}</span></h2><p class="hint">${detail}</p><p class="hint">直选64码覆盖 ${scored.hitDirect?'✓':'×'}；精选8码 ${scored.hitTop8?'✓':'×'}；组选6 ${scored.hitGroup6?'✓':'×'}；组选3 ${scored.hitGroup3?'✓':'×'}。</p><p class="hint">数据来源：${esc(s.resultStatus||'unknown')} · ${esc(s.resultSource||'未记录')}。这是历史遮盲检验，不能算真实事前预测。</p>`}
+function renderHistory(){const pool=dataset();$('histStatus').textContent=`已装入 ${pool.length} 期可用记录，范围 ${pool[0]?.date||'—'} 至 ${pool[pool.length-1]?.date||'—'}。第三方快照尚须逐期官方核验；支持扩展导入。`;
+ const batch=sessions.find(s=>s.batchId)?.batchId;const eligible=sessions.filter(s=>s.batchId===batch&&!s.revealed&&s.hash&&dataset().some(d=>d.issue===s.issue));$('revealBatch').disabled=!eligible.length;$('revealBatch').textContent=eligible.length?'本轮 '+eligible.length+' 期 · 一键开盒':'本轮无待开盒封盘';
+ $('sessionCount').textContent=`${sessions.length} 次试验`;
+ $('historyList').innerHTML=sessions.slice(0,150).map(s=>`<div class="history-card"><div class="row between"><div><div class="history-title">${esc(s.issue)}期 · ${s.revealed?`<span class="result mono">${esc(s.result)}</span>`:'*** 结果隐藏'}</div><div class="history-meta">${s.mode==='historical'?'历史遮盲':'当期盘'} · ${s.rounds.length}/3轮 · ${s.hash?'已冻结':'未冻结'}${s.revealed?' · 已开盒':''}</div></div><div class="row"><button data-open="${s.id}" class="ghost">查看</button>${s.hash&&!s.revealed&&dataset().some(d=>d.issue===s.issue)?`<button data-reveal="${s.id}">开盒</button>`:''}</div></div>${s.revealed?`<div class="history-nums">封存：${esc(s.hash?.slice(0,14))}… · 开盒结果：${esc(s.result)}</div>`:''}</div>`).join('')||'<p class="hint">暂无试验，随机抽一期或10期开始。</p>';
+ document.querySelectorAll('[data-open]').forEach(x=>x.onclick=()=>{activeId=x.dataset.open;tab='predict';render()});document.querySelectorAll('[data-reveal]').forEach(x=>x.onclick=()=>reveal(sessions.find(s=>s.id===x.dataset.reveal)));}
+function renderRank(){const key=sessions.filter(s=>s.revealed).map(s=>s.id+':'+s.result+':'+s.revealAt).join('|');if(lastStatsKey!==key){lastStats=LabEngine.stats(sessions);lastStatsKey=key}const st=lastStats;$('rankSummary').innerHTML=`<div class="metric"><b>${st.samples}</b><small>有效独立期次</small></div><div class="metric"><b>${st.duplicates}</b><small>同一期重复排除</small></div><div class="metric"><b>${st.combos.filter(x=>x.n>=20).length}</b><small>达到20次组合</small></div>`;
+ const axis=$('rankAxis').value,k=$('rankK').value,rows=st.combos.filter(x=>x.key.startsWith(axis+'|'+k+'|'));const rank=rows.slice(0,30);$('comboTable').innerHTML=rank.length?rank.map((r,i)=>{const label=r.key.split('|')[2],ids=r.key.split('|')[3].split('+'),names=ids.map(id=>METHOD_BY_ID.get(id)?.name||id).join(' · ');return `<div class="rank-row"><div><b>${i+1}. ${label} · ${names}</b><small>${r.n}次同向 / 命中${r.hit}次 · ${r.n<20?'探索样本不足':'达到初步样本门槛'}</small></div><div><span>${(r.rate*100).toFixed(1)}%</span><small>随机基准 ${(r.baseline*100).toFixed(1)}% · Wilson下界 ${(r.lower*100).toFixed(1)}%</small></div></div>`}).join(''):'<p class="hint">暂无符合要求的开盒组合；先运行并开盒多轮历史风洞。</p>';
+ const axisMethods=st.methods.filter(x=>x.key.includes('|'+axis+'|')).slice(0,30);$('singleTable').innerHTML=axisMethods.length?axisMethods.map((r,i)=>{const [id,dimension,pos]=r.key.split('|');return `<div class="rank-row"><div><b>${i+1}. ${METHOD_BY_ID.get(id)?.name||id} · ${POS[pos]}位</b><small>${r.hit}/${r.n}次 · ${r.n<20?'样本不足':'样本≥20'}</small></div><div><span>${(r.rate*100).toFixed(1)}%</span><small>下界 ${(r.lower*100).toFixed(1)}%</small></div></div>`}).join(''):'<p class="hint">完成历史开盒后显示单家排行。</p>'}
+function renderRules(){const data=dataset();$('datasetLabel').textContent=`本机 ${data.length} 期（随附 ${SEED_HISTORY.length} 期2026-08-10～2026-11-08第三方快照，另导入 ${imported.length} 期）。仅来源足以校验的期次才能标记为官方已核。`;
+ $('catalogList').innerHTML=METHODS.map((m,i)=>`<div class="method"><details><summary class="method-head"><span><span class="method-name">${i+1}. ${m.name}</span><span class="method-status"> · ${i<24?'东':'西'} · ${m.family}</span></span><span class="method-status">${m.level==='partial'?'符号模块':'待严谨复原'} ▾</span></summary><div class="trace">${esc(m.note)}<p>统一取数接口：随机Seed → 符号结构 → 预注册实验大小/单双 → 各位号码候选 → 封盘与开盒。</p></div></details></div>`).join('')}
+function render(){renderTabs();if(tab==='predict')renderPredict();if(tab==='tunnel')renderHistory();if(tab==='rank')renderRank();if(tab==='rules')renderRules()}
+function parseImport(input){let rows;if(input.trim().startsWith('[')){rows=JSON.parse(input);if(!Array.isArray(rows))throw Error('JSON必须是数组')}else{rows=input.split(/\r?\n/).filter(Boolean).map(line=>{const p=line.trim().split(/[\s,，;；]+/);return {issue:p[0],date:p[1],number:p[2]}})}
+ const existing=new Map(dataset().map(x=>[x.issue,x.number]));let added=0,dups=0,conflicts=[];for(const raw of rows){let issue=String(raw.issue||'').trim();if(/^20\d{5}$/.test(issue))issue=issue.slice(2);const date=String(raw.date||''),number=String(raw.number||'').padStart(3,'0');if(!/^\d{5}$/.test(issue)||!/20\d\d-\d\d-\d\d/.test(date)||!/^\d{3}$/.test(number))throw Error('不正确的期号/日期/号码：'+JSON.stringify(raw));if(existing.has(issue)){if(existing.get(issue)!==number)conflicts.push(issue);else dups++;continue}const d={issue,date,number,source:raw.source||'manual_import',status:'import_unverified'};imported.push(d);existing.set(issue,number);added++}persist();return {added,dups,conflicts}}
+function exportBackup(){const text=JSON.stringify({exportedAt:new Date().toISOString(),version:LabEngine.VERSION,methods:METHODS,sessions,imported,seedDataset:'2026-08-10_to_2026-11-08'},null,2);if(window.Android&&typeof Android.saveJson==='function'){Android.saveJson('PL3-36-backup.json',text);return}try{const url=URL.createObjectURL(new Blob([text],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='PL3-36-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)}catch(e){$('pasteData').value=text;alert('浏览器未支持下载；JSON已放入文本框，可复制备份。')}}
+function attach(){document.querySelectorAll('.nav button').forEach(btn=>btn.onclick=()=>{tab=btn.dataset.tab;render()});$('methodFilter').onchange=e=>{filter=e.target.value;renderPredict()};$('newSession').onclick=()=>{const issue=$('newIssue').value.trim();if(!/^\d{5}$/.test(issue)){alert('请输入5位排列三期号，例如26299');return}addSession({issue,date:''},'current');tab='predict';render()};$('nextRound').onclick=()=>nextRound(current());$('randomNext').onclick=()=>{pickHistory(1)};$('drawOne').onclick=()=>pickHistory(1);$('drawTen').onclick=()=>pickHistory(10);$('revealBatch').onclick=()=>{const batch=sessions.find(s=>s.batchId)?.batchId;const targets=sessions.filter(s=>s.batchId===batch&&s.hash&&!s.revealed);if(!targets.length)return;if(!confirm('确定将本轮 '+targets.length+' 期全部封盘开盒？所有结果将写入复盘账本。'))return;for(const s of targets){const d=dataset().find(x=>x.issue===s.issue);if(!d)continue;s.result=d.number;s.revealed=true;s.revealAt=now();s.resultSource=d.source;s.resultStatus=d.status}persist();render()};$('rankAxis').onchange=renderRank;$('rankK').onchange=renderRank;$('importData').onclick=()=>{try{const r=parseImport($('pasteData').value);$('dataMessage').textContent=`导入 ${r.added} 期；重复 ${r.dups} 期；冲突 ${r.conflicts.length} 期${r.conflicts.length?'（已拒绝覆盖：'+r.conflicts.join(',')+'）':''}`;renderRules()}catch(e){$('dataMessage').textContent='导入失败：'+e.message}};$('exportData').onclick=exportBackup;$('clearTrials').onclick=()=>{if(confirm('确定删除全部本机预测与复盘账本？本次动作不可撤销，请先导出备份。')){sessions=[];activeId=null;persist();tab='predict';addSession({issue:'26299'},'current');render()}};}
+if(!current())addSession({issue:'26299',date:''},'current');attach();render();
+})();
+
+</script></body></html>
